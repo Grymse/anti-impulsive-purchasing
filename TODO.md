@@ -1,4 +1,4 @@
-- [ ] Try to add a trigger to an existing button on all Amazon pages
-- [ ] Try to redirect or add a pop-up on specific clicks
-- [ ] Try to modify the price
-- [ ] Try to add some form of analytical pickup
+- [ ] Try to add a trigger to an existing button on all Amazon product pages
+- [ ] Try to redirect or add a pop-up on specific clicks (Interfere)
+- [ ] Try to modify the price of all Amazon product pages (Modify an element)
+- [ ] Try to add some form of analytical data being sent
