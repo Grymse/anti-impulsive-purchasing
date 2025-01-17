@@ -1,7 +1,17 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 function IndexPopup() {
+  const [currentUrl, setCurrentUrl] = useState<string>("")
   const [data, setData] = useState("")
+
+  const getCurrentUrl = async () => {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+    setCurrentUrl(tab.url)
+  }
+
+  useEffect(() => {
+    getCurrentUrl()
+  }, [])
 
   return (
     <div
@@ -15,10 +25,17 @@ function IndexPopup() {
         </a>{" "}
         Extension!
       </h2>
-      <input onChange={(e) => setData(e.target.value)} value={data} />
-      <a href="https://docs.plasmo.com" target="_blank">
-        View Docs
-      </a>
+      <h3>
+        You are currently on the following url: <br />
+        <a
+          href={currentUrl}
+          target="_blank"
+          style={{
+            wordBreak: "break-all"
+          }}>
+          {currentUrl}
+        </a>
+      </h3>
     </div>
   )
 }
