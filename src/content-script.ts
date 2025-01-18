@@ -2,11 +2,10 @@ export function modifyAmazonPricesToMindfulness(): void {
     const body = document.body;
     if (!body) return;
   
-    // Select all elements with the class "a-price-symbol"
+    // Amazone dollar sign
     const priceElements = body.querySelectorAll("span.a-price-symbol");
 
-    
-    // Loop through each price element and update the text
+
     priceElements.forEach((symbolElement) => {
       // Find the parent container of the price
       const priceContainer = symbolElement.closest("span.a-price");
