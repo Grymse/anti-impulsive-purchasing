@@ -25,3 +25,37 @@ export function modifyText(find: string, replace: string): void {
     body.innerHTML = body.innerHTML.replace(new RegExp(find, 'g'), replace);
   }
   
+  export function interceptBuyNowButton(): void {
+    // Use a MutationObserver to handle dynamic rendering
+    const observer = new MutationObserver(() => {
+      const buyNowButton = document.getElementById("buy-now-button") as HTMLInputElement;
+  
+      if (buyNowButton) {
+        observer.disconnect(); // Stop observing once the button is found
+  
+        // Attach an event listener to intercept and block its behavior
+        buyNowButton.addEventListener(
+          "click",
+          (event) => {
+            event.stopImmediatePropagation(); // Block all other event handlers
+            event.preventDefault(); // Prevent the default submission behavior
+  
+            // Custom interference logic
+            alert("Hold on! Are you sure you want to proceed with this purchase?");
+            console.log("Buy Now button click intercepted.");
+          },
+          true // Use capture phase to intercept early
+        );
+  
+        console.log("Buy Now button is ready and intercepted.");
+      }
+    });
+  
+    // Observe DOM changes to detect dynamic button loading
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+  
+  
+  
+
+  

@@ -1,5 +1,5 @@
 import type { PlasmoCSConfig } from "plasmo"
-import { modifyAmazonPricesToMindfulness } from "~content-script"
+import { interceptBuyNowButton, modifyAmazonPricesToMindfulness } from "~content-script"
  
 export const config: PlasmoCSConfig = {
   matches: ["<all_urls>"],
@@ -8,3 +8,4 @@ export const config: PlasmoCSConfig = {
 console.log("Der scriptes!")
 
 modifyAmazonPricesToMindfulness()
+interceptBuyNowButton()
