@@ -1,5 +1,5 @@
 import type { PlasmoCSConfig } from "plasmo"
-import { useEffect } from "react"
+import modifyText from "~content-script"
  
 export const config: PlasmoCSConfig = {
   matches: ["<all_urls>"],
@@ -7,25 +7,4 @@ export const config: PlasmoCSConfig = {
 }
 console.log("Hello from content script!")
 
-// const ReplaceNumbers = () => {
-//   useEffect(() => {
-//     // Function to replace numbers with exclamation marks
-//     const replaceNumbers = () => {
-//       const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
-//       let node;
-
-//       while ((node = walker.nextNode())) {
-//         if (node.nodeValue) {
-//           node.nodeValue = node.nodeValue.replace(/\d+/g, "!");
-//         }
-//       }
-//     };
-
-//     // Call the function to replace numbers
-//     replaceNumbers();
-//   }, []);
-
-//   return null;
-// };
-
-// export default ReplaceNumbers;
+modifyText("kurv", "FY BAD")

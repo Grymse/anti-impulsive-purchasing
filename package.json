@@ -31,7 +31,8 @@
       "storage",
       "tabs",
       "webNavigation",
-      "scripting"
+      "scripting",
+      "activeTab"
     ]
   }
 }
