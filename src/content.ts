@@ -5,6 +5,6 @@ export const config: PlasmoCSConfig = {
   matches: ["<all_urls>"],
   all_frames: true,
 }
-console.log("Hello from content script!")
+console.log("Der scriptes!")
 
 modifyText("kurv", "FY BAD")
