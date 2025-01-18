@@ -1,10 +1,11 @@
-function modifyAmazonPricesToMindfulness(): void {
+export function modifyAmazonPricesToMindfulness(): void {
     const body = document.body;
     if (!body) return;
   
     // Select all elements with the class "a-price-symbol"
     const priceElements = body.querySelectorAll("span.a-price-symbol");
-  
+
+    
     // Loop through each price element and update the text
     priceElements.forEach((symbolElement) => {
       // Find the parent container of the price
@@ -14,19 +15,14 @@ function modifyAmazonPricesToMindfulness(): void {
         priceContainer.textContent = "Mindfulness";
       }
     });
+
+
   }
-  
-  export default modifyAmazonPricesToMindfulness;
-  
-  
 
-
-
-// function modifyText(find: string, replace: string): void {
-//     const body = document.body;
-//     if (!body) return;
+export function modifyText(find: string, replace: string): void {
+    const body = document.body;
+    if (!body) return;
   
-//     body.innerHTML = body.innerHTML.replace(new RegExp(find, 'g'), replace);
-//   }
-//   export default modifyText;
+    body.innerHTML = body.innerHTML.replace(new RegExp(find, 'g'), replace);
+  }
   

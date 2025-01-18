@@ -1,5 +1,5 @@
 import type { PlasmoCSConfig } from "plasmo"
-import modifyText from "~content-script"
+import { modifyAmazonPricesToMindfulness } from "~content-script"
  
 export const config: PlasmoCSConfig = {
   matches: ["<all_urls>"],
@@ -7,5 +7,4 @@ export const config: PlasmoCSConfig = {
 }
 console.log("Der scriptes!")
 
-//Text defined in content-script.ts
-modifyText()
+modifyAmazonPricesToMindfulness()
