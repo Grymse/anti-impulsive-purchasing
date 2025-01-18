@@ -7,4 +7,5 @@ export const config: PlasmoCSConfig = {
 }
 console.log("Der scriptes!")
 
-modifyText("kurv", "FY BAD")
+//Text defined in content-script.ts
+modifyText()
