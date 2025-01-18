@@ -41,7 +41,7 @@ export function modifyText(find: string, replace: string): void {
             event.preventDefault(); // Prevent the default submission behavior
   
             // Custom interference logic
-            alert("Hold on! Are you sure you want to proceed with this purchase?");
+            alert("Hold on! Did you know that this kind of impulsive shopping can lead to financial stress and in severe cases LIGMA?");
             console.log("Buy Now button click intercepted.");
           },
           true // Use capture phase to intercept early
@@ -50,8 +50,6 @@ export function modifyText(find: string, replace: string): void {
         console.log("Buy Now button is ready and intercepted.");
       }
     });
-  
-    // Observe DOM changes to detect dynamic button loading
     observer.observe(document.body, { childList: true, subtree: true });
   }
   
