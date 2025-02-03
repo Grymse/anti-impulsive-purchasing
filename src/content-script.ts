@@ -52,8 +52,22 @@ export function modifyText(find: string, replace: string): void {
     });
     observer.observe(document.body, { childList: true, subtree: true });
   }
-  
-  
-  
 
-  
+export function setTimeoutTimer(): void {
+
+  const buyNowButton = document.getElementById("buy-now-button") as HTMLButtonElement;
+  const oneHour = 60 * 60 * 1000; // One hour in milliseconds
+  const now = Date.now();
+  const expirationTime = now + oneHour;
+
+
+  if (buyNowButton) {
+    buyNowButton.addEventListener("click", (event) => {
+      console.log("Expiration Timer set: ", expirationTime);
+      event.stopImmediatePropagation(); // Block all other event handlers
+      event.preventDefault(); // Prevent the default submission behavior
+      chrome.storage.local.set({ expirationTime });
+    });
+  }
+}
+
