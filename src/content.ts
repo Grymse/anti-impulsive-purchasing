@@ -5,9 +5,4 @@ export const config: PlasmoCSConfig = {
   matches: ["<all_urls>"],
   all_frames: true,
 }
-console.log("Der scriptes!")
-
-// modifyAmazonPricesToMindfulness()
-// interceptBuyNowButton()
-
 setTimeoutTimer()
