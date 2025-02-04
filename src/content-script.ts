@@ -1,3 +1,5 @@
+import { PURCHASE_KEYWORDS } from  "../assets/search-names";
+
 // export function modifyAmazonPricesToMindfulness(): void {
 //     const body = document.body;
 //     if (!body) return;
@@ -55,7 +57,8 @@
 
 export function setTimeoutTimer(): void {
 
-  const buyNowButton = document.getElementById("buy-now-button") as HTMLButtonElement;
+  const buyNowButton = getPurchaseButtons();
+  console.log("Fetched this amount of buttons: ", buyNowButton.length);
   const oneHour = 24 * 60 * 60 * 1000; // One hour in milliseconds
   const now = Date.now();
   const expirationTime = now + oneHour;
@@ -64,15 +67,54 @@ export function setTimeoutTimer(): void {
 
 
   if (buyNowButton) {
-    buyNowButton.addEventListener("click", (event) => {
-      event.stopImmediatePropagation(); // Block all other event handlers
-      event.preventDefault(); // Prevent the default submission behavior
-      chrome.storage.local.set({ expirationTime });
-      console.log("Following information stored: ", expirationTime);
-      chrome.storage.local.set({ [parentDomain]: expirationTime });
-      console.log("Following information stored: ", parentDomain);
+    buyNowButton.forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.stopImmediatePropagation(); // Block all other event handlers
+        event.preventDefault(); // Prevent the default submission behavior
+        chrome.storage.local.set({ expirationTime });
+        console.log("Following information stored: ", expirationTime);
+        chrome.storage.local.set({ [parentDomain]: expirationTime });
+        console.log("Following information stored: ", parentDomain);
+      });
     });
   }
+}
+
+export function getPurchaseButtons(
+  keywords: string[] = PURCHASE_KEYWORDS
+): HTMLElement[] {
+  // Some typical clickable elements
+  const selectors = [
+    "button",
+    "input[type=button]",
+    "input[type=submit]",
+    "a"
+  ]
+
+  const elements = Array.from(document.querySelectorAll<HTMLElement>(selectors.join(",")))
+
+  // Normalize for easier matching
+  const lowerCaseKeywords = keywords.map((k) => k.toLowerCase())
+
+  return elements.filter((el) => {
+    // We can look at various attributes or text content
+    const text = (el.textContent || "").toLowerCase().trim()
+    const ariaLabel = (el.getAttribute("aria-label") || "").toLowerCase().trim()
+    const value = (el.getAttribute("value") || "").toLowerCase().trim()
+
+    // Check if any keyword is included in these strings
+    return lowerCaseKeywords.some(
+      (keyword) =>
+        text.includes(keyword) ||
+        ariaLabel.includes(keyword) ||
+        value.includes(keyword)
+    )
+  })
+}
+
+export function getPurchaseButton(): HTMLElement | null {
+  const buttons = document.querySelector
+  return buttons.length ? buttons[0] : null
 }
 
 
@@ -83,6 +125,8 @@ export function getParentDomain(domain : string): string {
     return url.hostname;
   }
   catch (e) {
-    return "Not a url:, " + currentUrl;
+    return "Not a url: " + currentUrl;
   }
 }
+
+
