@@ -3,7 +3,7 @@ export type ElementGetters = {
     checkoutButtons: () => Element[];
     placeOrderButtons: () => Element[];
     checkoutButtonLabels: () => Element[];
-  }
+}
 
 type GetterRegister = {
     register: (domain: string, getters: ElementGetters) => void;
@@ -11,11 +11,31 @@ type GetterRegister = {
     getDomainGetters : (url: string) => ElementGetters;
 }
 
+/**
+ * A registry for storing and retrieving element getters based on domain.
+ */
 export const getters: GetterRegister = {
+    /**
+     * Registers a set of element getters for a specific domain.
+     * 
+     * @param domain - The domain for which the getters are being registered.
+     * @param getters - The set of element getters to register.
+     */
     register: function(domain: string, getters: ElementGetters) {
         this._getters.set(domain, getters);
     },
-    _getters: new Map(),
+
+    /**
+     * A private map storing the registered element getters by domain.
+     */
+    _getters: new Map<string, ElementGetters>(),
+
+    /**
+     * Retrieves the element getters for a specific domain.
+     * 
+     * @param domain - The domain for which to retrieve the getters.
+     * @returns The set of element getters for the specified domain, or default getters if none are registered.
+     */
     getDomainGetters: function(domain: string) {
         return this._getters.get(domain) || {
             checkoutButtons: () => [],
