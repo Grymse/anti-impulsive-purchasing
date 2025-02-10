@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react"
 
-import { getParentDomain } from "../content-script.ts"
-
 function IndexPopup() {
   const [currentUrl, setCurrentUrl] = useState<string>("")
   const [timeLeft, setTimeLeft] = useState<string>("")
@@ -9,7 +7,8 @@ function IndexPopup() {
   const getCurrentUrl = async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
     console.log("Current URL in index.tsx: ", tab.url)
-    setCurrentUrl(tab.url as string)
+    const trimmedUrl = tab.url?.split("://")[1].split("/")[0]
+    setCurrentUrl(trimmedUrl)
   }
 
   useEffect(() => {
@@ -17,11 +16,11 @@ function IndexPopup() {
 
     const updateTimer = async () => {
       // Fetch expirationTime from chrome.storage
-      const parentDomain = getParentDomain(currentUrl)
+      const parentDomain = currentUrl
       const parentDomainTimer = await chrome.storage.local.get(parentDomain)
       const expirationTime = parentDomainTimer[parentDomain]
 
-      console.log("Parent Domain: ", parentDomain)
+      console.log("Parent Domain: ", currentUrl)
       console.log("Parent Domain Timer!!: ", parentDomainTimer)
       console.log("Expiration Time: ", expirationTime)
 

@@ -7,3 +7,6 @@ chrome.action.onClicked.addListener((tab) => {
     });
   });
   
+
+console.log("Maybe this was the place to run scripts.")
+

@@ -1,5 +1,3 @@
-import { PURCHASE_KEYWORDS } from  "../assets/search-names";
-
 // export function modifyAmazonPricesToMindfulness(): void {
 //     const body = document.body;
 //     if (!body) return;
@@ -80,43 +78,11 @@ export function setTimeoutTimer(): void {
   }
 }
 
-export function getPurchaseButtons(
-  keywords: string[] = PURCHASE_KEYWORDS
-): HTMLElement[] {
-  // Some typical clickable elements
-  const selectors = [
-    "button",
-    "input[type=button]",
-    "input[type=submit]",
-    "a"
-  ]
-
-  const elements = Array.from(document.querySelectorAll<HTMLElement>(selectors.join(",")))
-
-  // Normalize for easier matching
-  const lowerCaseKeywords = keywords.map((k) => k.toLowerCase())
-
-  return elements.filter((el) => {
-    // We can look at various attributes or text content
-    const text = (el.textContent || "").toLowerCase().trim()
-    const ariaLabel = (el.getAttribute("aria-label") || "").toLowerCase().trim()
-    const value = (el.getAttribute("value") || "").toLowerCase().trim()
-
-    // Check if any keyword is included in these strings
-    return lowerCaseKeywords.some(
-      (keyword) =>
-        text.includes(keyword) ||
-        ariaLabel.includes(keyword) ||
-        value.includes(keyword)
-    )
-  })
+export function getPurchaseButtons(): HTMLElement[] {
+  const amazonButton = document.getElementById("buy-now-button");
+  // Return the button in an array if found, otherwise an empty array
+  return amazonButton instanceof HTMLElement ? [amazonButton] : [];
 }
-
-export function getPurchaseButton(): HTMLElement | null {
-  const buttons = document.querySelector
-  return buttons.length ? buttons[0] : null
-}
-
 
 export function getParentDomain(domain : string): string { 
   const currentUrl =  domain;
