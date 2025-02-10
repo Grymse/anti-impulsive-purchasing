@@ -1,11 +1,10 @@
 import type { PlasmoCSConfig } from "plasmo"
-import { amazonGetters, zalandoGetters } from "~lib/getters";
+import { getters as getterRegistry } from "~lib/getters";
 
 type Permit = {
   start: number;
   end: number;
 }
-
  
 export const config: PlasmoCSConfig = {
   matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*"], // or specific URLs
@@ -17,7 +16,7 @@ const PERMIT_WAIT_TIME = 50000 //1000 * 60 * 60 * 24 * 2; // 20 minutes
 const DOMAIN = document.location.hostname;
 let permit : Permit | null = null;
 
-const getters = zalandoGetters;
+const getters = getterRegistry.getDomainGetters(DOMAIN);
 
 function setup() {
   loadPermit();
@@ -85,13 +84,13 @@ function injectVisuals(e: HTMLElement) {
 
 
 function getOrCreatePermit() : Permit {
-  // Is there permit?
+  // Create new permit if necessary?
   if (!permit) return createNewPermit();
 
   const now = Date.now();
   const permitExpired = permit.end < now;
 
-  // Is there permit?
+  // Is permit expired?
   if (permitExpired) return createNewPermit();
 
   return permit;
