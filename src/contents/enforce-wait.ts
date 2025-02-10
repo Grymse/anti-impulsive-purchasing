@@ -1,57 +1,42 @@
 import type { PlasmoCSConfig } from "plasmo"
+import { amazonGetters, zalandoGetters } from "~lib/getters";
 
 type Permit = {
   start: number;
   end: number;
 }
+
  
 export const config: PlasmoCSConfig = {
-  /* matches: ["https://www.amazon.com/*"], // or specific URLs */
-  matches: ["<all_urls>"], // or specific URLs
+  matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*"], // or specific URLs
   all_frames: true,
 }
 
-const PERMIT_LENGTH = 5000 //1000 * 60 * 60 * 24 * 3; // 3 days
-const PERMIT_WAIT_TIME = 5000 //1000 * 60 * 60 * 24 * 2; // 20 minutes
+const PERMIT_LENGTH = 50000 //1000 * 60 * 60 * 24 * 3; // 3 days
+const PERMIT_WAIT_TIME = 50000 //1000 * 60 * 60 * 24 * 2; // 20 minutes
 const DOMAIN = document.location.hostname;
 let permit : Permit | null = null;
 
-function getCheckoutButtons(): Element[] {
-  const amazonButton = document.querySelectorAll('input[name="proceedToRetailCheckout"]');
-  return Array.from(amazonButton);
-}
-
-function getCheckoutButtonLabels(): Element[] {
-  const amazonButton = document.querySelectorAll('div[data-feature-id="proceed-to-checkout-label"]');
-  return Array.from(amazonButton);
-}
-
-function getPlaceOrderButtons(): Element[] {
-  const amazonButtons = document.querySelectorAll('input[name="placeYourOrder1"]');
-  return Array.from(amazonButtons);
-}
+const getters = zalandoGetters;
 
 function setup() {
   loadPermit();
-  const checkoutButtons = getCheckoutButtons();
-  const checkoutButtonLabels = getCheckoutButtonLabels();
-  const placeOrderButtons = getPlaceOrderButtons();
+  const checkoutButtons = getters.checkoutButtons();
+  const placeOrderButtons = getters.placeOrderButtons();
   checkoutButtons.forEach((button) => {
     button.addEventListener("click", onCheckoutClick);
   });
-
-  checkoutButtonLabels.forEach(injectVisuals);
-
   placeOrderButtons.forEach((button) => {
     button.addEventListener("click", onPlaceOrderClick);
   });
   
 }
 
-
 async function loadPermit() {
   const loadedObject = (await chrome.storage.local.get(DOMAIN)) as Record<string, Permit>;
   permit = loadedObject[DOMAIN] ?? null
+  const checkoutButtonLabels = getters.checkoutButtonLabels();
+  checkoutButtonLabels.forEach(injectVisuals);
 }
 
 function onPlaceOrderClick(e: Event)  {
@@ -80,20 +65,22 @@ function onCheckoutClick(e: Event) {
   }
 }
 
-function permitToWaittime(permit: Permit) : string {
+function permitToWaitTime(permit: Permit) : string {
   const now = Date.now();
   const diff = permit.end - now;
-
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
   return `${hours}h ${minutes}m`;
 }
 
 function injectVisuals(e: HTMLElement) {
-  /* if (!permit) return;
-  if (permit.end < Date.now() ) return; */
-  console.log(permit);
-  e.innerText = "Wait " + Number(1234).toString() + " before checking out";
+  if (!permit || permit.end < Date.now()) {
+    e.innerText = "Start checkout wait timer";  
+  }
+  else if (Date.now() < permit.start) {
+    e.innerText = "Wait " + permitToWaitTime(permit) + " before checking out";
+  }
+  else e.innerText = "Checkout";
 }
 
 
@@ -103,7 +90,6 @@ function getOrCreatePermit() : Permit {
 
   const now = Date.now();
   const permitExpired = permit.end < now;
-  const permitIsValid = permit.start < now && !permitExpired;
 
   // Is there permit?
   if (permitExpired) return createNewPermit();
@@ -128,7 +114,7 @@ function createNewPermit() : Permit {
   }
 
   chrome.storage.local.set({[DOMAIN]: permit});
-  // TODO: Inject visuals
+  getters.checkoutButtonLabels().forEach(injectVisuals);
 
   return permit;
 }
