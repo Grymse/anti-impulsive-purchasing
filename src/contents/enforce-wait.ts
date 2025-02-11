@@ -3,7 +3,7 @@ import { getters as getterRegistry } from "~lib/getters";
 import type { PlasmoCSConfig } from "plasmo";
 
 export const config: PlasmoCSConfig = {
-    matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://*.ebay.com/*"], // or specific URLs
+    matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://*.ebay.com/*", "https://www.matas.dk/*", "https://www.proshop.dk/*"], // or specific URLs
     all_frames: true,
     run_at: "document_idle",
 }
@@ -20,7 +20,7 @@ let permit : Permit | null = null;
 
 const getters = getterRegistry.getDomainGetters();
 
-console.log("WE ARE RUNNING")
+console.log("LESS IS ACTIVE");
 
 function setup() {
   // Load the existing permit from storage

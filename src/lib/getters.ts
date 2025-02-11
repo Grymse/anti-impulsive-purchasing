@@ -91,7 +91,7 @@ getters.register('www.zalando.dk', {
         return [];
       }
 });
-//TODO - Not working
+//TODO - Not working because of client side rendering
 getters.register("www.walmart.com", {
     checkoutButtons: () => {
         const buttons = document.querySelectorAll('button[id="Continue to checkout button"]')
@@ -132,10 +132,9 @@ getters.register("www.walmart.com", {
     }
 })
 
-
     getters.register("www.ebay.com", {
         checkoutButtons() {
-            const buttons = document.querySelectorAll('#binBtn_btn_1')
+            const buttons = document.querySelectorAll('#binBtn_btn_1, a[_sp="p4375194.m45024.l44798"]')
             return Array.from(buttons)
         },  
         placeOrderButtons() {
@@ -143,9 +142,47 @@ getters.register("www.walmart.com", {
             return Array.from(buttons)
         },
         checkoutButtonLabels() {
-            const buttons = document.querySelectorAll('div[data-testid="x-bin-action"]')
+            const buttons = document.querySelectorAll('div[data-testid="x-bin-action"], , a[_sp="p4375194.m45024.l44798"]')
             //@ts-expect-error
             return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
+        },
+        addToCartButtons() {
+          return []
+        }
+    })
+
+    //TODO - Reactive components, create mutation observer
+    getters.register("www.matas.dk", {
+        checkoutButtons() {
+            const buttons = document.querySelectorAll('button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh BasketPowerstepOpener__StyledButtonWithSpinner-sc-1s4iypb-1 BasketPowerstepOpener___StyledStyledButtonWithSpinner-sc-1s4iypb-2 VvhEn bFKtaQ"]')
+            return Array.from(buttons)
+        },  
+        placeOrderButtons() {
+            const buttons = document.querySelectorAll('button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh BasketPowerstepOpener__StyledButtonWithSpinner-sc-1s4iypb-1 BasketPowerstepOpener___StyledStyledButtonWithSpinner-sc-1s4iypb-2 VvhEn bFKtaQ"]')
+            return Array.from(buttons)
+        },
+        checkoutButtonLabels() {
+            const buttons = document.querySelectorAll('button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh BasketPowerstepOpener__StyledButtonWithSpinner-sc-1s4iypb-1 BasketPowerstepOpener___StyledStyledButtonWithSpinner-sc-1s4iypb-2 VvhEn bFKtaQ"]')
+            //@ts-expect-error
+            return Array.from(buttons.entries().map(([_, element]) => element.querySelector('div')));
+        },
+        addToCartButtons() {
+          return []
+        }
+    })
+
+    getters.register("www.proshop.dk", {
+        checkoutButtons() {
+            const buttons = document.querySelectorAll('a[class="btn site-btn-tall site-btn-green pull-right ml-2"], a[class="btn site-btn-tall site-btn-green"]')
+            return Array.from(buttons)
+        },  
+        placeOrderButtons() {
+            const buttons = document.querySelectorAll('a[class="btn site-btn-tall site-btn-green pull-right ml-2"], a[class="btn site-btn-tall site-btn-green"]')
+            return Array.from(buttons)
+        },
+        checkoutButtonLabels() {
+            const buttons = document.querySelectorAll('a[class="btn site-btn-tall site-btn-green pull-right ml-2"], a[class="btn site-btn-tall site-btn-green"]')
+            return Array.from(buttons)
         },
         addToCartButtons() {
           return []
