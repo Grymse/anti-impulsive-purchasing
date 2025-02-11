@@ -1,9 +1,13 @@
 // content.ts
 
-import { defaultConfig } from "~lib/config";
+import type { PlasmoCSConfig } from "plasmo";
 import { getters } from "~lib/getters";
 
-export const config = defaultConfig;
+export const config: PlasmoCSConfig = {
+  matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://www.ebay.com/*"], // or specific URLs
+  all_frames: true,
+}
+
 
 
 // Main content script logic
