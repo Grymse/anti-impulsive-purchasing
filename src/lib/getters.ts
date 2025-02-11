@@ -189,3 +189,23 @@ getters.register("www.walmart.com", {
         }
     })
 
+    //TODO - Client side rendering, som wall mart
+    getters.register("www.boozt.com", {
+        checkoutButtons() {
+            const buttons = document.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
+            return Array.from(buttons)
+        },  
+        placeOrderButtons() {
+            const buttons = document.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
+            return Array.from(buttons)
+        },
+        checkoutButtonLabels() {
+            const buttons = document.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
+            //@ts-expect-error
+            return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
+        },
+        addToCartButtons() {
+          return []
+        }
+    })
+
