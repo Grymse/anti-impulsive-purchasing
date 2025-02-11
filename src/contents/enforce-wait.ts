@@ -1,14 +1,11 @@
-import type { PlasmoCSConfig } from "plasmo"
 import { getters as getterRegistry } from "~lib/getters";
+import { defaultConfig } from "~lib/config";
+
+export const config = defaultConfig;
 
 type Permit = {
   start: number;
   end: number;
-}
- 
-export const config: PlasmoCSConfig = {
-  matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*"], // or specific URLs
-  all_frames: true,
 }
 
 const PERMIT_LENGTH = 50000 //1000 * 60 * 60 * 24 * 3; // 3 days
@@ -16,7 +13,7 @@ const PERMIT_WAIT_TIME = 50000 //1000 * 60 * 60 * 24 * 2; // 2 days
 const DOMAIN = document.location.hostname;
 let permit : Permit | null = null;
 
-const getters = getterRegistry.getDomainGetters(DOMAIN);
+const getters = getterRegistry.getDomainGetters();
 
 function setup() {
   // Load the existing permit from storage
