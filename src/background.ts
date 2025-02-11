@@ -1,4 +1,4 @@
-chrome.action.onClicked.addListener((tab) => {
+/* chrome.action.onClicked.addListener((tab) => {
     if (!tab.id) return;
   
     chrome.scripting.executeScript({
@@ -6,4 +6,7 @@ chrome.action.onClicked.addListener((tab) => {
       files: ["content-script.ts"]
     });
   });
-  
+   */
+
+console.log("Maybe this was the place to run scripts.")
+
