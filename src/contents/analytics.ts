@@ -1,16 +1,13 @@
 // content.ts
-import type { PlasmoCSConfig } from "plasmo"
 
-export const config: PlasmoCSConfig = {
-  matches: ["<all_urls>"], // or specific URLs
-  run_at: "document_start", // Critical for first paint,
-  all_frames: true
-}
+import { defaultConfig } from "~lib/config";
+import { getters } from "~lib/getters";
 
-/* console.log("ANALYTICS"); */
+export const config = defaultConfig;
 
-/* // Main content script logic
-const observer = new MutationObserver((mutations) => {
+
+// Main content script logic
+/* const observer = new MutationObserver((mutations) => {
   // Apply changes as soon as elements exist
   if (document.body) {
     // Apply your DOM modifications here
@@ -28,3 +25,10 @@ window.addEventListener("load", () => {
     subtree: true
   })
 }) */
+
+
+function setup() {
+  getters.getDomainGetters().addToCartButtons();
+}
+
+window.addEventListener("load", setup);
