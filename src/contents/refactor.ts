@@ -1,7 +1,11 @@
+import type { PlasmoCSConfig } from "plasmo";
 import { getters as getterRegistry } from "~lib/getters";
-import { defaultConfig } from "~lib/config";
+import { observer } from "~lib/observer";
 
-export const config = defaultConfig;
+export const config: PlasmoCSConfig = {
+    matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.matas.dk/*"], // or specific URLs
+    all_frames: true,
+}
 
 type Permit = {
   start: number;
@@ -15,7 +19,10 @@ let permit : Permit | null = null;
 
 const getters = getterRegistry.getDomainGetters();
 
-function setup() {
+function effect() {
+
+    const abort = new AbortController();
+    const signal = {signal: abort.signal};
   // Load the existing permit from storage
   loadPermit();
 
@@ -26,12 +33,16 @@ function setup() {
   // Add event listeners to the checkout buttons
   checkoutButtons.forEach((button) => {
     button.addEventListener("click", onCheckoutClick);
-  });
+  }, signal);
 
   // Add event listeners to the place order buttons
   placeOrderButtons.forEach((button) => {
     button.addEventListener("click", onPlaceOrderClick);
-  });
+  }, signal);
+
+  return () => {
+    abort.abort();
+  }
 }
 async function loadPermit() {
   // Load the permit from local storage
@@ -139,4 +150,10 @@ function createNewPermit() : Permit {
   return permit;
 }
 
-/* window.addEventListener("load", setup); */
+window.addEventListener("load", () => {
+    let prev = null;
+    observer.add(() => {
+        if (prev) prev();
+        prev = effect();
+    });
+});

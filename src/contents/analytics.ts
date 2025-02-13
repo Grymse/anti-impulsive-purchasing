@@ -3,12 +3,14 @@ import { getters, type ShoppingItem } from "~lib/getters";
 
 export const config = defaultConfig;
 
-function setup() {
+async function setup() {
   const addToCartButtons = getters.getDomainGetters().addToCartButtons();
   /* test(); */
   addToCartButtons.forEach((button) => {
     button.addEventListener("click", onAddToCartClick);
   });
+
+  await delay(1000);
 
   const items = getters.getDomainGetters().getCartItems();
   console.log(items);

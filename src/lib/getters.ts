@@ -90,6 +90,15 @@ getters.register('www.amazon.com', {
                 currency: priceSymbol[i].innerText
             });
         }
+        
+        const rightSideList = document.querySelectorAll<HTMLElement>('.ewc-item');
+        rightSideList.forEach(item => {
+            const quantity = parseInt(item.querySelector<HTMLElement>('[data-a-selector="value"]').innerText);
+            const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>('.ewc-price span').innerText);
+            items.push({ quantity, price, currency });
+        });
+        
+
         /* const elements = document.querySelectorAll<HTMLElement>('span.a-list-item div[data-csa-c-type="item"]');
         const x = elements.entries().map(([_, element]) => {
             return {
@@ -101,6 +110,12 @@ getters.register('www.amazon.com', {
         return items;
     }
 });
+
+function splitPriceCurrency(price: string) {
+    const numericPrice = price.match(/[\d,.]+/);
+    const currency = price.replace(numericPrice ? numericPrice[0] : '', '');
+    return { price: parseFloat(numericPrice[0].replace(',', '.')), currency };
+}
 
 getters.register('www.zalando.dk', {
     checkoutButtons: () => {

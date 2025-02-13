@@ -10,6 +10,7 @@
     "package": "plasmo package"
   },
   "dependencies": {
+    "lodash.debounce": "^4.0.8",
     "plasmo": "0.89.4",
     "psl": "^1.15.0",
     "react": "18.2.0",
