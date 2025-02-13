@@ -1,10 +1,10 @@
 
 export type ElementGetters = {
-    checkoutButtons: (e: HTMLElement) =>Element[];
-    placeOrderButtons: (e: HTMLElement) =>Element[];
-    checkoutButtonLabels: (e: HTMLElement) =>Element[];
-    addToCartButtons: (e: HTMLElement) =>Element[];
-    getCartItems: (e: HTMLElement) =>ShoppingItem[];
+    checkoutButtons: () => Element[];
+    placeOrderButtons: () => Element[];
+    checkoutButtonLabels: () => Element[];
+    addToCartButtons: () => Element[];
+    getCartItems: () => ShoppingItem[];
 }
 
 export type ShoppingItem = {
@@ -16,7 +16,7 @@ export type ShoppingItem = {
 type GetterRegister = {
     register: (domain: string, getters: ElementGetters) => void;
     _getters: Map<string,ElementGetters>;
-    getDomainGetters : () =>ElementGetters;
+    getDomainGetters : () => ElementGetters;
 }
 
 /**
@@ -44,44 +44,44 @@ export const getters: GetterRegister = {
      * @returns The set of element getters for the specified domain, or default getters if none are registered.
      */
     getDomainGetters: function() {
-        const domain = e.location.hostname;
+        const domain = document.location.hostname;
         return this._getters.get(domain) || {
-            checkoutButtons: (e: HTMLElement) =>[],
-            placeOrderButtons: (e: HTMLElement) =>[],
-            checkoutButtonLabels: (e: HTMLElement) =>[],
-            addToCartButtons: (e: HTMLElement) =>[],
-            getCartItems: (e: HTMLElement) =>[]
+            checkoutButtons: () => [],
+            placeOrderButtons: () => [],
+            checkoutButtonLabels: () => [],
+            addToCartButtons: () => [],
+            getCartItems: () => []
         };
     }
 }
 
 getters.register('www.amazon.com', {
-    checkoutButtons: (e: HTMLElement) =>{
-      const buttons = e.querySelectorAll('input[name="proceedToRetailCheckout"]');
+    checkoutButtons: () => {
+      const buttons = document.querySelectorAll('input[name="proceedToRetailCheckout"]');
       return Array.from(buttons);
     },
 
-    placeOrderButtons: (e: HTMLElement) =>{
-      const buttons = e.querySelectorAll('input[name="placeYourOrder1"]');
+    placeOrderButtons: () => {
+      const buttons = document.querySelectorAll('input[name="placeYourOrder1"]');
       return Array.from(buttons);
     },
 
-    checkoutButtonLabels: (e: HTMLElement) =>{ 
-      const buttons = e.querySelectorAll('div[data-feature-id="proceed-to-checkout-label"], #submitOrderButtonId-announce, #bottomSubmitOrderButtonId-announce');
+    checkoutButtonLabels: () => { 
+      const buttons = document.querySelectorAll('div[data-feature-id="proceed-to-checkout-label"], #submitOrderButtonId-announce, #bottomSubmitOrderButtonId-announce');
       return Array.from(buttons);
     },
 
-    addToCartButtons: (e: HTMLElement) =>{
-      const buttons = e.querySelectorAll('#add-to-cart-button, [name="submit.addToCart"], .add-to-cart .a-button-input, input[data-asin], div[data-csa-c-action="addToCart"] button');
+    addToCartButtons: () => {
+      const buttons = document.querySelectorAll('#add-to-cart-button, [name="submit.addToCart"], .add-to-cart .a-button-input, input[data-asin], div[data-csa-c-action="addToCart"] button');
       buttons.forEach(button => button.parentElement.style.backgroundColor = 'red');
       return Array.from(buttons);
     },
 
-    getCartItems: (e: HTMLElement) =>{
-        const quantities = e.querySelectorAll<HTMLElement>('div[name="sc-quantity"] span[data-a-selector="value"]')
-        const priceSymbol = e.querySelectorAll<HTMLElement>('#sc-active-cart .a-price span.a-price-symbol');
-        const priceWhole = e.querySelectorAll<HTMLElement>('#sc-active-cart .a-price span.a-price-whole');
-        const priceFraction = e.querySelectorAll<HTMLElement>('#sc-active-cart .a-price span.a-price-fraction');
+    getCartItems: () => {
+        const quantities = document.querySelectorAll<HTMLElement>('div[name="sc-quantity"] span[data-a-selector="value"]')
+        const priceSymbol = document.querySelectorAll<HTMLElement>('#sc-active-cart .a-price span.a-price-symbol');
+        const priceWhole = document.querySelectorAll<HTMLElement>('#sc-active-cart .a-price span.a-price-whole');
+        const priceFraction = document.querySelectorAll<HTMLElement>('#sc-active-cart .a-price span.a-price-fraction');
         const items = [];
         for (let i = 0; i < priceSymbol.length; i++) {
             items.push({
@@ -91,7 +91,7 @@ getters.register('www.amazon.com', {
             });
         }
         
-        const rightSideList = e.querySelectorAll<HTMLElement>('.ewc-item');
+        const rightSideList = document.querySelectorAll<HTMLElement>('.ewc-item');
         rightSideList.forEach(item => {
             const quantity = parseInt(item.querySelector<HTMLElement>('[data-a-selector="value"]').innerText);
             const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>('.ewc-price span').innerText);
@@ -99,7 +99,7 @@ getters.register('www.amazon.com', {
         });
         
 
-        /* const elements = e.querySelectorAll<HTMLElement>('span.a-list-item div[data-csa-c-type="item"]');
+        /* const elements = document.querySelectorAll<HTMLElement>('span.a-list-item div[data-csa-c-type="item"]');
         const x = elements.entries().map(([_, element]) => {
             return {
                 quantity: parseFloat(element.getAttribute('data-quantity')),
@@ -118,169 +118,169 @@ function splitPriceCurrency(price: string) {
 }
 
 getters.register('www.zalando.dk', {
-    checkoutButtons: (e: HTMLElement) =>{
-        const buttons = e.querySelectorAll('button[data-id="buy-now-button-top"], button[data-id="buy-now-button-bottom"]');
+    checkoutButtons: () => {
+        const buttons = document.querySelectorAll('button[data-id="buy-now-button-top"], button[data-id="buy-now-button-bottom"]');
         return Array.from(buttons);
     },
 
-    placeOrderButtons: (e: HTMLElement) =>{
-        const buttons = e.querySelectorAll('button[data-id="proceed-to-checkout-button"]');
+    placeOrderButtons: () => {
+        const buttons = document.querySelectorAll('button[data-id="proceed-to-checkout-button"]');
         return Array.from(buttons);
     },
     
-    checkoutButtonLabels: (e: HTMLElement) =>{
-        const buttons = e.querySelectorAll('button[data-id="proceed-to-checkout-button"], button[data-id="buy-now-button-top"], button[data-id="buy-now-button-bottom"]');
+    checkoutButtonLabels: () => {
+        const buttons = document.querySelectorAll('button[data-id="proceed-to-checkout-button"], button[data-id="buy-now-button-top"], button[data-id="buy-now-button-bottom"]');
         //@ts-expect-error
         return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
     },
 
-    addToCartButtons: (e: HTMLElement) =>{
+    addToCartButtons: () => {
         return [];
     },
 
-    getCartItems: (e: HTMLElement) =>{
+    getCartItems: () => {
         return [];
     }
 });
 //TODO - Not working because of client side rendering
 getters.register("www.walmart.com", {
-    checkoutButtons: (e: HTMLElement) =>{
-        const buttons = e.querySelectorAll('button[id="Continue to checkout button"]')
+    checkoutButtons: () => {
+        const buttons = document.querySelectorAll('button[id="Continue to checkout button"]')
         console.log(buttons)
         return Array.from(buttons)
     },
   
-    placeOrderButtons: (e: HTMLElement) =>{
-        const buttons = e.querySelectorAll('button[id="Continue to checkout button"]')
+    placeOrderButtons: () => {
+        const buttons = document.querySelectorAll('button[id="Continue to checkout button"]')
         return Array.from(buttons)
     },
   
-    checkoutButtonLabels: (e: HTMLElement) =>{
-        const buttons = e.querySelectorAll('button[id="Continue to checkout button"]')
+    checkoutButtonLabels: () => {
+        const buttons = document.querySelectorAll('button[id="Continue to checkout button"]')
         return Array.from(buttons)
     },
 
-    addToCartButtons: (e: HTMLElement) =>{
+    addToCartButtons: () => {
         return [];
     },
 
-    getCartItems: (e: HTMLElement) =>{
+    getCartItems: () => {
         return [];
     }
   })
 
   getters.register("cart.ebay.com", {
-    checkoutButtons(e: HTMLElement) {
-        const buttons = e.querySelectorAll('button[data-test-id="cta-top"]')
+    checkoutButtons() {
+        const buttons = document.querySelectorAll('button[data-test-id="cta-top"]')
         return Array.from(buttons)
     },  
-    placeOrderButtons(e: HTMLElement) {
-        const buttons = e.querySelectorAll('button[data-test-id="cart-checkout-button"]')
+    placeOrderButtons() {
+        const buttons = document.querySelectorAll('button[data-test-id="cart-checkout-button"]')
         return Array.from(buttons)
     },
-    checkoutButtonLabels(e: HTMLElement) {
-        const buttons = e.querySelectorAll('button[data-test-id="cta-top"]')
+    checkoutButtonLabels() {
+        const buttons = document.querySelectorAll('button[data-test-id="cta-top"]')
         return Array.from(buttons)
     },
-    addToCartButtons: (e: HTMLElement) =>{
+    addToCartButtons: () => {
         return [];
     },
 
-    getCartItems: (e: HTMLElement) =>{
+    getCartItems: () => {
         return [];
     }
 })
 
     getters.register("www.ebay.com", {
-        checkoutButtons(e: HTMLElement) {
-            const buttons = e.querySelectorAll('#binBtn_btn_1, a[_sp="p4375194.m45024.l44798"]')
+        checkoutButtons() {
+            const buttons = document.querySelectorAll('#binBtn_btn_1, a[_sp="p4375194.m45024.l44798"]')
             return Array.from(buttons)
         },  
-        placeOrderButtons(e: HTMLElement) {
-            const buttons = e.querySelectorAll('button[data-test-id="cart-checkout-button"]')
+        placeOrderButtons() {
+            const buttons = document.querySelectorAll('button[data-test-id="cart-checkout-button"]')
             return Array.from(buttons)
         },
-        checkoutButtonLabels(e: HTMLElement) {
-            const buttons = e.querySelectorAll('div[data-testid="x-bin-action"], , a[_sp="p4375194.m45024.l44798"]')
+        checkoutButtonLabels() {
+            const buttons = document.querySelectorAll('div[data-testid="x-bin-action"], , a[_sp="p4375194.m45024.l44798"]')
             //@ts-expect-error
             return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
         },
-        addToCartButtons: (e: HTMLElement) =>{
+        addToCartButtons: () => {
             return [];
         },
     
-        getCartItems: (e: HTMLElement) =>{
+        getCartItems: () => {
             return [];
         }
     })
 
     //TODO - Reactive components, create mutation observer
     getters.register("www.matas.dk", {
-        checkoutButtons(e: HTMLElement) {
-            const buttons = e.querySelectorAll('button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh BasketPowerstepOpener__StyledButtonWithSpinner-sc-1s4iypb-1 BasketPowerstepOpener___StyledStyledButtonWithSpinner-sc-1s4iypb-2 VvhEn bFKtaQ"]')
+        checkoutButtons() {
+            const buttons = document.querySelectorAll('button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh BasketPowerstepOpener__StyledButtonWithSpinner-sc-1s4iypb-1 BasketPowerstepOpener___StyledStyledButtonWithSpinner-sc-1s4iypb-2 VvhEn bFKtaQ"]')
             return Array.from(buttons)
         },  
-        placeOrderButtons(e: HTMLElement) {
-            const buttons = e.querySelectorAll('button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh BasketPowerstepOpener__StyledButtonWithSpinner-sc-1s4iypb-1 BasketPowerstepOpener___StyledStyledButtonWithSpinner-sc-1s4iypb-2 VvhEn bFKtaQ"]')
+        placeOrderButtons() {
+            const buttons = document.querySelectorAll('button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh BasketPowerstepOpener__StyledButtonWithSpinner-sc-1s4iypb-1 BasketPowerstepOpener___StyledStyledButtonWithSpinner-sc-1s4iypb-2 VvhEn bFKtaQ"]')
             return Array.from(buttons)
         },
-        checkoutButtonLabels(e: HTMLElement) {
-            const buttons = e.querySelectorAll('button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh BasketPowerstepOpener__StyledButtonWithSpinner-sc-1s4iypb-1 BasketPowerstepOpener___StyledStyledButtonWithSpinner-sc-1s4iypb-2 VvhEn bFKtaQ"]')
+        checkoutButtonLabels() {
+            const buttons = document.querySelectorAll('button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh BasketPowerstepOpener__StyledButtonWithSpinner-sc-1s4iypb-1 BasketPowerstepOpener___StyledStyledButtonWithSpinner-sc-1s4iypb-2 VvhEn bFKtaQ"]')
             //@ts-expect-error
             return Array.from(buttons.entries().map(([_, element]) => element.querySelector('div')));
         },
-        addToCartButtons: (e: HTMLElement) =>{
+        addToCartButtons: () => {
             return [];
         },
     
-        getCartItems: (e: HTMLElement) =>{
+        getCartItems: () => {
             return [];
         }
     })
 
     getters.register("www.proshop.dk", {
-        checkoutButtons(e: HTMLElement) {
-            const buttons = e.querySelectorAll('a[class="btn site-btn-tall site-btn-green pull-right ml-2"], a[class="btn site-btn-tall site-btn-green"]')
+        checkoutButtons() {
+            const buttons = document.querySelectorAll('a[class="btn site-btn-tall site-btn-green pull-right ml-2"], a[class="btn site-btn-tall site-btn-green"]')
             return Array.from(buttons)
         },  
-        placeOrderButtons(e: HTMLElement) {
-            const buttons = e.querySelectorAll('a[class="btn site-btn-tall site-btn-green pull-right ml-2"], a[class="btn site-btn-tall site-btn-green"]')
+        placeOrderButtons() {
+            const buttons = document.querySelectorAll('a[class="btn site-btn-tall site-btn-green pull-right ml-2"], a[class="btn site-btn-tall site-btn-green"]')
             return Array.from(buttons)
         },
-        checkoutButtonLabels(e: HTMLElement) {
-            const buttons = e.querySelectorAll('a[class="btn site-btn-tall site-btn-green pull-right ml-2"], a[class="btn site-btn-tall site-btn-green"]')
+        checkoutButtonLabels() {
+            const buttons = document.querySelectorAll('a[class="btn site-btn-tall site-btn-green pull-right ml-2"], a[class="btn site-btn-tall site-btn-green"]')
             return Array.from(buttons)
         },
-        addToCartButtons: (e: HTMLElement) =>{
+        addToCartButtons: () => {
             return [];
         },
     
-        getCartItems: (e: HTMLElement) =>{
+        getCartItems: () => {
             return [];
         }
     })
 
     //TODO - Client side rendering, som wall mart
     getters.register("www.boozt.com", {
-        checkoutButtons(e: HTMLElement) {
-            const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
+        checkoutButtons() {
+            const buttons = document.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
             return Array.from(buttons)
         },  
-        placeOrderButtons(e: HTMLElement) {
-            const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
+        placeOrderButtons() {
+            const buttons = document.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
             return Array.from(buttons)
         },
-        checkoutButtonLabels(e: HTMLElement) {
-            const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
+        checkoutButtonLabels() {
+            const buttons = document.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
             //@ts-expect-error
             return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
         },
-        addToCartButtons: (e: HTMLElement) =>{
-            return [];
-        },
-    
-        getCartItems: (e: HTMLElement) =>{
-            return [];
-        }
+    addToCartButtons: () => {
+        return [];
+    },
+
+    getCartItems: () => {
+        return [];
+    }
     })
 
