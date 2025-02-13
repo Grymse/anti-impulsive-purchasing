@@ -5,7 +5,7 @@ import type { PlasmoCSConfig } from "plasmo";
 export const config: PlasmoCSConfig = {
     matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://*.ebay.com/*", "https://www.matas.dk/*", "https://www.proshop.dk/*", "https://www.boozt.com/*"], // or specific URLs
     all_frames: true,
-    run_at: "document_idle",
+    run_at: "e_idle",
 }
 
 type Permit = {
@@ -15,7 +15,7 @@ type Permit = {
 
 const PERMIT_LENGTH = 50000 //1000 * 60 * 60 * 24 * 3; // 3 days
 const PERMIT_WAIT_TIME = 50000 //1000 * 60 * 60 * 24 * 2; // 2 days
-const DOMAIN = document.location.hostname;
+const DOMAIN = e.location.hostname;
 let permit : Permit | null = null;
 
 const getters = getterRegistry.getDomainGetters();

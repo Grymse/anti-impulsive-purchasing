@@ -14,13 +14,12 @@ type Permit = {
 
 const PERMIT_LENGTH = 50000 //1000 * 60 * 60 * 24 * 3; // 3 days
 const PERMIT_WAIT_TIME = 50000 //1000 * 60 * 60 * 24 * 2; // 2 days
-const DOMAIN = document.location.hostname;
+const DOMAIN = e.location.hostname;
 let permit : Permit | null = null;
 
 const getters = getterRegistry.getDomainGetters();
 
 function effect() {
-
     const abort = new AbortController();
     const signal = {signal: abort.signal};
   // Load the existing permit from storage
@@ -40,7 +39,7 @@ function effect() {
     button.addEventListener("click", onPlaceOrderClick);
   }, signal);
 
-  return () => {
+  return (e: HTMLElement) =>{
     abort.abort();
   }
 }
@@ -150,10 +149,15 @@ function createNewPermit() : Permit {
   return permit;
 }
 
-window.addEventListener("load", () => {
-    let prev = null;
-    observer.add(() => {
-        if (prev) prev();
-        prev = effect();
+
+
+window.addEventListener("load", (e: HTMLElement) =>{
+    let prevObserver = null;
+    let prevElement = null;
+    observer.add((e) => {
+        if (e === prevElement) return;
+        prevElement = e;
+        if (prevObserver) prevObserver();
+        prevObserver = effect();
     });
 });

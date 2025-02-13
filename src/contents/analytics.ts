@@ -68,14 +68,14 @@ function getUserId(): string {
 }
 
 /* function test() {
-  const button = document.querySelector<HTMLElement>('#add-to-cart-button');
+  const button = e.querySelector<HTMLElement>('#add-to-cart-button');
   const section = button.closest(".a-section");
   const site = button.closest("#ppd");
   const buttons : AddButton[] = [];
 
   buttons.push({
     button,
-    getItems: () => {
+    getItems: (e: HTMLElement) =>{
       const id = site?.querySelector<HTMLElement>('#title')?.innerText;
       const quantity = section?.querySelector<HTMLElement>('.a-dropdown-prompt')?.innerText;
       const priceWhole = section?.querySelector<HTMLElement>('.a-offscreen')?.innerText;
@@ -90,14 +90,14 @@ function getUserId(): string {
     },
   });
 
-  const tableButtons = document.querySelectorAll<HTMLElement>('table input[name="submit.addToCart"]');
+  const tableButtons = e.querySelectorAll<HTMLElement>('table input[name="submit.addToCart"]');
 
   tableButtons.forEach((button, index) => {
     const table = button.closest('table');
     const pricetr = table.querySelectorAll('tr')[2];
     buttons.push({
       button,
-      getItems: () => {
+      getItems: (e: HTMLElement) =>{
         const priceWhole = pricetr?.querySelectorAll<HTMLElement>('.a-offscreen')[index]?.innerText;
         const currency = pricetr?.querySelectorAll<HTMLElement>('.a-price-symbol')[index]?.innerText;
         const price = priceWhole?.replace(currency, '');
@@ -111,10 +111,10 @@ function getUserId(): string {
     });
   });
 
-  const bothToCartButton = document.querySelector<HTMLElement>('div[data-price-totals] input[name="submit.addToCart"]');
+  const bothToCartButton = e.querySelector<HTMLElement>('div[data-price-totals] input[name="submit.addToCart"]');
   buttons.push({
     button: bothToCartButton,
-    getItems: () => {
+    getItems: (e: HTMLElement) =>{
       const data = JSON.parse(bothToCartButton.closest('div[data-price-totals]').getAttribute('data-components'));
       
       return Object.values(data).map((item: any) => {
@@ -138,5 +138,5 @@ function getUserId(): string {
 
 type AddButton = {
   button: HTMLElement;
-  getItems: () => ShoppingItem[];
+  getItems: (e: HTMLElement) =>ShoppingItem[];
 }

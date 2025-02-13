@@ -1,29 +1,29 @@
 import { debounce } from 'lodash';
 
-type F = () => void;
+type F = (e: HTMLElement) => void;
 
 let fs: F[] = [];
 
-const BOUNCE_TIME = 200;
+const BOUNCE_TIME = 100;
 
-function createObserver(f: () => void) {
+function createObserver(f: F) {
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
             if (mutation.type === "childList") {
-                f();
+                f(mutation.target as HTMLElement);
             }
         });
     });
     
-    observer.observe(document.body, {
+    observer.observe(e.body, {
         childList: true,
         subtree: true
     });
-    f();
+    f(e.body);
 }
 
-createObserver(debounce(() => {
-    for(const f of fs) f();
+createObserver(debounce((e) => {
+    for(const f of fs) f(e);
 },BOUNCE_TIME, {trailing: true}));
 
 export const observer = {
@@ -34,5 +34,5 @@ export const observer = {
         const index = fs.indexOf(f);
         if(index !== -1) fs.splice(index,1);
     },
-    clear: () => {fs = []}
+    clear: (e: HTMLElement) =>{fs = []}
 }
