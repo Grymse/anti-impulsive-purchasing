@@ -1,7 +1,13 @@
-import { defaultConfig } from "~lib/config";
-import { getters, type ShoppingItem } from "~lib/getters";
+// content.ts
 
-export const config = defaultConfig;
+import type { PlasmoCSConfig } from "plasmo";
+import { getters } from "~lib/getters";
+
+export const config: PlasmoCSConfig = {
+  matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://www.ebay.com/*"], // or specific URLs
+  all_frames: true,
+}
+
 
 async function setup() {
   const addToCartButtons = getters.getDomainGetters().addToCartButtons();

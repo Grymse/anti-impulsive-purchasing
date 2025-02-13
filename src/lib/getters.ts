@@ -130,6 +130,7 @@ getters.register('www.zalando.dk', {
     
     checkoutButtonLabels: () => {
         const buttons = document.querySelectorAll('button[data-id="proceed-to-checkout-button"], button[data-id="buy-now-button-top"], button[data-id="buy-now-button-bottom"]');
+        //@ts-expect-error
         return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
     },
 
@@ -141,3 +142,145 @@ getters.register('www.zalando.dk', {
         return [];
     }
 });
+//TODO - Not working because of client side rendering
+getters.register("www.walmart.com", {
+    checkoutButtons: () => {
+        const buttons = document.querySelectorAll('button[id="Continue to checkout button"]')
+        console.log(buttons)
+        return Array.from(buttons)
+    },
+  
+    placeOrderButtons: () => {
+        const buttons = document.querySelectorAll('button[id="Continue to checkout button"]')
+        return Array.from(buttons)
+    },
+  
+    checkoutButtonLabels: () => {
+        const buttons = document.querySelectorAll('button[id="Continue to checkout button"]')
+        return Array.from(buttons)
+    },
+
+    addToCartButtons: () => {
+        return [];
+    },
+
+    getCartItems: () => {
+        return [];
+    }
+  })
+
+  getters.register("cart.ebay.com", {
+    checkoutButtons() {
+        const buttons = document.querySelectorAll('button[data-test-id="cta-top"]')
+        return Array.from(buttons)
+    },  
+    placeOrderButtons() {
+        const buttons = document.querySelectorAll('button[data-test-id="cart-checkout-button"]')
+        return Array.from(buttons)
+    },
+    checkoutButtonLabels() {
+        const buttons = document.querySelectorAll('button[data-test-id="cta-top"]')
+        return Array.from(buttons)
+    },
+    addToCartButtons: () => {
+        return [];
+    },
+
+    getCartItems: () => {
+        return [];
+    }
+})
+
+    getters.register("www.ebay.com", {
+        checkoutButtons() {
+            const buttons = document.querySelectorAll('#binBtn_btn_1, a[_sp="p4375194.m45024.l44798"]')
+            return Array.from(buttons)
+        },  
+        placeOrderButtons() {
+            const buttons = document.querySelectorAll('button[data-test-id="cart-checkout-button"]')
+            return Array.from(buttons)
+        },
+        checkoutButtonLabels() {
+            const buttons = document.querySelectorAll('div[data-testid="x-bin-action"], , a[_sp="p4375194.m45024.l44798"]')
+            //@ts-expect-error
+            return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
+        },
+        addToCartButtons: () => {
+            return [];
+        },
+    
+        getCartItems: () => {
+            return [];
+        }
+    })
+
+    //TODO - Reactive components, create mutation observer
+    getters.register("www.matas.dk", {
+        checkoutButtons() {
+            const buttons = document.querySelectorAll('button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh BasketPowerstepOpener__StyledButtonWithSpinner-sc-1s4iypb-1 BasketPowerstepOpener___StyledStyledButtonWithSpinner-sc-1s4iypb-2 VvhEn bFKtaQ"]')
+            return Array.from(buttons)
+        },  
+        placeOrderButtons() {
+            const buttons = document.querySelectorAll('button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh BasketPowerstepOpener__StyledButtonWithSpinner-sc-1s4iypb-1 BasketPowerstepOpener___StyledStyledButtonWithSpinner-sc-1s4iypb-2 VvhEn bFKtaQ"]')
+            return Array.from(buttons)
+        },
+        checkoutButtonLabels() {
+            const buttons = document.querySelectorAll('button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh BasketPowerstepOpener__StyledButtonWithSpinner-sc-1s4iypb-1 BasketPowerstepOpener___StyledStyledButtonWithSpinner-sc-1s4iypb-2 VvhEn bFKtaQ"]')
+            //@ts-expect-error
+            return Array.from(buttons.entries().map(([_, element]) => element.querySelector('div')));
+        },
+        addToCartButtons: () => {
+            return [];
+        },
+    
+        getCartItems: () => {
+            return [];
+        }
+    })
+
+    getters.register("www.proshop.dk", {
+        checkoutButtons() {
+            const buttons = document.querySelectorAll('a[class="btn site-btn-tall site-btn-green pull-right ml-2"], a[class="btn site-btn-tall site-btn-green"]')
+            return Array.from(buttons)
+        },  
+        placeOrderButtons() {
+            const buttons = document.querySelectorAll('a[class="btn site-btn-tall site-btn-green pull-right ml-2"], a[class="btn site-btn-tall site-btn-green"]')
+            return Array.from(buttons)
+        },
+        checkoutButtonLabels() {
+            const buttons = document.querySelectorAll('a[class="btn site-btn-tall site-btn-green pull-right ml-2"], a[class="btn site-btn-tall site-btn-green"]')
+            return Array.from(buttons)
+        },
+        addToCartButtons: () => {
+            return [];
+        },
+    
+        getCartItems: () => {
+            return [];
+        }
+    })
+
+    //TODO - Client side rendering, som wall mart
+    getters.register("www.boozt.com", {
+        checkoutButtons() {
+            const buttons = document.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
+            return Array.from(buttons)
+        },  
+        placeOrderButtons() {
+            const buttons = document.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
+            return Array.from(buttons)
+        },
+        checkoutButtonLabels() {
+            const buttons = document.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
+            //@ts-expect-error
+            return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
+        },
+        addToCartButtons: () => {
+            return [];
+        },
+    
+        getCartItems: () => {
+            return [];
+        }
+    })
+
