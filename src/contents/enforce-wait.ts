@@ -12,18 +12,17 @@ type Permit = {
   end: number;
 }
 
-const PERMIT_LENGTH = 50000 //1000 * 60 * 60 * 24 * 3; // 3 days
-const PERMIT_WAIT_TIME = 50000 //1000 * 60 * 60 * 24 * 2; // 2 days
+const PERMIT_LENGTH = 5000 //1000 * 60 * 60 * 24 * 3; // 3 days
+const PERMIT_WAIT_TIME = 5000 //1000 * 60 * 60 * 24 * 2; // 2 days
 const DOMAIN = document.location.hostname;
+const LOCAL_STORAGE_KEY = DOMAIN + "permit";
 let permit : Permit | null = null;
 
 const getters = getterRegistry.getDomainGetters();
 
 let currentTarget = document.body;
 
-function effect() {
-    const abort = new AbortController();
-    const signal = {signal: abort.signal};
+function effect(signal: {signal: AbortSignal}) {
   // Load the existing permit from storage
   loadPermit();
 
@@ -36,13 +35,11 @@ function effect() {
   getters.placeOrderButtons(currentTarget).forEach((button) => {
     button.addEventListener("click", onPlaceOrderClick);
   }, signal);
-
-  return () => abort.abort();
 }
 async function loadPermit() {
   // Load the permit from local storage
-  const loadedObject = (await chrome.storage.local.get(DOMAIN)) as Record<string, Permit>;
-  permit = loadedObject[DOMAIN] ?? null;
+  const loadedObject = (await chrome.storage.local.get(LOCAL_STORAGE_KEY)) as Record<string, Permit>;
+  permit = loadedObject[LOCAL_STORAGE_KEY] ?? null;
   
   // Update the checkout button labels with the current permit status
   const checkoutButtonLabels = getters.checkoutButtonLabels(currentTarget);
@@ -66,7 +63,7 @@ function onPlaceOrderClick(e: Event)  {
 
 function clearPermit() {
   permit = null;
-  chrome.storage.local.remove(DOMAIN);
+  chrome.storage.local.remove(LOCAL_STORAGE_KEY);
 }
 
 function onCheckoutClick(e: Event) {
@@ -130,7 +127,7 @@ function isPermitValid(permit: Permit) : boolean {
 /**
  * Creates a new permit with a start time delayed by `PERMIT_WAIT_TIME` and an end time
  * delayed by `PERMIT_LENGTH` plus `PERMIT_WAIT_TIME`. The permit is then stored in
- * Chrome's local storage under the key `DOMAIN` and visuals are injected into the
+ * Chrome's local storage under the key LOCAL_STORAGE_KEY and visuals are injected into the
  * checkout button labels.
  *
  * @returns {Permit} The newly created permit object.
@@ -141,24 +138,12 @@ function createNewPermit() : Permit {
     end: Date.now() + PERMIT_LENGTH + PERMIT_WAIT_TIME
   }
 
-  chrome.storage.local.set({[DOMAIN]: permit});
+  chrome.storage.local.set({[LOCAL_STORAGE_KEY]: permit});
   getters.checkoutButtonLabels(currentTarget).forEach(injectVisuals);
 
   return permit;
 }
 
-
-type Effect = () => (() => void);
-
-let prevObserver = null;
-function effectRunner(f: Effect) {
-    return () => {
-        if (prevObserver) { prevObserver(); }
-        prevObserver = f();
-    };
-}
-
-
 window.addEventListener("load", () =>{
-    observer.add(effectRunner(effect))
+    observer.addEffect(effect)
 });
