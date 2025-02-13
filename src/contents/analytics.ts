@@ -1,7 +1,7 @@
 // content.ts
 
 import type { PlasmoCSConfig } from "plasmo";
-import { getters } from "~lib/getters";
+import { getters, type ShoppingItem } from "~lib/getters";
 
 export const config: PlasmoCSConfig = {
   matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://www.ebay.com/*"], // or specific URLs
