@@ -5,7 +5,6 @@ import type { PlasmoCSConfig } from "plasmo";
 export const config: PlasmoCSConfig = {
     matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://*.ebay.com/*", "https://www.matas.dk/*", "https://www.proshop.dk/*", "https://www.boozt.com/*"], // or specific URLs
     all_frames: true,
-    run_at: "e_idle",
 }
 
 type Permit = {
@@ -15,7 +14,7 @@ type Permit = {
 
 const PERMIT_LENGTH = 50000 //1000 * 60 * 60 * 24 * 3; // 3 days
 const PERMIT_WAIT_TIME = 50000 //1000 * 60 * 60 * 24 * 2; // 2 days
-const DOMAIN = e.location.hostname;
+const DOMAIN = document.location.hostname;
 let permit : Permit | null = null;
 
 const getters = getterRegistry.getDomainGetters();
@@ -27,8 +26,8 @@ function setup() {
   loadPermit();
 
   // Get the checkout and place order buttons using the getters
-  const checkoutButtons = getters.checkoutButtons();
-  const placeOrderButtons = getters.placeOrderButtons();
+  const checkoutButtons = getters.checkoutButtons(document.body);
+  const placeOrderButtons = getters.placeOrderButtons(document.body);
 
   // Add event listeners to the checkout buttons
   checkoutButtons.forEach((button) => {
@@ -46,7 +45,7 @@ async function loadPermit() {
   permit = loadedObject[DOMAIN] ?? null;
   
   // Update the checkout button labels with the current permit status
-  const checkoutButtonLabels = getters.checkoutButtonLabels();
+  const checkoutButtonLabels = getters.checkoutButtonLabels(document.body);
   checkoutButtonLabels.forEach(injectVisuals);
 }
 function onPlaceOrderClick(e: Event)  {
@@ -141,7 +140,7 @@ function createNewPermit() : Permit {
   }
 
   chrome.storage.local.set({[DOMAIN]: permit});
-  getters.checkoutButtonLabels().forEach(injectVisuals);
+  getters.checkoutButtonLabels(document.body).forEach(injectVisuals);
 
   return permit;
 }

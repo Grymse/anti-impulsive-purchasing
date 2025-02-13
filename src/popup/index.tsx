@@ -6,7 +6,7 @@ function IndexPopup() {
 
   // This function queries the active tab, sends a message to the content script,
   // and uses the response to update our UI.
-  const updateTimer = async (e: HTMLElement) =>{
+  const updateTimer = async () =>{
     try {
       // 1. Get the active tab
       const [tab] = await chrome.tabs.query({
@@ -59,17 +59,17 @@ function IndexPopup() {
     }
   }
 
-  useEffect((e: HTMLElement) =>{
+  useEffect(() =>{
     // Fetch immediately
     updateTimer()
 
     // Then refresh every 10s
-    const intervalId = setInterval((e: HTMLElement) =>{
+    const intervalId = setInterval(() =>{
       updateTimer()
     }, 10_000) // 10 seconds
 
     // Cleanup interval on unmount
-    return (e: HTMLElement) =>clearInterval(intervalId)
+    return () =>clearInterval(intervalId)
   }, [])
 
   return (

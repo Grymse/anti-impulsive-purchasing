@@ -10,7 +10,7 @@ export const config: PlasmoCSConfig = {
 
 
 async function setup() {
-  const addToCartButtons = getters.getDomainGetters().addToCartButtons();
+  const addToCartButtons = getters.getDomainGetters().addToCartButtons(document.body);
   /* test(); */
   addToCartButtons.forEach((button) => {
     button.addEventListener("click", onAddToCartClick);
@@ -18,7 +18,7 @@ async function setup() {
 
   await delay(1000);
 
-  const items = getters.getDomainGetters().getCartItems();
+  const items = getters.getDomainGetters().getCartItems(document.body);
   console.log(items);
 }
 
@@ -138,5 +138,5 @@ function getUserId(): string {
 
 type AddButton = {
   button: HTMLElement;
-  getItems: (e: HTMLElement) =>ShoppingItem[];
+  getItems: () =>ShoppingItem[];
 }

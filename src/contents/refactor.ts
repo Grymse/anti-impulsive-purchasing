@@ -3,7 +3,7 @@ import { getters as getterRegistry } from "~lib/getters";
 import { observer } from "~lib/observer";
 
 export const config: PlasmoCSConfig = {
-    matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.matas.dk/*"], // or specific URLs
+    matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://*.ebay.com/*", "https://www.matas.dk/*", "https://www.proshop.dk/*", "https://www.boozt.com/*"], // or specific URLs
     all_frames: true,
 }
 
@@ -14,10 +14,12 @@ type Permit = {
 
 const PERMIT_LENGTH = 50000 //1000 * 60 * 60 * 24 * 3; // 3 days
 const PERMIT_WAIT_TIME = 50000 //1000 * 60 * 60 * 24 * 2; // 2 days
-const DOMAIN = e.location.hostname;
+const DOMAIN = document.location.hostname;
 let permit : Permit | null = null;
 
 const getters = getterRegistry.getDomainGetters();
+
+let currentTarget = document.body;
 
 function effect() {
     const abort = new AbortController();
@@ -25,23 +27,17 @@ function effect() {
   // Load the existing permit from storage
   loadPermit();
 
-  // Get the checkout and place order buttons using the getters
-  const checkoutButtons = getters.checkoutButtons();
-  const placeOrderButtons = getters.placeOrderButtons();
-
   // Add event listeners to the checkout buttons
-  checkoutButtons.forEach((button) => {
+  getters.checkoutButtons(currentTarget).forEach((button) => {
     button.addEventListener("click", onCheckoutClick);
   }, signal);
 
   // Add event listeners to the place order buttons
-  placeOrderButtons.forEach((button) => {
+  getters.placeOrderButtons(currentTarget).forEach((button) => {
     button.addEventListener("click", onPlaceOrderClick);
   }, signal);
 
-  return (e: HTMLElement) =>{
-    abort.abort();
-  }
+  return () => abort.abort();
 }
 async function loadPermit() {
   // Load the permit from local storage
@@ -49,9 +45,10 @@ async function loadPermit() {
   permit = loadedObject[DOMAIN] ?? null;
   
   // Update the checkout button labels with the current permit status
-  const checkoutButtonLabels = getters.checkoutButtonLabels();
+  const checkoutButtonLabels = getters.checkoutButtonLabels(currentTarget);
   checkoutButtonLabels.forEach(injectVisuals);
 }
+
 function onPlaceOrderClick(e: Event)  {
   const permit = getOrCreatePermit();
   
@@ -71,6 +68,7 @@ function clearPermit() {
   permit = null;
   chrome.storage.local.remove(DOMAIN);
 }
+
 function onCheckoutClick(e: Event) {
   const permit = getOrCreatePermit();
   
@@ -79,7 +77,7 @@ function onCheckoutClick(e: Event) {
     // Prevent the default action and stop event propagation if the permit is not valid
     e.preventDefault();
     e.stopPropagation();
-    alert("Please wait a few minutes before checking out.");
+    /* alert("Please wait a few minutes before checking out."); */
   }
 }
 
@@ -144,20 +142,23 @@ function createNewPermit() : Permit {
   }
 
   chrome.storage.local.set({[DOMAIN]: permit});
-  getters.checkoutButtonLabels().forEach(injectVisuals);
+  getters.checkoutButtonLabels(currentTarget).forEach(injectVisuals);
 
   return permit;
 }
 
 
+type Effect = () => (() => void);
 
-window.addEventListener("load", (e: HTMLElement) =>{
-    let prevObserver = null;
-    let prevElement = null;
-    observer.add((e) => {
-        if (e === prevElement) return;
-        prevElement = e;
-        if (prevObserver) prevObserver();
-        prevObserver = effect();
-    });
+let prevObserver = null;
+function effectRunner(f: Effect) {
+    return () => {
+        if (prevObserver) { prevObserver(); }
+        prevObserver = f();
+    };
+}
+
+
+window.addEventListener("load", () =>{
+    observer.add(effectRunner(effect))
 });
