@@ -1,6 +1,6 @@
-import { getters as getterRegistry } from "~lib/getters";
-
 import type { PlasmoCSConfig } from "plasmo";
+import { getters as getterRegistry } from "~lib/getters";
+import { observer } from "~lib/observer";
 
 export const config: PlasmoCSConfig = {
     matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://*.ebay.com/*", "https://www.matas.dk/*", "https://www.proshop.dk/*", "https://www.boozt.com/*"], // or specific URLs
@@ -19,25 +19,25 @@ let permit : Permit | null = null;
 
 const getters = getterRegistry.getDomainGetters();
 
-console.log("LESS IS ACTIVE");
+let currentTarget = document.body;
 
-function setup() {
+function effect() {
+    const abort = new AbortController();
+    const signal = {signal: abort.signal};
   // Load the existing permit from storage
   loadPermit();
 
-  // Get the checkout and place order buttons using the getters
-  const checkoutButtons = getters.checkoutButtons(document.body);
-  const placeOrderButtons = getters.placeOrderButtons(document.body);
-
   // Add event listeners to the checkout buttons
-  checkoutButtons.forEach((button) => {
+  getters.checkoutButtons(currentTarget).forEach((button) => {
     button.addEventListener("click", onCheckoutClick);
-  });
+  }, signal);
 
   // Add event listeners to the place order buttons
-  placeOrderButtons.forEach((button) => {
+  getters.placeOrderButtons(currentTarget).forEach((button) => {
     button.addEventListener("click", onPlaceOrderClick);
-  });
+  }, signal);
+
+  return () => abort.abort();
 }
 async function loadPermit() {
   // Load the permit from local storage
@@ -45,9 +45,10 @@ async function loadPermit() {
   permit = loadedObject[DOMAIN] ?? null;
   
   // Update the checkout button labels with the current permit status
-  const checkoutButtonLabels = getters.checkoutButtonLabels(document.body);
+  const checkoutButtonLabels = getters.checkoutButtonLabels(currentTarget);
   checkoutButtonLabels.forEach(injectVisuals);
 }
+
 function onPlaceOrderClick(e: Event)  {
   const permit = getOrCreatePermit();
   
@@ -67,6 +68,7 @@ function clearPermit() {
   permit = null;
   chrome.storage.local.remove(DOMAIN);
 }
+
 function onCheckoutClick(e: Event) {
   const permit = getOrCreatePermit();
   
@@ -75,7 +77,7 @@ function onCheckoutClick(e: Event) {
     // Prevent the default action and stop event propagation if the permit is not valid
     e.preventDefault();
     e.stopPropagation();
-    alert("Please wait a few minutes before checking out.");
+    /* alert("Please wait a few minutes before checking out."); */
   }
 }
 
@@ -140,9 +142,23 @@ function createNewPermit() : Permit {
   }
 
   chrome.storage.local.set({[DOMAIN]: permit});
-  getters.checkoutButtonLabels(document.body).forEach(injectVisuals);
+  getters.checkoutButtonLabels(currentTarget).forEach(injectVisuals);
 
   return permit;
 }
 
-/* window.addEventListener("load", setup); */
+
+type Effect = () => (() => void);
+
+let prevObserver = null;
+function effectRunner(f: Effect) {
+    return () => {
+        if (prevObserver) { prevObserver(); }
+        prevObserver = f();
+    };
+}
+
+
+window.addEventListener("load", () =>{
+    observer.add(effectRunner(effect))
+});

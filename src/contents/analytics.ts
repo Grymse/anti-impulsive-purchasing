@@ -135,8 +135,8 @@ function getUserId(): string {
   });
 }
  */
-
+/* 
 type AddButton = {
   button: HTMLElement;
   getItems: () =>ShoppingItem[];
-}
+} */
