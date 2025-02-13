@@ -2,39 +2,58 @@
 
 import type { PlasmoCSConfig } from "plasmo";
 import { getters, type ShoppingItem } from "~lib/getters";
+import { observer } from "~lib/observer";
 
 export const config: PlasmoCSConfig = {
   matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://www.ebay.com/*"], // or specific URLs
   all_frames: true,
 }
 
+const DOMAIN = document.location.hostname;
+const LOCAL_CART_STORAGE_KEY = DOMAIN + "cart";
+const SESSION_LENGTH = 1000 * 60 * 15; // 30 minutes
 
-async function setup() {
+function effect(signal: {signal: AbortSignal}) {
   const addToCartButtons = getters.getDomainGetters().addToCartButtons(document.body);
-  /* test(); */
+  const placeOrderButtons = getters.getDomainGetters().placeOrderButtons(document.body);
   addToCartButtons.forEach((button) => {
     button.addEventListener("click", onAddToCartClick);
-  });
+  }, signal);
 
-  await delay(1000);
+  placeOrderButtons.forEach((button) => {
+    button.addEventListener("click", onPlaceOrderClick);
+  }, signal);
 
+  saveCurrentItems();
+}
+
+function onPlaceOrderClick(e: Event) {
   const items = getters.getDomainGetters().getCartItems(document.body);
-  console.log(items);
+  sendAnalytics('place-order', items);
+}
+
+function saveCurrentItems() {
+  const items = getters.getDomainGetters().getCartItems(document.body);
+  if(items.length === 0) return;
+  localStorage.setItem(LOCAL_CART_STORAGE_KEY, JSON.stringify(items));
 }
 
 function onAddToCartClick(e: Event) {
   sendAnalytics('add-to-cart', undefined);
 }
 
-window.addEventListener("load", setup);
+window.addEventListener("load", () =>{
+    observer.addEffect(effect)
+});
+
 
 type AnalyticsEvent = {
   type: keyof AnalyticsPayloads;
   url: string;
   payload: string;
-  userId: string;
-  sessionId: string;
-  unixTime: number;
+  user_id: string;
+  session_id: string;
+  created_at: number;
 }
 
 type AnalyticsPayloads = {
@@ -48,24 +67,47 @@ function sendAnalytics<T extends keyof AnalyticsPayloads>(type: T, payload: Anal
     type,
     url: window.location.href,
     payload: JSON.stringify(payload),
-    userId: getUserId(),
-    sessionId: getSessionId(),
-    unixTime: Date.now()
+    user_id: getUserId(),
+    session_id: getSessionId(),
+    created_at: Date.now()
   }
 
   // Send the analytics data to the server
   console.log("ANALYTICS:",data);
 }
 
-// TODO: Create if none. Reset if expired?
-function getSessionId() {
-  return 'sessionid'
+type SessionID = {
+  id: string;
+  expires: number;
 }
 
-// TODO: Create if none.
-function getUserId(): string {
-  return 'userid'
+function getSessionId() {
+  const session = JSON.parse(localStorage.getItem('sessionid')) as SessionID | undefined;
+
+  if(session && session.expires > Date.now()) {
+    session.expires = Date.now() + SESSION_LENGTH;
+    localStorage.setItem('sessionid', JSON.stringify(session));
+    return session.id;
+  }
+
+  const newSession = {
+    id: crypto.randomUUID(),
+    expires: Date.now() + SESSION_LENGTH
+  }
+  localStorage.setItem('sessionid', JSON.stringify(newSession));
+
+  return newSession.id;
 }
+
+function getUserId(): string {
+  const id = localStorage.getItem('userid');
+  if(id) return id;
+
+  const newId = crypto.randomUUID();
+  localStorage.setItem('userid', newId);
+  return newId;
+}
+
 
 /* function test() {
   const button = e.querySelector<HTMLElement>('#add-to-cart-button');

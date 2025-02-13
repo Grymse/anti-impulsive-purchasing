@@ -82,7 +82,7 @@ getters.register('www.amazon.com', {
         const priceSymbol = e.querySelectorAll<HTMLElement>('#sc-active-cart .a-price span.a-price-symbol');
         const priceWhole = e.querySelectorAll<HTMLElement>('#sc-active-cart .a-price span.a-price-whole');
         const priceFraction = e.querySelectorAll<HTMLElement>('#sc-active-cart .a-price span.a-price-fraction');
-        const items = [];
+        let items = [];
         for (let i = 0; i < priceSymbol.length; i++) {
             items.push({
                 quantity: parseInt(quantities[i].innerText),
@@ -92,21 +92,14 @@ getters.register('www.amazon.com', {
         }
         
         const rightSideList = e.querySelectorAll<HTMLElement>('.ewc-item');
+        if(rightSideList.length === 0) return items;
+        items = [];
         rightSideList.forEach(item => {
             const quantity = parseInt(item.querySelector<HTMLElement>('[data-a-selector="value"]').innerText);
-            const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>('.ewc-price span').innerText);
+            const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>('.ewc-unit-price span').innerText);
             items.push({ quantity, price, currency });
         });
         
-
-        /* const elements = e.querySelectorAll<HTMLElement>('span.a-list-item div[data-csa-c-type="item"]');
-        const x = elements.entries().map(([_, element]) => {
-            return {
-                quantity: parseFloat(element.getAttribute('data-quantity')),
-                price: parseFloat(element.getAttribute('data-price')),
-                currency: JSON.parse(element.getAttribute('data-subtotal'))?.subtotal?.code
-            }
-        }).toArray(); */
         return items;
     }
 });
