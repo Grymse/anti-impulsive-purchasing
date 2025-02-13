@@ -28,8 +28,8 @@ function effect(signal: {signal: AbortSignal}) {
 }
 
 function onPlaceOrderClick(e: Event) {
-  const items = getters.getDomainGetters().getCartItems(document.body);
-  sendAnalytics('place-order', items);
+  const items = localStorage.getItem(LOCAL_CART_STORAGE_KEY);
+  sendAnalytics('place-order', items ? JSON.parse(items) : []);
 }
 
 function saveCurrentItems() {
@@ -46,19 +46,18 @@ window.addEventListener("load", () =>{
     observer.addEffect(effect)
 });
 
-
 type AnalyticsEvent = {
   type: keyof AnalyticsPayloads;
   url: string;
   payload: string;
   user_id: string;
   session_id: string;
-  created_at: number;
+  created_at: string;
 }
 
 type AnalyticsPayloads = {
   'add-to-cart': undefined;
-  'checkout': ShoppingItem[];
+  'checkout': undefined;
   'place-order': ShoppingItem[];
 }
 
@@ -69,11 +68,26 @@ function sendAnalytics<T extends keyof AnalyticsPayloads>(type: T, payload: Anal
     payload: JSON.stringify(payload),
     user_id: getUserId(),
     session_id: getSessionId(),
-    created_at: Date.now()
+    created_at: new Date().toISOString(),
   }
 
   // Send the analytics data to the server
   console.log("ANALYTICS:",data);
+  fetch(process.env.PLASMO_PUBLIC_ANALYTICS_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal',
+      'apikey': process.env.PLASMO_PUBLIC_ANALYTICS_SECRET
+    },
+    body: JSON.stringify(data)
+  }).then(response => {
+    if(response.ok) {
+      console.log('Analytics sent');
+    } else {
+      console.error('Failed to send analytics');
+    }
+  });
 }
 
 type SessionID = {
@@ -99,6 +113,7 @@ function getSessionId() {
   return newSession.id;
 }
 
+// TODO: Has to work across domains
 function getUserId(): string {
   const id = localStorage.getItem('userid');
   if(id) return id;
