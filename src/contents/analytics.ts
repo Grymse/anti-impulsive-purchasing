@@ -3,15 +3,17 @@
 import type { PlasmoCSConfig } from "plasmo";
 import { getters, type ShoppingItem } from "~lib/getters";
 import { observer } from "~lib/observer";
+import { Stopwatch } from "ts-stopwatch";
 
 export const config: PlasmoCSConfig = {
-  matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://www.ebay.com/*"], // or specific URLs
+  matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://*.ebay.com/*", "https://www.matas.dk/*", "https://www.proshop.dk/*", "https://www.boozt.com/*"], // or specific URLs
   all_frames: true,
 }
 
 const DOMAIN = document.location.hostname;
 const LOCAL_CART_STORAGE_KEY = DOMAIN + "-cart";
 const SESSION_LENGTH = 1000 * 60 * 15; // 30 minutes
+const INTERVAL_LENGTH = 1000 * 5; // 5 seconds
 
 function effect(signal: {signal: AbortSignal}) {
   const addToCartButtons = getters.getDomainGetters().addToCartButtons(document.body);
@@ -42,8 +44,10 @@ function onAddToCartClick(e: Event) {
   sendAnalytics('add-to-cart', undefined);
 }
 
-window.addEventListener("load", () =>{
+window.addEventListener("load", () => {
+    setupTimeMeasurement();
     observer.addEffect(effect)
+    sendAnalytics('page-view', undefined);
 });
 
 type AnalyticsEvent = {
@@ -59,12 +63,15 @@ type AnalyticsPayloads = {
   'add-to-cart': undefined;
   'checkout': undefined;
   'place-order': ShoppingItem[];
+  'page-view': undefined;
+  'page-exit': {duration: number};
+  'time-spent': {duration: number};
 }
 
 function sendAnalytics<T extends keyof AnalyticsPayloads>(type: T, payload: AnalyticsPayloads[T]) {
   const data: AnalyticsEvent = {
     type,
-    url: window.location.href,
+    url: window.location.hostname+window.location.pathname,
     payload: JSON.stringify(payload),
     user_id: getUserId(),
     session_id: getSessionId(),
@@ -72,7 +79,7 @@ function sendAnalytics<T extends keyof AnalyticsPayloads>(type: T, payload: Anal
   }
 
   // Send the analytics data to the server
-  console.log("ANALYTICS:",data);
+  console.log(process.env.PLASMO_PUBLIC_ANALYTICS_URL);
   fetch(process.env.PLASMO_PUBLIC_ANALYTICS_URL, {
     method: 'POST',
     headers: {
@@ -87,7 +94,7 @@ function sendAnalytics<T extends keyof AnalyticsPayloads>(type: T, payload: Anal
     } else {
       console.error('Failed to send analytics');
     }
-  });
+  }).catch(console.error);
 }
 
 type SessionID = {
@@ -123,76 +130,30 @@ function getUserId(): string {
 }
 
 
-/* function test() {
-  const button = e.querySelector<HTMLElement>('#add-to-cart-button');
-  const section = button.closest(".a-section");
-  const site = button.closest("#ppd");
-  const buttons : AddButton[] = [];
+function setupTimeMeasurement() {
+  const timeSpentWatch = new Stopwatch();
+  const totalTime = new Stopwatch();
+  timeSpentWatch.start();
+  totalTime.start();
 
-  buttons.push({
-    button,
-    getItems: (e: HTMLElement) =>{
-      const id = site?.querySelector<HTMLElement>('#title')?.innerText;
-      const quantity = section?.querySelector<HTMLElement>('.a-dropdown-prompt')?.innerText;
-      const priceWhole = section?.querySelector<HTMLElement>('.a-offscreen')?.innerText;
-      const currency = section?.querySelector<HTMLElement>('.a-price-symbol')?.innerText;
-      const price = priceWhole?.replace(currency, '');
-
-      return [{
-        quantity: quantity ? parseInt(quantity) : 0,
-        price: price ? parseFloat(price) : 0,
-        currency: currency ? currency : '',
-      }];
-    },
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      timeSpentWatch.stop();
+      totalTime.stop();
+    } else {
+      timeSpentWatch.start();
+      totalTime.start();
+    }
   });
 
-  const tableButtons = e.querySelectorAll<HTMLElement>('table input[name="submit.addToCart"]');
+  setInterval(() => {
+    if (document.hidden) return;
+    sendAnalytics('time-spent', {duration: timeSpentWatch.getTime()});
+    timeSpentWatch.start(true);
+  }, INTERVAL_LENGTH);
 
-  tableButtons.forEach((button, index) => {
-    const table = button.closest('table');
-    const pricetr = table.querySelectorAll('tr')[2];
-    buttons.push({
-      button,
-      getItems: (e: HTMLElement) =>{
-        const priceWhole = pricetr?.querySelectorAll<HTMLElement>('.a-offscreen')[index]?.innerText;
-        const currency = pricetr?.querySelectorAll<HTMLElement>('.a-price-symbol')[index]?.innerText;
-        const price = priceWhole?.replace(currency, '');
-
-        return [{
-          quantity: 1,
-          price: price ? parseFloat(price) : 0,
-          currency: currency ? currency : '',
-        }];
-      },
-    });
-  });
-
-  const bothToCartButton = e.querySelector<HTMLElement>('div[data-price-totals] input[name="submit.addToCart"]');
-  buttons.push({
-    button: bothToCartButton,
-    getItems: (e: HTMLElement) =>{
-      const data = JSON.parse(bothToCartButton.closest('div[data-price-totals]').getAttribute('data-components'));
-      
-      return Object.values(data).map((item: any) => {
-        console.log(item);
-        const currency = item?.price?.currencySymbol;
-        const price = item.price.displayString.replace(currency, '');
-        return {
-          quantity: item.minQuantity,
-          price: price ? parseFloat(price) : 0,
-          currency: currency ? currency : '',
-        };
-      });
-  }});
-
-  buttons.flatMap(button => button.getItems()).forEach(console.log);
-  buttons.forEach(button => {
-    button.button.parentElement.style.backgroundColor = 'red';
+  window.addEventListener("beforeunload", () => {
+    sendAnalytics('time-spent', {duration: timeSpentWatch.stop()});
+    /* sendAnalytics('page-exit', {duration: totalTime.stop()}); */
   });
 }
- */
-/* 
-type AddButton = {
-  button: HTMLElement;
-  getItems: () =>ShoppingItem[];
-} */
