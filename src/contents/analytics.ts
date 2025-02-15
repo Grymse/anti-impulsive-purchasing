@@ -10,7 +10,7 @@ export const config: PlasmoCSConfig = {
 }
 
 const DOMAIN = document.location.hostname;
-const LOCAL_CART_STORAGE_KEY = DOMAIN + "cart";
+const LOCAL_CART_STORAGE_KEY = DOMAIN + "-cart";
 const SESSION_LENGTH = 1000 * 60 * 15; // 30 minutes
 
 function effect(signal: {signal: AbortSignal}) {
@@ -113,7 +113,6 @@ function getSessionId() {
   return newSession.id;
 }
 
-// TODO: Has to work across domains
 function getUserId(): string {
   const id = localStorage.getItem('userid');
   if(id) return id;

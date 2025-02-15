@@ -15,7 +15,7 @@ type Permit = {
 const PERMIT_LENGTH = 5000 //1000 * 60 * 60 * 24 * 3; // 3 days
 const PERMIT_WAIT_TIME = 5000 //1000 * 60 * 60 * 24 * 2; // 2 days
 const DOMAIN = document.location.hostname;
-const LOCAL_STORAGE_KEY = DOMAIN + "permit";
+const LOCAL_STORAGE_KEY = DOMAIN + "-permit";
 let permit : Permit | null = null;
 
 const getters = getterRegistry.getDomainGetters();
