@@ -19,6 +19,12 @@ type GetterRegister = {
     getDomainGetters : () => ElementGetters;
 }
 
+function splitPriceCurrency(price: string) {
+    const numericPrice = price.match(/[\d,.]+/);
+    const currency = price.replace(numericPrice ? numericPrice[0] : '', '');
+    return { price: parseFloat(numericPrice[0].replace(',', '.')), currency };
+}
+
 /**
  * A registry for storing and retrieving element getters based on domain.
  */
@@ -104,12 +110,6 @@ getters.register('www.amazon.com', {
     }
 });
 
-function splitPriceCurrency(price: string) {
-    const numericPrice = price.match(/[\d,.]+/);
-    const currency = price.replace(numericPrice ? numericPrice[0] : '', '');
-    return { price: parseFloat(numericPrice[0].replace(',', '.')), currency };
-}
-
 getters.register('www.zalando.dk', {
     checkoutButtons: (e: HTMLElement) => {
         const buttons = e.querySelectorAll('button[data-id="proceed-to-checkout-button"]');
@@ -161,7 +161,7 @@ getters.register("www.walmart.com", {
     }
   })
 
-  getters.register("cart.ebay.com", {
+getters.register("cart.ebay.com", {
     checkoutButtons:(e: HTMLElement) => {
         const buttons = e.querySelectorAll('button[data-test-id="cta-top"]')
         return Array.from(buttons)
@@ -206,7 +206,6 @@ getters.register("pay.ebay.com", {
     }
 })
 
-
 getters.register("www.ebay.com", {
     checkoutButtons:(e: HTMLElement) => {
         const buttons = e.querySelectorAll('#binBtn_btn_1, div.gh-minicart-action a[aria-label="Checkout"]')
@@ -229,7 +228,6 @@ getters.register("www.ebay.com", {
     }
 })
 
-    //TODO - Reactive components, create mutation observer
 getters.register("www.matas.dk", {
     checkoutButtons:(e: HTMLElement) => {
         const buttons = e.querySelectorAll('button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh BasketPowerstepOpener__StyledButtonWithSpinner-sc-1s4iypb-1 BasketPowerstepOpener___StyledStyledButtonWithSpinner-sc-1s4iypb-2 VvhEn bFKtaQ"]')
@@ -276,7 +274,6 @@ getters.register("www.proshop.dk", {
     }
 })
 
-//TODO - Client side rendering, som wall mart
 getters.register("www.boozt.com", {
     checkoutButtons:(e: HTMLElement) => {
         const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
