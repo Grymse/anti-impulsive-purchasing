@@ -259,12 +259,13 @@ getters.register("www.proshop.dk", {
         return Array.from(buttons)
     },  
     placeOrderButtons:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll('a[class="btn site-btn-tall site-btn-green pull-right ml-2"], a[class="btn site-btn-tall site-btn-green"]')
+        const buttons = e.querySelectorAll('button[name="paymentOption"]')
         return Array.from(buttons)
     },
     checkoutButtonLabels:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll('a[class="btn site-btn-tall site-btn-green pull-right ml-2"], a[class="btn site-btn-tall site-btn-green"]')
+        const buttons = e.querySelectorAll('a[class="btn site-btn-tall site-btn-green pull-right ml-2"], a[class="btn site-btn-tall site-btn-green"], span[data-amountformat="dubbleLine"]')
         return Array.from(buttons)
+        //button[name="paymentOption"]
     },
     addToCartButtons: (e: HTMLElement) => {
         return [];
