@@ -128,21 +128,21 @@ getters.register('www.zalando.dk', {
     },
 
     addToCartButtons: (e: HTMLElement) => {
-        return [];
+        const buttons = e.querySelectorAll('button[class="_ZDS_REF_SCOPE_ vfoVrE DJxzzA u9KIT8 uEg2FS U_OhzR ZkIJC- Vn-7c- VWL_Ot _13ipK_ FCIprz heWLCX lXdmf0 LyRfpJ Md_Vex NN8L-8 EmWJce EvwuKo gcK-9K EKabf7 aX2-iv r9BRio pOsi7r mo6ZnF  Wy3rmK"]');
+        return Array.from(buttons);
     },
 
     getCartItems: (e: HTMLElement) => {
+        return [];
         const cart = e.querySelector<HTMLElement>('div[data-id="article-group"]');
+        //Fanger kun første element i kurven.
         const priceFraction = cart.querySelectorAll<HTMLElement>('p[class="sDq_FX lystZ1 dgII7d HlZ_Tf"]');
         const quantities = cart.querySelectorAll<HTMLElement>('select[aria-label="quantity-selection"]')
         const priceWhole = e.querySelector<HTMLElement>('div[data-id="total-price"]');
+        //Hacky måde.
         const priceSymbol = splitPriceCurrency(priceWhole.innerText).currency.split('moms')[1].split(',00')[1].trim();
 
-
         let items = [];
-
-        console.log(priceFraction[0])
-
         for (let i = 0; i < priceSymbol.length; i++) {
             items.push({
                 //@ts-expect-error .value is a valid field.
@@ -150,10 +150,7 @@ getters.register('www.zalando.dk', {
                 price: parseFloat(priceWhole[i].innerText) + parseFloat(priceFraction[i].innerText) / 100,
                 currency: priceSymbol
             });
-        }
-
-        console.log("Found items", items)
-        return [];
+        }     
     }
 });
 
