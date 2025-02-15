@@ -132,6 +132,27 @@ getters.register('www.zalando.dk', {
     },
 
     getCartItems: (e: HTMLElement) => {
+        const cart = e.querySelector<HTMLElement>('div[data-id="article-group"]');
+        const priceFraction = cart.querySelectorAll<HTMLElement>('p[class="sDq_FX lystZ1 dgII7d HlZ_Tf"]');
+        const quantities = cart.querySelectorAll<HTMLElement>('select[aria-label="quantity-selection"]')
+        const priceWhole = e.querySelector<HTMLElement>('div[data-id="total-price"]');
+        const priceSymbol = splitPriceCurrency(priceWhole.innerText).currency.split('moms')[1].split(',00')[1].trim();
+
+
+        let items = [];
+
+        console.log(priceFraction[0])
+
+        for (let i = 0; i < priceSymbol.length; i++) {
+            items.push({
+                //@ts-expect-error .value is a valid field.
+                quantity: parseInt(quantities[i].value),
+                price: parseFloat(priceWhole[i].innerText) + parseFloat(priceFraction[i].innerText) / 100,
+                currency: priceSymbol
+            });
+        }
+
+        console.log("Found items", items)
         return [];
     }
 });
