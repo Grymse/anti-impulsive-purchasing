@@ -305,18 +305,12 @@ getters.register("www.proshop.dk", {
             items.push({
                 //@ts-expect-error .value is a valid field.
                 quantity: parseInt(quantities[i].value),
-                price: parseFloat(priceWhole[0].textContent) + parseFloat(priceFraction[i].innerText) / 100,
+                price: parseFloat(priceFraction[i].innerText),
                 currency: priceSymbol
             });
         }
-        
-        console.log("ITEMS", items);
-        return [];
-        
-
-        //console.log(splitPriceCurrency(priceSymbol[0].innerText))
-        //const q = parseInt(quantities[0])
-        //console.log(quantities[0].value);
+    
+        return items;
     }
 })
 
