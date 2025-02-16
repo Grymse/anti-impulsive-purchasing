@@ -1,5 +1,10 @@
+import json
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import logging
+
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)  # Only log errors, ignore regular requests
 
 app = Flask(__name__)
 
@@ -10,11 +15,22 @@ def add_csp_headers(response):
     response.headers["Content-Security-Policy"] = "default-src * data: blob: 'unsafe-inline' 'unsafe-eval'; connect-src *;"
     return response
 
+t = 1000
+
 @app.route('/endpoint', methods=['POST'])
 def endpoint():
-    data = request.get_json()
+    global t
+    data =  request.data
+    try:
+        data = json.loads(data)
+    except ValueError:
+        return jsonify({"error": "Invalid JSON data received"}), 400
+    t = t + 1
     if data:
-        print(f"{data['url']} - {data['type']}")
+        if "payload" in data:
+            print(f"{t} - {data['type']} - {data['url']} - {data['payload']}")
+        else:
+            print(f"{t} - {data['type']} - {data['url']}")
         return jsonify({"message": "Keys printed to console"}), 200
     else:
         return jsonify({"error": "No JSON data received"}), 400

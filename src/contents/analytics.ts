@@ -64,7 +64,6 @@ type AnalyticsPayloads = {
   'checkout': undefined;
   'place-order': ShoppingItem[];
   'page-view': undefined;
-  'page-exit': {duration: number};
   'time-spent': {duration: number};
 }
 
@@ -79,22 +78,9 @@ function sendAnalytics<T extends keyof AnalyticsPayloads>(type: T, payload: Anal
   }
 
   // Send the analytics data to the server
-  console.log(process.env.PLASMO_PUBLIC_ANALYTICS_URL);
-  fetch(process.env.PLASMO_PUBLIC_ANALYTICS_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Prefer': 'return=minimal',
-      'apikey': process.env.PLASMO_PUBLIC_ANALYTICS_SECRET
-    },
-    body: JSON.stringify(data)
-  }).then(response => {
-    if(response.ok) {
-      console.log('Analytics sent');
-    } else {
-      console.error('Failed to send analytics');
-    }
-  }).catch(console.error);
+  console.log(`${data.type} - ${data.url} - ${data.payload}`);
+  const URL = process.env.PLASMO_PUBLIC_ANALYTICS_URL + '?apikey=' + process.env.PLASMO_PUBLIC_ANALYTICS_SECRET;
+  navigator.sendBeacon(URL,JSON.stringify(data));
 }
 
 type SessionID = {
@@ -130,30 +116,35 @@ function getUserId(): string {
 }
 
 
-function setupTimeMeasurement() {
-  const timeSpentWatch = new Stopwatch();
-  const totalTime = new Stopwatch();
-  timeSpentWatch.start();
-  totalTime.start();
 
+function setupTimeMeasurement() {
+  const stopWatch = new Stopwatch();
+  stopWatch.start();
+
+  // Is triggered by the browser when the tab is hidden or visible
   document.addEventListener("visibilitychange", () => {
+    console.log("Visibility changed");
     if (document.hidden) {
-      timeSpentWatch.stop();
-      totalTime.stop();
+      stopWatch.stop();
     } else {
-      timeSpentWatch.start();
-      totalTime.start();
+      stopWatch.start();
     }
   });
 
-  setInterval(() => {
-    if (document.hidden) return;
-    sendAnalytics('time-spent', {duration: timeSpentWatch.getTime()});
-    timeSpentWatch.start(true);
-  }, INTERVAL_LENGTH);
-
-  window.addEventListener("beforeunload", () => {
-    sendAnalytics('time-spent', {duration: timeSpentWatch.stop()});
-    /* sendAnalytics('page-exit', {duration: totalTime.stop()}); */
+  // If another application is opened on top of the browser, the focus changes
+  window.addEventListener("focus", () => {
+    stopWatch.start();
   });
+  window.addEventListener("blur", () => {
+    stopWatch.stop();
+  });
+
+  const sendTimeEvent = () => {
+    if (!stopWatch.isRunning()) return;
+    sendAnalytics('time-spent', {duration: stopWatch.getTime()});
+    stopWatch.start(true);
+  }
+
+  setInterval(sendTimeEvent, INTERVAL_LENGTH); // Every so often
+  window.addEventListener("beforeunload", sendTimeEvent); // When the tab is closed
 }
