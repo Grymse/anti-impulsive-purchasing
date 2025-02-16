@@ -335,7 +335,8 @@ getters.register("www.boozt.com", {
         return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
     },
     addToCartButtons: (e: HTMLElement) => {
-        return [];
+        const buttons = e.querySelectorAll<HTMLElement>('div[class="product-actions__add-to-cart"]');
+        return Array.from(buttons);
     },
 
     getCartItems: (e: HTMLElement) => {
