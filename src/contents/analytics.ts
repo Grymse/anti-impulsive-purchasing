@@ -4,6 +4,7 @@ import type { PlasmoCSConfig } from "plasmo";
 import { getters, type ShoppingItem } from "~lib/getters";
 import { observer } from "~lib/observer";
 import { Stopwatch } from "ts-stopwatch";
+import permit from "~lib/permit";
 
 export const config: PlasmoCSConfig = {
   matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://*.ebay.com/*", "https://www.matas.dk/*", "https://www.proshop.dk/*", "https://www.boozt.com/*"], // or specific URLs
@@ -12,7 +13,7 @@ export const config: PlasmoCSConfig = {
 
 const DOMAIN = document.location.hostname;
 const LOCAL_CART_STORAGE_KEY = DOMAIN + "-cart";
-const SESSION_LENGTH = 1000 * 60 * 15; // 30 minutes
+const SESSION_LENGTH = 1000 * 30; // 1000 * 60 * 15; // 30 minutes
 const INTERVAL_LENGTH = 1000 * 5; // 5 seconds
 
 function effect(signal: {signal: AbortSignal}) {
@@ -30,14 +31,19 @@ function effect(signal: {signal: AbortSignal}) {
 }
 
 function onPlaceOrderClick(e: Event) {
-  const items = localStorage.getItem(LOCAL_CART_STORAGE_KEY);
-  sendAnalytics('place-order', items ? JSON.parse(items) : []);
+  if (!permit.isValid()) return;
+
+  chrome.storage.local.get(LOCAL_CART_STORAGE_KEY, (data) => {
+    const items = data[LOCAL_CART_STORAGE_KEY];
+    sendAnalytics('place-order', items ? JSON.parse(items) : []);
+  });
 }
 
 function saveCurrentItems() {
   const items = getters.getDomainGetters().getCartItems(document.body);
   if(items.length === 0) return;
-  localStorage.setItem(LOCAL_CART_STORAGE_KEY, JSON.stringify(items));
+
+  chrome.storage.local.set({[LOCAL_CART_STORAGE_KEY]: JSON.stringify(items)});
 }
 
 function onAddToCartClick(e: Event) {
@@ -67,13 +73,13 @@ type AnalyticsPayloads = {
   'time-spent': {duration: number};
 }
 
-function sendAnalytics<T extends keyof AnalyticsPayloads>(type: T, payload: AnalyticsPayloads[T]) {
+async function sendAnalytics<T extends keyof AnalyticsPayloads>(type: T, payload: AnalyticsPayloads[T]) {
   const data: AnalyticsEvent = {
     type,
     url: window.location.hostname+window.location.pathname,
     payload: JSON.stringify(payload),
-    user_id: getUserId(),
-    session_id: getSessionId(),
+    user_id: await getUserId(),
+    session_id: await getSessionId(),
     created_at: new Date().toISOString(),
   }
 
@@ -88,30 +94,28 @@ type SessionID = {
   expires: number;
 }
 
-function getSessionId() {
-  const session = JSON.parse(localStorage.getItem('sessionid')) as SessionID | undefined;
+async function getSessionId(): Promise<string> {
+  const unparsedSession = (await chrome.storage.local.get('session'))?.["session"];
+  const session = JSON.parse(unparsedSession ?? "{}") as SessionID;
 
-  if(session && session.expires > Date.now()) {
-    session.expires = Date.now() + SESSION_LENGTH;
-    localStorage.setItem('sessionid', JSON.stringify(session));
-    return session.id;
+  // Create new ID if session is new or previous session has expired
+  if(session.id === undefined || session.expires < Date.now()) {
+    session.id = crypto.randomUUID();
   }
 
-  const newSession = {
-    id: crypto.randomUUID(),
-    expires: Date.now() + SESSION_LENGTH
-  }
-  localStorage.setItem('sessionid', JSON.stringify(newSession));
+  // Extend the session expiration time
+  session.expires = Date.now() + SESSION_LENGTH;
 
-  return newSession.id;
+  await chrome.storage.local.set({session: JSON.stringify(session)});
+  return session.id;
 }
 
-function getUserId(): string {
-  const id = localStorage.getItem('userid');
+async function getUserId(): Promise<string> {
+  const id = (await chrome.storage.local.get('userid'))?.["userid"];
   if(id) return id;
 
   const newId = crypto.randomUUID();
-  localStorage.setItem('userid', newId);
+  chrome.storage.local.set({userid: newId});
   return newId;
 }
 
@@ -123,12 +127,7 @@ function setupTimeMeasurement() {
 
   // Is triggered by the browser when the tab is hidden or visible
   document.addEventListener("visibilitychange", () => {
-    console.log("Visibility changed");
-    if (document.hidden) {
-      stopWatch.stop();
-    } else {
-      stopWatch.start();
-    }
+    document.hidden ? stopWatch.stop() : stopWatch.start();
   });
 
   // If another application is opened on top of the browser, the focus changes

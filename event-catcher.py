@@ -15,22 +15,29 @@ def add_csp_headers(response):
     response.headers["Content-Security-Policy"] = "default-src * data: blob: 'unsafe-inline' 'unsafe-eval'; connect-src *;"
     return response
 
-t = 1000
+t = 0
+users = set()
+sessions = set()
 
 @app.route('/endpoint', methods=['POST'])
 def endpoint():
     global t
+    global users
+    global sessions
     data =  request.data
     try:
         data = json.loads(data)
     except ValueError:
         return jsonify({"error": "Invalid JSON data received"}), 400
     t = t + 1
+    users.add(data['user_id'])
+    sessions.add(data['session_id'])
+
     if data:
         if "payload" in data:
-            print(f"{t} - {data['type']} - {data['url']} - {data['payload']}")
+            print(f"{t:04}:{len(users)}:{len(sessions)} - {data['type']} - {data['url']} - {data['payload']}")
         else:
-            print(f"{t} - {data['type']} - {data['url']}")
+            print(f"{t:04}:{len(users)}:{len(sessions)} - {data['type']} - {data['url']}")
         return jsonify({"message": "Keys printed to console"}), 200
     else:
         return jsonify({"error": "No JSON data received"}), 400
