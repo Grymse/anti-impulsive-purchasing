@@ -28,7 +28,7 @@ type AnalyticsPayloads = {
 }
 
 export async function sendAnalytics<T extends keyof AnalyticsPayloads>(type: T, payload: AnalyticsPayloads[T]) {
-  if (type !== 'remove-data' && !consent.value) return;
+  if (type !== 'remove-data' && type !== 'consent' && !consent.value) return;
 
   const data: AnalyticsEvent = {
     type,

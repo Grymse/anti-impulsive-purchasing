@@ -82,6 +82,8 @@ function updateVisuals() {
 }
 
 window.addEventListener("load", () =>{
-    if (!consent.value) return;
-    observer.addEffect(effect)
+    consent.onInit((hasConsent) => {
+      if (!hasConsent) return;
+      observer.addEffect(effect)
+  });
 });
