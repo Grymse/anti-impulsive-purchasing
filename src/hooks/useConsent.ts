@@ -3,7 +3,7 @@ import { consent, sendAnalytics } from "~lib/analytics"
 
 const reloadPage = async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-    if (tab?.id) {
+    if (!tab.url.includes("chrome-extension://") && tab?.id) {
       chrome.tabs.reload(tab.id)
     }
 }
