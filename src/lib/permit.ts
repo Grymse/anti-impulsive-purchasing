@@ -5,9 +5,9 @@ export type Permit = {
   end: number;
 }
 
-const PERMIT_LENGTH = 10_000 //1000 * 60 * 60 * 24 * 3; // 3 days
-const PERMIT_WAIT_TIME = 5_000 //1000 * 60 * 60 * 24 * 2; // 2 days
-const PERMIT_ON_PAY_GRACE = 1_000 * 60 * 10 // 1000 * 60 * 10; // 10 minutter
+const PERMIT_LENGTH = 1_000 * 60 * 60 * 24 * 2; //1000 * 60 * 60 * 24 * 3; // 2 days
+const PERMIT_WAIT_TIME = 1_000 * 60 * 60 * 24; //1000 * 60 * 60 * 24 * 1; // 1 days
+const PERMIT_ON_PAY_GRACE = 1_000 * 60 * 10; // 1000 * 60 * 10; // 10 minutter
 const DOMAIN = document.location.hostname;
 const LOCAL_STORAGE_KEY = DOMAIN + "-permit";
 const permit = new PersistentValue<Permit>(LOCAL_STORAGE_KEY);
@@ -15,7 +15,6 @@ const permit = new PersistentValue<Permit>(LOCAL_STORAGE_KEY);
 function get() : Permit | null {
     return permit.value;
 }
-
 
 function markAsUsed() {
     permit.value = {

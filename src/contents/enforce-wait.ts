@@ -59,7 +59,7 @@ function onCheckoutClick(e: Event) {
 function permitToWaitTime(permit: Permit) : string {
   // Calculate the remaining wait time in hours and minutes
   const now = Date.now();
-  const diff = permit.end - now;
+  const diff = permit.start - now;
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
   return `${hours}h ${minutes}m`;

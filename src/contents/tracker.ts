@@ -46,9 +46,7 @@ function onPlaceOrderClick(e: Event) {
 
 function saveCurrentItems() {
   const items = getters.getDomainGetters().getCartItems(document.body);
-  console.log("update items", items);
   if(items.length === 0) return;
-
 
   cart.value = items;
 }

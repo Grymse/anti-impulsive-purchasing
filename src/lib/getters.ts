@@ -118,6 +118,7 @@ getters.register('www.zalando.dk', {
 
     addToCartButtons: (e: HTMLElement) => {
         const checkOutBox = e.querySelector<HTMLElement>('div[data-testid="pdp-add-to-cart"]')
+        if (!checkOutBox) return [];
         const buttons = Array.from(checkOutBox.querySelectorAll('button')).filter(button => !button.hasAttribute('data-testid'));
         return Array.from(buttons);
     },
@@ -126,7 +127,7 @@ getters.register('www.zalando.dk', {
         const itemElements = e.querySelectorAll('article.cart-product-card');
         if (!itemElements) return [];
         const priceElements = Array.from(itemElements).map(i => i.querySelector('header section p').textContent);
-        const quantity = Array.from(itemElements).map(i => i.querySelector('select').value);
+        const quantity = Array.from(itemElements).map(i => i.querySelectorAll<HTMLOptionElement>('select')?.[1]?.value);
         let items = [];
         for (let i = 0; i < itemElements.length; i++) {
             items.push({
@@ -192,11 +193,12 @@ getters.register("pay.ebay.com", {
         return Array.from(buttons)
     },
     placeOrderButtons:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll('#gpay-button-online-api-id, div[data-test-id="PAYPAL_CTA_BUTTON"]')
+        const buttons = e.querySelectorAll('#gpay-button-online-api-id, div[data-test-id="PAYPAL_CTA_BUTTON"], button[data-test-id="CONFIRM_AND_PAY_BUTTON"]')
         return Array.from(buttons)
     },
     checkoutButtonLabels:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('#gpay-button-online-api-id, div[data-test-id="PAYPAL_CTA_BUTTON"]')
+        const buttons = e.querySelectorAll<HTMLElement>('#gpay-button-online-api-id, div[data-test-id="PAYPAL_CTA_BUTTON"], button[data-test-id="CONFIRM_AND_PAY_BUTTON"]')
+        buttons.forEach(e => {e.style.color = 'white'; e.style.fontSize="16px"; e.style.fontWeight="bold"; e.style.backgroundColor="blue"; e.style.padding="10px"; e.style.borderRadius="20px"; e.style.cursor="pointer";});
         return Array.from(buttons);
     },
     addToCartButtons: (e: HTMLElement) => {
@@ -204,18 +206,20 @@ getters.register("pay.ebay.com", {
     },
 
     getCartItems: (e: HTMLElement) => {
-        const priceElement = e.querySelectorAll<HTMLElement>('.line-item--listings .item-price');
-        const quantity = e.querySelectorAll<HTMLElement>('.line-item--listings .item-quantity');
-        let items = [];
+        const listings = e.querySelectorAll<HTMLElement>('.line-item--listings');
+        if (!listings) return [];
 
-        for (let i = 0; i < priceElement.length; i++) {
-            items.push({
-                quantity: parseInt(quantity[0].innerText.split(' ')[1]),
-                price: splitPriceCurrency(priceElement[i].innerText).price,
-                currency: splitPriceCurrency(priceElement[i].innerText).currency
-            });
-        }
-        return items;
+        return Array.from(listings).map(l => {
+            const price = l.querySelector<HTMLElement>('.item-price');
+            const quantity = l.querySelector<HTMLInputElement | HTMLSelectElement>('.item-quantity select, .item-quantity input');
+            if (!price || !quantity) return;
+            const q = parseInt(quantity.value);
+            return {
+                quantity: q,
+                price: (splitPriceCurrency(price.innerText).price) / q,
+                currency: splitPriceCurrency(price.innerText).currency
+            };
+        });
     }
 })
 
@@ -244,17 +248,32 @@ getters.register("www.ebay.com", {
 
 getters.register("www.matas.dk", {
     checkoutButtons:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll('button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh BasketPowerstepOpener__StyledButtonWithSpinner-sc-1s4iypb-1 BasketPowerstepOpener___StyledStyledButtonWithSpinner-sc-1s4iypb-2 VvhEn bFKtaQ"]')
-        return Array.from(buttons)
+        if(!location.href.includes('kurv')) return [];
+        
+        const buttons = Array.from(document.querySelectorAll<HTMLElement>('button[less-button="checkout"]'))
+        return buttons;
     },  
     placeOrderButtons:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll('button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh"]');
-        return Array.from(buttons)
+        if(!location.href.includes('oversigt')) return [];
+        
+        const x = Array.from(document.querySelectorAll<HTMLElement>('button[less-button="place-order"]'))
+        
+        return x;
     },
     checkoutButtonLabels:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll('button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh BasketPowerstepOpener__StyledButtonWithSpinner-sc-1s4iypb-1 BasketPowerstepOpener___StyledStyledButtonWithSpinner-sc-1s4iypb-2 VvhEn bFKtaQ"], button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh"]')
-        //@ts-expect-error
-        return Array.from(buttons.entries().map(([_, element]) => element.querySelector('div')));
+        if(!location.href.includes('kurv') && !location.href.includes('oversigt')) return [];
+
+        const checkoutButtons = Array.from(document.querySelectorAll<HTMLElement>('button div, button[less-button="checkout"]'))
+            .filter(e => e.textContent.includes('kassen') || e.hasAttribute('less-button'));
+
+        checkoutButtons.forEach(e => e.closest('button').setAttribute('less-button', 'checkout'));
+
+        const placeOrderButtons = Array.from(document.querySelectorAll<HTMLElement>('button div, button[less-button="place-order"]'))
+            .filter(e => e.textContent.includes('til betaling') || e.hasAttribute('less-button'));
+        
+        placeOrderButtons.forEach(e => e.closest('button').setAttribute('less-button', 'place-order'));
+
+        return [...checkoutButtons, ...placeOrderButtons];
     },
     addToCartButtons: (e: HTMLElement) => {
         const buttons = e.querySelectorAll<HTMLElement>('button[aria-label="Læg i kurv"], button[aria-label="Vælg variant"], button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh PDPProductActionRenderer__StyledProductActionRenderer-sc-1puad6u-0 pnAwd CombinedProductActions__StyledPDPProductActionRenderer-sc-uclf41-1 cEvPEY"]');
@@ -262,21 +281,17 @@ getters.register("www.matas.dk", {
     },
 
     getCartItems: (e: HTMLElement) => {
-        const quantities = e.querySelectorAll<HTMLElement>('span[class="Label__StyledLabel-sc-i714yy-0 iXTKQg DropdownButton__StyledLabel-sc-1d0135-2 dndGqN"]');
-        const cart = e.querySelector<HTMLElement>('div[class="Flex__FlexComponent-sc-c7jxj6-0 kvTLHt Flex-sc-c7jxj6-1 fUPuBf FlexColumn-sc-1izq7wk-0 BasketGroupRenderer__List-sc-wo8lx5-1 gRfXJO efGCwW"]');
-        if (!cart) return [];
-
-        const priceElement = cart.querySelectorAll<HTMLElement>('span[class="Text__TextElement-sc-1xtks91-0 hKtdFh Price__StyledText-sc-1wga4nl-0 VgnIT"]');
-        const filteredPriceElement = Array.from(priceElement).filter((_, index) => index % 2 === 0);
-        let items = [];
-        for (let i = 0; i < filteredPriceElement.length; i++) {
-            items.push({
-                quantity: parseInt(quantities[i].innerText),
-                price: parseFloat(filteredPriceElement[i].innerText),
+        const quantities = e.querySelectorAll<HTMLSelectElement>('select[name="quantity"]');
+        return Array.from(quantities).map(q => {
+            const box = q.parentElement.parentElement.parentElement.parentElement.parentElement;
+            const price = Array.from(box.querySelectorAll<HTMLElement>('div[direction="column"] span')).filter(i => i.innerText.includes('kr.'))[0];
+            
+            return {
+                quantity: parseInt(q.value),
+                price: splitPriceCurrency(price.innerText).price,
                 currency: "kr"
-            });
-        }
-        return items;
+            };
+        });
     }
 })
 
@@ -324,15 +339,17 @@ getters.register("www.boozt.com", {
         const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
         return Array.from(buttons)
     },  
+
     placeOrderButtons:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
+        const buttons = e.querySelectorAll('.checkout-order-confirmation__content button')
         return Array.from(buttons)
     },
+
     checkoutButtonLabels:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], button[class="palette-button palette-button--primary-boozt palette-button--medium palette-button--rectangle palette-button--expanded palette-button--horizontal-align-center shopcart-quick-checkout__button"]')
-        //@ts-expect-error
+        const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], button[class="palette-button palette-button--primary-boozt palette-button--medium palette-button--rectangle palette-button--expanded palette-button--horizontal-align-center shopcart-quick-checkout__button"], .checkout-order-confirmation__content button')
         return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
     },
+
     addToCartButtons: (e: HTMLElement) => {
         const buttons = e.querySelectorAll<HTMLElement>('div[class="product-actions__add-to-cart"]');
         return Array.from(buttons);
