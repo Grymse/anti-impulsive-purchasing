@@ -4,7 +4,7 @@ import IconSrc from "data-base64:~assets/icon.png"
 import "../style.css"
 
 import { useConsent } from "~hooks/useConsent"
-import { Button } from "~ui/button"
+import { Button } from "~components/ui/button"
 
 function OptionsPage() {
   let { isActive, toggleActive } = useConsent()

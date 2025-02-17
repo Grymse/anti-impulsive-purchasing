@@ -1,0 +1,1 @@
+This folder contains scripts that are useful for testing analytics
