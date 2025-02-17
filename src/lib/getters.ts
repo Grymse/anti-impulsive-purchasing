@@ -133,7 +133,7 @@ getters.register('www.zalando.dk', {
     },
 
     getCartItems: (e: HTMLElement) => {
-        return [];
+        
         const cart = e.querySelector<HTMLElement>('div[data-id="article-group"]');
         //Fanger kun første element i kurven.
         const priceFraction = cart.querySelectorAll<HTMLElement>('p[class="sDq_FX lystZ1 dgII7d HlZ_Tf"]');
@@ -141,16 +141,16 @@ getters.register('www.zalando.dk', {
         const priceWhole = e.querySelector<HTMLElement>('div[data-id="total-price"]');
         //Hacky måde.
         const priceSymbol = splitPriceCurrency(priceWhole.innerText).currency.split('moms')[1].split(',00')[1].trim();
-
         let items = [];
         for (let i = 0; i < priceSymbol.length; i++) {
             items.push({
                 //@ts-expect-error .value is a valid field.
                 quantity: parseInt(quantities[i].value),
-                price: parseFloat(priceWhole[i].innerText) + parseFloat(priceFraction[i].innerText) / 100,
+                price: parseFloat(priceFraction[i].innerText),
                 currency: priceSymbol
             });
         }     
+        return items;;
     }
 });
 
@@ -324,7 +324,7 @@ getters.register("www.boozt.com", {
         return Array.from(buttons)
     },
     checkoutButtonLabels:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
+        const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], button[class="palette-button palette-button--primary-boozt palette-button--medium palette-button--rectangle palette-button--expanded palette-button--horizontal-align-center shopcart-quick-checkout__button"]')
         //@ts-expect-error
         return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
     },
@@ -334,7 +334,21 @@ getters.register("www.boozt.com", {
     },
 
     getCartItems: (e: HTMLElement) => {
-        return [];
+        const cart = e.querySelector<HTMLElement>('div[class="shopcart-items"]');
+        const priceElement = cart.querySelectorAll<HTMLElement>('div[class="product-prices__price"] .typography--body2');
+        const quantity = cart.querySelectorAll<HTMLElement>('select[class="select__dropdown skip-generic-styling"]');
+
+        let items = [];
+        for (let i = 0; i < priceElement.length; i++) {
+            items.push({
+                //@ts-expect-error .value is a valid field.
+                quantity: parseInt(quantity[i].value),
+                price: parseFloat(priceElement[i].innerText),
+                currency: "kr"
+            });
+        }
+        console.log(items)
+        return items;
     }
 })
 
