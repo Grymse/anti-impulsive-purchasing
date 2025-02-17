@@ -128,29 +128,24 @@ getters.register('www.zalando.dk', {
     },
 
     addToCartButtons: (e: HTMLElement) => {
-        const buttons = e.querySelectorAll('button[class="_ZDS_REF_SCOPE_ vfoVrE DJxzzA u9KIT8 uEg2FS U_OhzR ZkIJC- Vn-7c- VWL_Ot _13ipK_ FCIprz heWLCX lXdmf0 LyRfpJ Md_Vex NN8L-8 EmWJce EvwuKo gcK-9K EKabf7 aX2-iv r9BRio pOsi7r mo6ZnF  Wy3rmK"]');
+        const checkOutBox = e.querySelector<HTMLElement>('div[data-testid="pdp-add-to-cart"]')
+        const buttons = Array.from(checkOutBox.querySelectorAll('button')).filter(button => !button.hasAttribute('data-testid'));
         return Array.from(buttons);
     },
 
     getCartItems: (e: HTMLElement) => {
-        
-        const cart = e.querySelector<HTMLElement>('div[data-id="article-group"]');
-        //Fanger kun første element i kurven.
-        const priceFraction = cart.querySelectorAll<HTMLElement>('p[class="sDq_FX lystZ1 dgII7d HlZ_Tf"]');
-        const quantities = cart.querySelectorAll<HTMLElement>('select[aria-label="quantity-selection"]')
-        const priceWhole = e.querySelector<HTMLElement>('div[data-id="total-price"]');
-        //Hacky måde.
-        const priceSymbol = splitPriceCurrency(priceWhole.innerText).currency.split('moms')[1].split(',00')[1].trim();
+        const itemElements = e.querySelectorAll('article.cart-product-card');
+        const priceElements = Array.from(itemElements).map(i => i.querySelector('header section p').textContent);
+        const quantity = Array.from(itemElements).map(i => i.querySelector('select').value);
         let items = [];
-        for (let i = 0; i < priceSymbol.length; i++) {
+        for (let i = 0; i < itemElements.length; i++) {
             items.push({
-                //@ts-expect-error .value is a valid field.
-                quantity: parseInt(quantities[i].value),
-                price: parseFloat(priceFraction[i].innerText),
-                currency: priceSymbol
+                quantity: parseInt(quantity[i]),
+                price: parseFloat(priceElements[i]),
+                currency: "kr"
             });
         }     
-        return items;;
+        return items;
     }
 });
 
