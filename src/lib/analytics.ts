@@ -4,10 +4,6 @@ import { PersistentValue } from "./utils";
 const SESSION_LENGTH = 1000 * 30; // 1000 * 60 * 15; // 30 minutes
 export const consent = new PersistentValue<boolean>('content');
 
-consent.onChange((value) => {
-    sendAnalytics('consent', {allow: value});
-});
-
 export function removeData() {
     sendAnalytics('remove-data', undefined);
 }
