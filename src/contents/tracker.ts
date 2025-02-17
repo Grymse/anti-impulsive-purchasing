@@ -23,6 +23,8 @@ function effect(signal: {signal: AbortSignal}) {
   const placeOrderButtons = getters.getDomainGetters().placeOrderButtons(document.body);
   const checkoutButtons = getters.getDomainGetters().checkoutButtons(document.body);
 
+  addToCartButtons.forEach(button => button.style.backgroundColor = 'red');
+
   checkoutButtons.forEach((button) => {
     button.addEventListener("click", onCheckoutClick);
   }, signal);

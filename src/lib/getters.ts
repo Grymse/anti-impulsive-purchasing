@@ -207,7 +207,6 @@ getters.register("pay.ebay.com", {
     },
     checkoutButtonLabels:(e: HTMLElement) => {
         const buttons = e.querySelectorAll<HTMLElement>('#gpay-button-online-api-id, div[data-test-id="PAYPAL_CTA_BUTTON"]')
-        buttons.forEach(button => button.style.backgroundColor = 'red');
         return Array.from(buttons);
     },
     addToCartButtons: (e: HTMLElement) => {
@@ -304,8 +303,7 @@ getters.register("www.proshop.dk", {
         return Array.from(buttons)
     },
     addToCartButtons: (e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[data-form-action="addToBasket"]');
-        buttons.forEach(button => button.style.backgroundColor = 'red');    
+        const buttons = e.querySelectorAll<HTMLElement>('button[data-form-action="addToBasket"]');   
         return Array.from(buttons);
     },
 
