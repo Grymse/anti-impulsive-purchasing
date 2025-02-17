@@ -23,8 +23,6 @@ function effect(signal: {signal: AbortSignal}) {
   const placeOrderButtons = getters.getDomainGetters().placeOrderButtons(document.body);
   const checkoutButtons = getters.getDomainGetters().checkoutButtons(document.body);
 
-  addToCartButtons.forEach(button => button.style.backgroundColor = 'red');
-
   checkoutButtons.forEach((button) => {
     button.addEventListener("click", onCheckoutClick);
   }, signal);
@@ -48,7 +46,9 @@ function onPlaceOrderClick(e: Event) {
 
 function saveCurrentItems() {
   const items = getters.getDomainGetters().getCartItems(document.body);
+  console.log("update items", items);
   if(items.length === 0) return;
+
 
   cart.value = items;
 }

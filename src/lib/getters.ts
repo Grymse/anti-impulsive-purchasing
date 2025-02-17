@@ -78,35 +78,24 @@ getters.register('www.amazon.com', {
     },
 
     addToCartButtons: (e: HTMLElement) => {
-      const buttons = e.querySelectorAll('#add-to-cart-button, [name="submit.addToCart"], .add-to-cart .a-button-input, input[data-asin], div[data-csa-c-action="addToCart"] button');
-      buttons.forEach(button => button.parentElement.style.backgroundColor = 'red');
+      const buttons = e.querySelectorAll('#add-to-cart-button, [name="submit.addToCart"], .add-to-cart .a-button-input, input[data-asin], div[data-csa-c-action="addToCart"] button, input[name="submit.gc-add-to-cart"], div.ucw-cards-product-atc button, div[data-testid="point-area"] div div div div div div div div div div div div div div button');
       return Array.from(buttons);
     },
 
     getCartItems: (e: HTMLElement) => {
-        const quantities = e.querySelectorAll<HTMLElement>('div[name="sc-quantity"] span[data-a-selector="value"]')
-        const priceSymbol = e.querySelectorAll<HTMLElement>('#sc-active-cart .a-price span.a-price-symbol');
-        const priceWhole = e.querySelectorAll<HTMLElement>('#sc-active-cart .a-price span.a-price-whole');
-        const priceFraction = e.querySelectorAll<HTMLElement>('#sc-active-cart .a-price span.a-price-fraction');
-        let items = [];
-        for (let i = 0; i < priceSymbol.length; i++) {
-            items.push({
-                quantity: parseInt(quantities[i].innerText),
-                price: parseFloat(priceWhole[i].innerText) + parseFloat(priceFraction[i].innerText) / 100,
-                currency: priceSymbol[i].innerText
-            });
-        }
-        
-        const rightSideList = e.querySelectorAll<HTMLElement>('.ewc-item');
-        if(rightSideList.length === 0) return items;
-        items = [];
-        rightSideList.forEach(item => {
-            const quantity = parseInt(item.querySelector<HTMLElement>('[data-a-selector="value"]').innerText);
-            const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>('.ewc-unit-price span').innerText);
-            items.push({ quantity, price, currency });
+        const cart = e.querySelector<HTMLElement>('.sc-list-body');
+        if (!cart) return [];
+        const itemsElements = cart.querySelectorAll<HTMLElement>('div[data-csa-c-type="item"]');
+        return Array.from(itemsElements).map((item) => {
+            const obj = JSON.parse(item.getAttribute('data-subtotal'));
+            const totalPrice = parseInt(obj["subtotal"]?.["value"]);
+            const quantity = parseInt(obj["quantity"]);
+            return {
+                quantity,
+                price: totalPrice / quantity,
+                currency: obj["subtotal"]?.["code"],
+            };
         });
-        
-        return items;
     }
 });
 
@@ -135,6 +124,7 @@ getters.register('www.zalando.dk', {
 
     getCartItems: (e: HTMLElement) => {
         const itemElements = e.querySelectorAll('article.cart-product-card');
+        if (!itemElements) return [];
         const priceElements = Array.from(itemElements).map(i => i.querySelector('header section p').textContent);
         const quantity = Array.from(itemElements).map(i => i.querySelector('select').value);
         let items = [];
@@ -149,7 +139,7 @@ getters.register('www.zalando.dk', {
     }
 });
 
-getters.register("www.walmart.com", {
+/* getters.register("www.walmart.com", {
     checkoutButtons: (e: HTMLElement) => {
         const buttons = e.querySelectorAll('button[id="Continue to checkout button"]')
         return Array.from(buttons)
@@ -172,7 +162,7 @@ getters.register("www.walmart.com", {
     getCartItems: (e: HTMLElement) => {
         return [];
     }
-  })
+  }) */
 
 getters.register("cart.ebay.com", {
     checkoutButtons:(e: HTMLElement) => {
@@ -274,12 +264,13 @@ getters.register("www.matas.dk", {
     getCartItems: (e: HTMLElement) => {
         const quantities = e.querySelectorAll<HTMLElement>('span[class="Label__StyledLabel-sc-i714yy-0 iXTKQg DropdownButton__StyledLabel-sc-1d0135-2 dndGqN"]');
         const cart = e.querySelector<HTMLElement>('div[class="Flex__FlexComponent-sc-c7jxj6-0 kvTLHt Flex-sc-c7jxj6-1 fUPuBf FlexColumn-sc-1izq7wk-0 BasketGroupRenderer__List-sc-wo8lx5-1 gRfXJO efGCwW"]');
+        if (!cart) return [];
+
         const priceElement = cart.querySelectorAll<HTMLElement>('span[class="Text__TextElement-sc-1xtks91-0 hKtdFh Price__StyledText-sc-1wga4nl-0 VgnIT"]');
         const filteredPriceElement = Array.from(priceElement).filter((_, index) => index % 2 === 0);
         let items = [];
         for (let i = 0; i < filteredPriceElement.length; i++) {
             items.push({
-
                 quantity: parseInt(quantities[i].innerText),
                 price: parseFloat(filteredPriceElement[i].innerText),
                 currency: "kr"
@@ -311,6 +302,7 @@ getters.register("www.proshop.dk", {
         const quantities = e.querySelectorAll<HTMLElement>('input[name="quantity"]');
         const priceFraction = e.querySelectorAll<HTMLElement>('b[data-bind="autoNumeric: linePriceWithVat"]');
         const priceWhole = e.querySelectorAll<HTMLElement>('strong[data-bind="autoNumeric: BasketContent().totalWithVat"]');
+        if (!priceWhole || !priceWhole[0]) return [];
         const priceSymbol = splitPriceCurrency(priceWhole[0].textContent).currency;
 
         let items = [];
@@ -348,6 +340,7 @@ getters.register("www.boozt.com", {
 
     getCartItems: (e: HTMLElement) => {
         const cart = e.querySelector<HTMLElement>('div[class="shopcart-items"]');
+        if (!cart) return [];
         const priceElement = cart.querySelectorAll<HTMLElement>('div[class="product-prices__price"] .typography--body2');
         const quantity = cart.querySelectorAll<HTMLElement>('select[class="select__dropdown skip-generic-styling"]');
 
@@ -360,7 +353,6 @@ getters.register("www.boozt.com", {
                 currency: "kr"
             });
         }
-        console.log(items)
         return items;
     }
 })
