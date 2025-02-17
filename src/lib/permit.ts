@@ -6,7 +6,8 @@ export type Permit = {
 
 
 const PERMIT_LENGTH = 10_000 //1000 * 60 * 60 * 24 * 3; // 3 days
-const PERMIT_WAIT_TIME = 5000 //1000 * 60 * 60 * 24 * 2; // 2 days
+const PERMIT_WAIT_TIME = 5_000 //1000 * 60 * 60 * 24 * 2; // 2 days
+const PERMIT_ON_PAY_GRACE = 1_000 * 60 * 10 // 1000 * 60 * 10; // 10 minutter
 const DOMAIN = document.location.hostname;
 const LOCAL_STORAGE_KEY = DOMAIN + "-permit";
 let permit : Permit | null = null;
@@ -22,9 +23,13 @@ function get() : Permit | null {
 }
 
 
-function clear() {
-    permit = null;
-    chrome.storage.local.remove(LOCAL_STORAGE_KEY);
+function markAsUsed() {
+    permit = {
+        start: permit.start,
+        end: Date.now() + PERMIT_ON_PAY_GRACE
+    }
+    
+    chrome.storage.local.set({[LOCAL_STORAGE_KEY]: permit});
 }
 
   
@@ -35,9 +40,9 @@ function createIfNone() {
     permit = {
         start: Date.now() + PERMIT_WAIT_TIME,
         end: Date.now() + PERMIT_LENGTH + PERMIT_WAIT_TIME
-      }
+    }
     
-      chrome.storage.local.set({[LOCAL_STORAGE_KEY]: permit});
+    chrome.storage.local.set({[LOCAL_STORAGE_KEY]: permit});
 }
   
 function isValid() : boolean {
@@ -53,7 +58,7 @@ function isValid() : boolean {
 export default {
     init,
     get,
-    clear,
+    markAsUsed,
     createIfNone,
     isValid,
 };

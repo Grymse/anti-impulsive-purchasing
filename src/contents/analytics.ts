@@ -19,6 +19,12 @@ const INTERVAL_LENGTH = 1000 * 5; // 5 seconds
 function effect(signal: {signal: AbortSignal}) {
   const addToCartButtons = getters.getDomainGetters().addToCartButtons(document.body);
   const placeOrderButtons = getters.getDomainGetters().placeOrderButtons(document.body);
+  const checkoutButtons = getters.getDomainGetters().checkoutButtons(document.body);
+
+  checkoutButtons.forEach((button) => {
+    button.addEventListener("click", onCheckoutClick);
+  }, signal);
+
   addToCartButtons.forEach((button) => {
     button.addEventListener("click", onAddToCartClick);
   }, signal);
@@ -44,6 +50,11 @@ function saveCurrentItems() {
   if(items.length === 0) return;
 
   chrome.storage.local.set({[LOCAL_CART_STORAGE_KEY]: JSON.stringify(items)});
+}
+
+function onCheckoutClick(e: Event) {
+  if (!permit.isValid()) return;
+  sendAnalytics('checkout', undefined);
 }
 
 function onAddToCartClick(e: Event) {

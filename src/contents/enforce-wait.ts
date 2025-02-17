@@ -40,7 +40,7 @@ function onPlaceOrderClick(e: Event)  {
   }
 
   // Clear the permit if it is valid
-  permit.clear();
+  permit.markAsUsed();
 }
 
 
