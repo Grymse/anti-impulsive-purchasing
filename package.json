@@ -1,7 +1,7 @@
 {
   "name": "less",
   "displayName": "Less",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Help avoid impulsive purchasing online",
   "author": "Less Group <lessextensiondev@gmail.com>",
   "scripts": {
