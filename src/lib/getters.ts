@@ -266,12 +266,20 @@ getters.register("www.matas.dk", {
     },
 
     getCartItems: (e: HTMLElement) => {
-        return [];
         const quantities = e.querySelectorAll<HTMLElement>('span[class="Label__StyledLabel-sc-i714yy-0 iXTKQg DropdownButton__StyledLabel-sc-1d0135-2 dndGqN"]');
-        const cart = e.querySelector<HTMLElement>('div.Flex__FlexComponent-sc-c7jxj6-0 kvTLHt Flex-sc-c7jxj6-1 fUPuBf FlexColumn-sc-1izq7wk-0 BasketGroupRenderer__List-sc-wo8lx5-1 gRfXJO efGCwW');
-        const priceSymbol = cart.querySelectorAll<HTMLElement>('span[class="Text__TextElement-sc-1xtks91-0 hKtdFh Price__StyledText-sc-1wga4nl-0 VgnIT"]');
-        const priceWhole = e.querySelectorAll<HTMLElement>('#sc-active-cart .a-price span.a-price-whole');
-        const priceFraction = e.querySelectorAll<HTMLElement>('#sc-active-cart .a-price span.a-price-fraction');
+        const cart = e.querySelector<HTMLElement>('div[class="Flex__FlexComponent-sc-c7jxj6-0 kvTLHt Flex-sc-c7jxj6-1 fUPuBf FlexColumn-sc-1izq7wk-0 BasketGroupRenderer__List-sc-wo8lx5-1 gRfXJO efGCwW"]');
+        const priceElement = cart.querySelectorAll<HTMLElement>('span[class="Text__TextElement-sc-1xtks91-0 hKtdFh Price__StyledText-sc-1wga4nl-0 VgnIT"]');
+        const filteredPriceElement = Array.from(priceElement).filter((_, index) => index % 2 === 0);
+        let items = [];
+        for (let i = 0; i < filteredPriceElement.length; i++) {
+            items.push({
+                //@ts-expect-error .value is a valid field.
+                quantity: parseInt(quantities[i].innerText),
+                price: parseFloat(filteredPriceElement[i].innerText),
+                currency: "kr"
+            });
+        }
+        return items;
     }
 })
 
