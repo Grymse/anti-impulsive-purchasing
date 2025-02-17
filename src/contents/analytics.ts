@@ -5,7 +5,7 @@ import { getters, type ShoppingItem } from "~lib/getters";
 import { observer } from "~lib/observer";
 
 export const config: PlasmoCSConfig = {
-  matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://www.ebay.com/*", "https://www.matas.dk/*", "https://www.proshop.dk/*", "https://www.boozt.com/*"], // or specific URLs
+  matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://www.ebay.com/*", "https://www.matas.dk/*", "https://www.proshop.dk/*", "https://www.boozt.com/*", "https://pay.ebay.com/*" ], // or specific URLs
   all_frames: true,
 }
 

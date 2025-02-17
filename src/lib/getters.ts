@@ -220,7 +220,18 @@ getters.register("pay.ebay.com", {
     },
 
     getCartItems: (e: HTMLElement) => {
-        return [];
+        const priceElement = e.querySelectorAll<HTMLElement>('.line-item--listings .item-price');
+        const quantity = e.querySelectorAll<HTMLElement>('.line-item--listings .item-quantity');
+        let items = [];
+
+        for (let i = 0; i < priceElement.length; i++) {
+            items.push({
+                quantity: parseInt(quantity[0].innerText.split(' ')[1]),
+                price: splitPriceCurrency(priceElement[i].innerText).price,
+                currency: splitPriceCurrency(priceElement[i].innerText).currency
+            });
+        }
+        return items;
     }
 })
 
@@ -238,7 +249,9 @@ getters.register("www.ebay.com", {
         return Array.from(buttons);
     },
     addToCartButtons: (e: HTMLElement) => {
-        return [];
+        const buttons = e.querySelectorAll<HTMLElement>('div.x-atc-action.overlay-placeholder.atcv3modalloading');
+        buttons.forEach(button => button.style.backgroundColor = 'red');
+        return Array.from(buttons);
     },
 
     getCartItems: (e: HTMLElement) => {
@@ -273,7 +286,7 @@ getters.register("www.matas.dk", {
         let items = [];
         for (let i = 0; i < filteredPriceElement.length; i++) {
             items.push({
-                //@ts-expect-error .value is a valid field.
+
                 quantity: parseInt(quantities[i].innerText),
                 price: parseFloat(filteredPriceElement[i].innerText),
                 currency: "kr"
