@@ -1,9 +1,9 @@
 {
-  "name": "anti",
-  "displayName": "Anti",
+  "name": "less",
+  "displayName": "Less",
   "version": "0.0.1",
   "description": "Help avoid impulsive purchasing online",
-  "author": "Plasmo Corp. <foss@plasmo.com>",
+  "author": "Less Group <lessextensiondev@gmail.com>",
   "scripts": {
     "dev": "plasmo dev",
     "build": "plasmo build",
@@ -38,9 +38,7 @@
     "typescript": "5.3.3"
   },
   "manifest": {
-    "host_permissions": [
-      "https://*/*"
-    ],
+    "host_permissions": ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://*.ebay.com/*", "https://www.matas.dk/*", "https://www.proshop.dk/*", "https://www.boozt.com/*"],
     "permissions": [
       "storage",
       "tabs",

@@ -5,7 +5,7 @@ import { observer } from "~lib/observer";
 import permit, { type Permit } from "~lib/permit";
 
 export const config: PlasmoCSConfig = {
-    matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://*.ebay.com/*", "https://www.matas.dk/*", "https://www.proshop.dk/*", "https://www.boozt.com/*"], // or specific URLs
+    matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://*.ebay.com/*", "https://www.matas.dk/*", "https://www.proshop.dk/*", "https://www.boozt.com/*"], // or specific URLs
     all_frames: true,
 }
 
