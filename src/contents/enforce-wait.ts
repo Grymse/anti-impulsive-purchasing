@@ -1,4 +1,5 @@
 import type { PlasmoCSConfig } from "plasmo";
+import { consent } from "~lib/analytics";
 import { getters as getterRegistry } from "~lib/getters";
 import { observer } from "~lib/observer";
 import permit, { type Permit } from "~lib/permit";
@@ -13,8 +14,7 @@ const getters = getterRegistry.getDomainGetters();
 let currentTarget = document.body;
 
 function effect(signal: {signal: AbortSignal}) {
-  // Load the existing permit from storage
-  permit.init().then(updateVisuals);
+  updateVisuals();
 
   // Add event listeners to the checkout buttons
   getters.checkoutButtons(currentTarget).forEach((button) => {
@@ -65,7 +65,6 @@ function permitToWaitTime(permit: Permit) : string {
   return `${hours}h ${minutes}m`;
 }
 
-
 function injectVisuals(e: HTMLElement) {
   const currentPermit = permit.get();
 
@@ -83,5 +82,6 @@ function updateVisuals() {
 }
 
 window.addEventListener("load", () =>{
+    if (!consent.value) return;
     observer.addEffect(effect)
 });

@@ -5,6 +5,8 @@ import { getters, type ShoppingItem } from "~lib/getters";
 import { observer } from "~lib/observer";
 import { Stopwatch } from "ts-stopwatch";
 import permit from "~lib/permit";
+import { consent, sendAnalytics } from "~lib/analytics";
+import { PersistentValue } from "~lib/utils";
 
 export const config: PlasmoCSConfig = {
   matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://*.ebay.com/*", "https://www.matas.dk/*", "https://www.proshop.dk/*", "https://www.boozt.com/*"], // or specific URLs
@@ -13,8 +15,8 @@ export const config: PlasmoCSConfig = {
 
 const DOMAIN = document.location.hostname;
 const LOCAL_CART_STORAGE_KEY = DOMAIN + "-cart";
-const SESSION_LENGTH = 1000 * 30; // 1000 * 60 * 15; // 30 minutes
 const INTERVAL_LENGTH = 1000 * 5; // 5 seconds
+const cart = new PersistentValue<ShoppingItem[]>(LOCAL_CART_STORAGE_KEY);
 
 function effect(signal: {signal: AbortSignal}) {
   const addToCartButtons = getters.getDomainGetters().addToCartButtons(document.body);
@@ -39,17 +41,14 @@ function effect(signal: {signal: AbortSignal}) {
 function onPlaceOrderClick(e: Event) {
   if (!permit.isValid()) return;
 
-  chrome.storage.local.get(LOCAL_CART_STORAGE_KEY, (data) => {
-    const items = data[LOCAL_CART_STORAGE_KEY];
-    sendAnalytics('place-order', items ? JSON.parse(items) : []);
-  });
+  sendAnalytics('place-order', cart.value ?? []);
 }
 
 function saveCurrentItems() {
   const items = getters.getDomainGetters().getCartItems(document.body);
   if(items.length === 0) return;
 
-  chrome.storage.local.set({[LOCAL_CART_STORAGE_KEY]: JSON.stringify(items)});
+  cart.value = items;
 }
 
 function onCheckoutClick(e: Event) {
@@ -60,77 +59,6 @@ function onCheckoutClick(e: Event) {
 function onAddToCartClick(e: Event) {
   sendAnalytics('add-to-cart', undefined);
 }
-
-window.addEventListener("load", () => {
-    setupTimeMeasurement();
-    observer.addEffect(effect)
-    sendAnalytics('page-view', undefined);
-});
-
-type AnalyticsEvent = {
-  type: keyof AnalyticsPayloads;
-  url: string;
-  payload: string;
-  user_id: string;
-  session_id: string;
-  created_at: string;
-}
-
-type AnalyticsPayloads = {
-  'add-to-cart': undefined;
-  'checkout': undefined;
-  'place-order': ShoppingItem[];
-  'page-view': undefined;
-  'time-spent': {duration: number};
-}
-
-async function sendAnalytics<T extends keyof AnalyticsPayloads>(type: T, payload: AnalyticsPayloads[T]) {
-  const data: AnalyticsEvent = {
-    type,
-    url: window.location.hostname+window.location.pathname,
-    payload: JSON.stringify(payload),
-    user_id: await getUserId(),
-    session_id: await getSessionId(),
-    created_at: new Date().toISOString(),
-  }
-
-  // Send the analytics data to the server
-  console.log(`${data.type} - ${data.url} - ${data.payload}`);
-  const URL = process.env.PLASMO_PUBLIC_ANALYTICS_URL + '?apikey=' + process.env.PLASMO_PUBLIC_ANALYTICS_SECRET;
-  navigator.sendBeacon(URL,JSON.stringify(data));
-}
-
-type SessionID = {
-  id: string;
-  expires: number;
-}
-
-async function getSessionId(): Promise<string> {
-  const unparsedSession = (await chrome.storage.local.get('session'))?.["session"];
-  const session = JSON.parse(unparsedSession ?? "{}") as SessionID;
-
-  // Create new ID if session is new or previous session has expired
-  if(session.id === undefined || session.expires < Date.now()) {
-    session.id = crypto.randomUUID();
-  }
-
-  // Extend the session expiration time
-  session.expires = Date.now() + SESSION_LENGTH;
-
-  await chrome.storage.local.set({session: JSON.stringify(session)});
-  return session.id;
-}
-
-async function getUserId(): Promise<string> {
-  const id = (await chrome.storage.local.get('userid'))?.["userid"];
-  if(id) return id;
-
-  const newId = crypto.randomUUID();
-  chrome.storage.local.set({userid: newId});
-  return newId;
-}
-
-
 
 function setupTimeMeasurement() {
   const stopWatch = new Stopwatch();
@@ -158,3 +86,14 @@ function setupTimeMeasurement() {
   setInterval(sendTimeEvent, INTERVAL_LENGTH); // Every so often
   window.addEventListener("beforeunload", sendTimeEvent); // When the tab is closed
 }
+
+consent.onChange((value) => {
+  console.log("CHANGED FOR TRACKER", value);
+});
+
+window.addEventListener("load", () => {
+  if (!consent.value) return;
+  setupTimeMeasurement();
+  observer.addEffect(effect)
+  sendAnalytics('page-view', undefined);
+});

@@ -229,7 +229,6 @@ getters.register("www.ebay.com", {
     }
 })
 
-    //TODO - Reactive components, create mutation observer
 getters.register("www.matas.dk", {
     checkoutButtons:(e: HTMLElement) => {
         const buttons = e.querySelectorAll('button[class="Button__StyledButton-sc-1hw8wt-0 AmFIh BasketPowerstepOpener__StyledButtonWithSpinner-sc-1s4iypb-1 BasketPowerstepOpener___StyledStyledButtonWithSpinner-sc-1s4iypb-2 VvhEn bFKtaQ"]')

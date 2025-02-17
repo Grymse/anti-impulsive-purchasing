@@ -10,11 +10,18 @@
     "package": "plasmo package"
   },
   "dependencies": {
+    "@plasmohq/messaging": "^0.7.1",
+    "@radix-ui/react-slot": "^1.1.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "lodash.debounce": "^4.0.8",
+    "lucide-react": "^0.475.0",
     "plasmo": "0.89.4",
     "psl": "^1.15.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "tailwind-merge": "^3.0.1",
+    "tailwindcss-animate": "^1.0.7",
     "ts-stopwatch": "^0.0.4"
   },
   "devDependencies": {
@@ -23,7 +30,10 @@
     "@types/node": "20.11.5",
     "@types/react": "18.2.48",
     "@types/react-dom": "18.2.18",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.2",
     "prettier": "3.2.4",
+    "tailwindcss": "^3.4.17",
     "typescript": "5.3.3"
   },
   "manifest": {

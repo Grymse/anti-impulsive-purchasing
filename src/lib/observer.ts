@@ -1,13 +1,16 @@
-import { get } from 'http';
 import { debounce } from 'lodash';
-
-type F = (e: HTMLElement) => void;
-
-let fs: F[] = [];
+import { consent } from './analytics';
 
 const BOUNCE_TIME = 100;
 
+type F = () => void;
+type SignalEffect = ((signal: {signal: AbortSignal}) => ((() => void) | void));
+export type Effect = SignalEffect | (() => (void | (() => void)));
+
+let fs: F[] = [];
 let prevMutations = [] as Node[];
+
+
 function createObserver(f: F) {
     const observer = new MutationObserver((mutations) => {
         let hasChanged = false;
@@ -19,26 +22,22 @@ function createObserver(f: F) {
         if (!hasChanged) return;
         
         prevMutations = mutations.map(m => m.target);
-        f(document.body);
+
+        f();
     });
     
     observer.observe(document.body, {
         childList: true,
         subtree: true
     });
-    f(document.body);
+    f();
     
 }
 
-createObserver(debounce((e) => {
-    for(const f of fs) f(e);
+createObserver(debounce(() => {
+    for(const f of fs) f();
 },BOUNCE_TIME, {trailing: true}));
 
-/**
- * Effect type
- */
-type SignalEffect = ((signal: {signal: AbortSignal}) => ((() => void) | void));
-export type Effect = SignalEffect | (() => (void | (() => void)));
 /**
  * Creates an effect that runs the given function and cleans up after itself.
  * Inspired by React's useEffect.
@@ -51,6 +50,7 @@ export function withCleanUp(f: Effect) {
     return () => {
         if (abortController) abortController.abort();
         if (cleanUp) cleanUp();
+        if (!consent.value) return;
         abortController = new AbortController();
         cleanUp = f({signal: abortController.signal});
     };
@@ -60,17 +60,17 @@ export function withCleanUp(f: Effect) {
  * Observer object
  */
 
-
 export const observer = {
     add: (f: F)  => {
         fs.push(f);
     },
+
     addEffect: (f: Effect) => {
         observer.add(withCleanUp(f));
     },
+
     remove: (f: F) => {
         const index = fs.indexOf(f);
         if(index !== -1) fs.splice(index,1);
     },
-    clear: (e: HTMLElement) =>{fs = []},
 }
