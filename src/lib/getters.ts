@@ -250,7 +250,6 @@ getters.register("www.ebay.com", {
     },
     addToCartButtons: (e: HTMLElement) => {
         const buttons = e.querySelectorAll<HTMLElement>('div.x-atc-action.overlay-placeholder.atcv3modalloading');
-        buttons.forEach(button => button.style.backgroundColor = 'red');
         return Array.from(buttons);
     },
 
