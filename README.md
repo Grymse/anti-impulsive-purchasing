@@ -4,7 +4,7 @@
 
 ## Description
 
-Welcome to Less, a browser extension designed to help reduce impulsive online purchases. Our global consumption levels have grown to an unsustainable scale, posing a serious threat to the planet’s environment. By encouraging mindful purchasing decisions, Less aims to promote a more eco-friendly lifestyle, help you save money, and offer the mental benefits of decluttering.
+Welcome to *Less*, a browser extension designed to help reduce impulsive online purchases. Our global consumption levels have grown to an unsustainable scale, posing a serious threat to the planet’s environment. By encouraging mindful purchasing decisions, *Less* aims to promote a more eco-friendly lifestyle, help you save money, and offer the mental benefits of decluttering.
 
 Developed as part of a thesis on reducing online impulsive buying behaviors, this tool is meant to support both your financial well-being and the environment.
 
@@ -21,13 +21,14 @@ Developed as part of a thesis on reducing online impulsive buying behaviors, thi
 
 ### Analytics
 
-The extension collects data on which pages users visit, how long users are on each site, 'add-to-cart' clicks, 'checkout' clicks and 'pay' clicks. When a user pay, the current cart is sent along as well (Price & quantity but no product ID). All of these analytics will inform our research, such that we can measure the effectiveness of different consumption reduction features/strategies, which we intend to implement over time.
+The extension collects data on which pages users visit, how long users are on each site, 'add-to-cart' clicks, 'checkout' clicks and 'pay' clicks. When a user pay, the current cart is sent along as well (Specifically each items price & quantity but no information on the product itself). All of these analytics will inform our research, such that we can measure the effectiveness of different consumption reduction features/strategies, which we intend to implement over time.
 
-With regards to data-handling, we specifically:
+With regards to data-handling, we guarantee:
 - No identifying information is ever tied to the data.
 - All data is aggregated before any use.
 - Data is not sold or shared with third parties.
 
+Analytics are opt-in. Only if the user activates the plugins features, does the analytics start.
 
 ## Development
 

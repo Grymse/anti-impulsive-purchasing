@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { consent, sendAnalytics } from "~lib/analytics"
 
 const reloadPage = async () => {
@@ -8,14 +8,20 @@ const reloadPage = async () => {
     }
 }
 
+
+
 export const useConsent = () => {
     const [isActive, setActive] = useState(consent.value)
+
+    useEffect(() => {
+        consent.onChange(reloadPage);
+        return () => consent.removeOnChange(reloadPage);
+    }, []);
 
     function toggleActive() {
         const newIsActive = !isActive;
         setActive(newIsActive);
         sendAnalytics('consent', {allow: newIsActive})
-        consent.onChange(() => reloadPage());
         consent.value = newIsActive
     }
 
