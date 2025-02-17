@@ -1,4 +1,3 @@
-import { ScrollArea } from "@/components/ui/scroll-area"
 import IconOffSrc from "data-base64:~assets/icon-off.png"
 import IconSrc from "data-base64:~assets/icon.png"
 
@@ -107,15 +106,23 @@ function OptionsPage() {
       </div>
       {/* Third Text Block */}
       <br />
-      <ScrollArea className="max-h-[400px] border rounded p-4 bg-white dark:bg-gray-900">
+      <div
+        className="
+        text-center
+        w-full max-w-md p-4 rounded-md
+        bg-white text-black
+        dark:bg-gray-800 dark:text-white
+      ">
+        {/* Terms of Service Title */}
         <div className="mb-4">
-          <h1 className="text-xl font-semibold">Terms of Service</h1>
-          <p>A description of the terms of service</p>
+          <h1 className="text-xl font-semibold mb-1">Terms of Service</h1>
+          <p className="text-sm">A description of the terms of service</p>
         </div>
 
+        {/* Introduction */}
         <div className="mb-4">
           <h2 className="font-semibold">Introduction</h2>
-          <p className="mt-2">
+          <p className="mt-2 text-sm">
             Welcome to Less, a browser extension developed as part of a thesis
             on reducing impulse purchasing habits. This extension aims to gather
             insights into user behavior and help develop strategies to minimize
@@ -124,18 +131,20 @@ function OptionsPage() {
           </p>
         </div>
 
+        {/* Eligibility */}
         <div className="mb-4">
           <h2 className="font-semibold">Eligibility</h2>
-          <p className="mt-2">
+          <p className="mt-2 text-sm">
             Use of this extension is intended for individuals aged 18 and older
             who are interested in contributing to research on mitigating impulse
             purchasing behaviors.
           </p>
         </div>
 
+        {/* Voluntary Participation */}
         <div className="mb-4">
           <h2 className="font-semibold">Voluntary Participation</h2>
-          <p className="mt-2">
+          <p className="mt-2 text-sm">
             Your use of this extension is entirely voluntary. You may
             discontinue use at any time without any consequences or obligations.
             There is no requirement to continue using the extension once
@@ -143,9 +152,10 @@ function OptionsPage() {
           </p>
         </div>
 
+        {/* Data Collection and Usage */}
         <div className="mb-4">
           <h2 className="font-semibold">Data Collection and Usage</h2>
-          <p className="mt-2">
+          <p className="mt-2 text-sm">
             The data collected may include, but is not limited to, information
             about your browsing activity and information on purchases. All
             collected data will be anonymized and used solely for academic
@@ -155,9 +165,10 @@ function OptionsPage() {
           </p>
         </div>
 
+        {/* Confidentiality and Privacy */}
         <div className="mb-4">
           <h2 className="font-semibold">Confidentiality and Privacy</h2>
-          <p className="mt-2">
+          <p className="mt-2 text-sm">
             Your privacy is paramount. Any personal data is processed and stored
             securely, in accordance with applicable privacy regulations (e.g.,
             GDPR, CCPA). Identifiable data, if collected, will not be shared
@@ -167,18 +178,20 @@ function OptionsPage() {
           </p>
         </div>
 
+        {/* Data Security */}
         <div className="mb-4">
           <h2 className="font-semibold">Data Security</h2>
-          <p className="mt-2">
+          <p className="mt-2 text-sm">
             All collected data is stored securely using Google’s Firestore
             database service. Reasonable measures are in place to prevent
             unauthorized access, loss, or disclosure.
           </p>
         </div>
 
+        {/* Liability Disclaimer */}
         <div className="mb-4">
           <h2 className="font-semibold">Liability Disclaimer</h2>
-          <p className="mt-2">
+          <p className="mt-2 text-sm">
             Although efforts are made to secure your data, Nicolai Grymer and
             IT-University of Copenhagen are not liable for any unauthorized
             access or unforeseen data breaches that may occur despite best
@@ -186,9 +199,10 @@ function OptionsPage() {
           </p>
         </div>
 
+        {/* Right to Withdraw and Data Removal */}
         <div className="mb-4">
           <h2 className="font-semibold">Right to Withdraw and Data Removal</h2>
-          <p className="mt-2">
+          <p className="mt-2 text-sm">
             If, after providing data through the extension, you wish to withdraw
             your anonymized data from the study, you must make a request within
             30 days of your usage. After this period, data may be aggregated and
@@ -198,24 +212,35 @@ function OptionsPage() {
           </p>
         </div>
 
+        {/* Contact Information */}
         <div className="mb-4">
           <h2 className="font-semibold">Contact Information</h2>
-          <p className="mt-2">
+          <p className="mt-2 text-sm">
             For any questions or concerns regarding this extension, your
             participation, or the data collected, please contact:
           </p>
-          <ul className="list-disc list-inside mt-2">
+          <ul className="list-disc list-inside mt-2 text-sm">
             <li>
               Nicolai Grymer:{" "}
-              <a href="mailto:pronicoxd@gmail.com">pronicoxd@gmail.com</a> or{" "}
-              <a href="mailto:ngry@itu.dk">ngry@itu.dk</a>
+              <a
+                href="mailto:pronicoxd@gmail.com"
+                className="text-blue-600 dark:text-blue-400 underline">
+                pronicoxd@gmail.com
+              </a>{" "}
+              or{" "}
+              <a
+                href="mailto:ngry@itu.dk"
+                className="text-blue-600 dark:text-blue-400 underline">
+                ngry@itu.dk
+              </a>
             </li>
           </ul>
         </div>
 
+        {/* Consent */}
         <div className="mb-4">
           <h2 className="font-semibold">Consent</h2>
-          <p className="mt-2">
+          <p className="mt-2 text-sm">
             By installing and using this extension, you confirm that you have
             read, understood, and agree to these Terms of Service. Your
             continued usage constitutes your consent to be part of the research
@@ -223,13 +248,16 @@ function OptionsPage() {
           </p>
         </div>
 
+        {/* Thank You */}
         <div className="mb-4">
-          <p>Thank you for participating in our research.</p>
-          <p className="mt-2">The Less team</p>
-          <p>Nicolai Grymer &amp; Frederik Rothe</p>
-          <p>IT-University of Copenhagen</p>
+          <p className="text-sm">
+            Thank you for participating in our research.
+          </p>
+          <p className="text-sm mt-2">The Less team</p>
+          <p className="text-sm">Nicolai Grymer &amp; Frederik Rothe</p>
+          <p className="text-sm">IT-University of Copenhagen</p>
         </div>
-      </ScrollArea>
+      </div>
     </main>
   )
 }
