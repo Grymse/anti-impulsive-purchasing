@@ -33,17 +33,25 @@ Analytics are opt-in. Only if the user activates the plugins features, does the 
 ## Development
 
 ### Technologies
-- Plasmo: Framework for building browser extensions.
-- Shadcn: Modern UI components for a polished look.
-- TypeScript: Strongly typed JavaScript for better reliability.
-- Tailwind CSS: Utility-first styling for a highly customizable design.
-- Supabase: Open-source Firebase alternative. (For analytics)
+**Extension**
+- **Plasmo**: Framework for building browser extensions.
+- **Shadcn/ui**: Modern UI components for a polished look.
+- **TypeScript**: Strongly typed JavaScript for better reliability.
+- **Tailwind CSS**: Utility-first styling for a highly customizable design.
+- **Supabase**: Open-source Firebase alternative. (For analytics)
+
+**Web Application**
+- **React**: Framework for reactive web applications
+- **Shadcn/ui**: Modern UI components for a polished look.
+- **TypeScript**: Strongly typed JavaScript for better reliability.
+- **Tailwind CSS**: Utility-first styling for a highly customizable design.
 
 ### How to get started
 
 First, run the development server:
 
 ```bash
+cd extension
 npm i
 npm run dev
 ```
@@ -65,7 +73,7 @@ npm run build
 ### Folder structure
 
 ```go
-anti-consumption/
+extension/
 ├── assets
 │   └── icon.png // Extension Icon
 ├── build
