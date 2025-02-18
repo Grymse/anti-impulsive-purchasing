@@ -1,6 +1,6 @@
 # Less Extension
 
-<img src="./assets/icon.png" alt="Less Icon" width="200"/>
+<img src="./extension//assets/icon.png" alt="Less Icon" width="200"/>
 
 ## Description
 
