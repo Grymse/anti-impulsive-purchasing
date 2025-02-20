@@ -373,3 +373,43 @@ getters.register("www.boozt.com", {
         return items;
     }
 })
+
+
+
+function shopifyExtender(remainders: Omit<ElementGetters, 'getCartItems' | 'placeOrderButtons'>) : ElementGetters {
+    return {
+        ...remainders,
+        checkoutButtonLabels: (e: HTMLElement) => {
+            // TODO: REPLACE WITH ACTUAL SELECTOR
+            const buttons = e.querySelectorAll('SOME BUTTONS');
+
+            // merge
+            return [...Array.from(buttons), ...remainders.checkoutButtonLabels(e)];
+        },
+        getCartItems: (e: HTMLElement) => {
+            // TODO: REPLACE WITH ACTUAL SELECTOR
+            return [];
+        },
+        placeOrderButtons: (e: HTMLElement) => {
+            // TODO: REPLACE WITH ACTUAL SELECTOR
+            return [];
+        }
+    };
+
+}
+
+// TODO: EXAMPLE:
+getters.register("www.huel.com", shopifyExtender({
+    checkoutButtons:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
+        return Array.from(buttons)
+    },  
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('div[class="product-actions__add-to-cart"]');
+        return Array.from(buttons);
+    },
+    checkoutButtonLabels: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], button[class="palette-button palette-button--primary-boozt palette-button--medium palette-button--rectangle palette-button--expanded palette-button--horizontal-align-center shopcart-quick-checkout__button"], .checkout-order-confirmation__content button')
+        return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
+    }
+}))
