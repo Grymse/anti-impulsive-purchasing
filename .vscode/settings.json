@@ -1,0 +1,6 @@
+{
+  "deno.enablePaths": [
+    "edge/supabase/functions"
+  ],
+  "deno.enable": true,
+}

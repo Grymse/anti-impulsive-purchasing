@@ -1,0 +1,11 @@
+{
+  "name": "anti-impulsive-purchasing-edge",
+  "scripts": {
+    "deploy": "supabase functions deploy analytics --project-ref iukxcgvmzjfelwfrpkyi"
+  },
+  "version": "1.0.0",
+  "description": "<img src=\"./extension//assets/icon.png\" alt=\"Less Icon\" width=\"200\"/>",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC"
+}
