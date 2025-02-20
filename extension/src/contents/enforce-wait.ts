@@ -81,9 +81,7 @@ function updateVisuals() {
   getters.checkoutButtonLabels(currentTarget).forEach(injectVisuals);
 }
 
-window.addEventListener("load", () =>{
-    consent.onInit((hasConsent) => {
-      if (!hasConsent) return;
-      observer.addEffect(effect)
-  });
+consent.onInit((hasConsent) => {
+  if (!hasConsent) return;
+  observer.addEffect(effect)
 });

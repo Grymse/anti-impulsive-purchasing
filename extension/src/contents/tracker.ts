@@ -87,11 +87,9 @@ function setupTimeMeasurement() {
   window.addEventListener("beforeunload", sendTimeEvent); // When the tab is closed
 }
 
-window.addEventListener("load", () => {
-  consent.onInit((hasConsent) => {
-    if (!hasConsent) return;
-    setupTimeMeasurement();
-    observer.addEffect(effect)
-    sendAnalytics('page-view', undefined);
-  });
+consent.onInit((hasConsent) => {
+  if (!hasConsent) return;
+  setupTimeMeasurement();
+  observer.addEffect(effect)
+  sendAnalytics('page-view', undefined);
 });
