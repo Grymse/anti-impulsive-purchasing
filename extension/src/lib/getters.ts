@@ -112,7 +112,6 @@ getters.register('www.zalando.dk', {
     
     checkoutButtonLabels: (e: HTMLElement) => {
         const buttons = e.querySelectorAll('button[data-id="proceed-to-checkout-button"], button[data-id="buy-now-button-top"], button[data-id="buy-now-button-bottom"]');
-        //@ts-expect-error
         return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
     },
 
@@ -398,18 +397,57 @@ function shopifyExtender(remainders: Omit<ElementGetters, 'getCartItems' | 'plac
 
 }
 
-// TODO: EXAMPLE:
-getters.register("www.huel.com", shopifyExtender({
+getters.register("www2.hm.com", {
     checkoutButtons:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
-        return Array.from(buttons)
+        const minicart = e.querySelector<HTMLElement>('div[data-testid="minicart-open"]');
+        if (!minicart) return [];
+        const buttons1 = e.querySelectorAll<HTMLElement>('button[data-elid="header-cart-button"]');
+        const buttons2 = minicart.querySelectorAll<HTMLElement>('button')[1];
+        const allButtons = Array.from(buttons1).concat(Array.from([buttons2]));
+        allButtons.forEach(e => e.style.backgroundColor = 'green');
+        return Array.from(allButtons);
     },  
+
+    placeOrderButtons:(e: HTMLElement) => {
+        const minicart = e.querySelector<HTMLElement>('div[data-testid="minicart-open"]');
+        if (!minicart) return [];
+        const buttons = e.querySelectorAll<HTMLElement>('button[data-testid="continue-button-cart-sidebar"]')
+        const button2 = minicart.querySelectorAll<HTMLElement>('button');
+        buttons.forEach(e => e.style.backgroundColor = 'blue');
+        return Array.from(buttons).concat(button2[1]);  
+    },
+
+    checkoutButtonLabels:(e: HTMLElement) => {
+        const minicart = e.querySelector<HTMLElement>('div[data-testid="minicart-open"]');
+        if (!minicart) return [];
+        const buttons = minicart.querySelectorAll<HTMLElement>('button');
+        buttons.forEach(e => e.style.backgroundColor = 'blue');
+        return [buttons[0]];
+    },
+
     addToCartButtons: (e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('div[class="product-actions__add-to-cart"]');
+        const buttons = e.querySelectorAll<HTMLElement>('button[data-testid="pdp_add_to_cart_button"]');
+        buttons.forEach(e => e.style.backgroundColor = 'red');
         return Array.from(buttons);
     },
-    checkoutButtonLabels: (e: HTMLElement) => {
-        const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], button[class="palette-button palette-button--primary-boozt palette-button--medium palette-button--rectangle palette-button--expanded palette-button--horizontal-align-center shopcart-quick-checkout__button"], .checkout-order-confirmation__content button')
-        return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
+
+    getCartItems: (e: HTMLElement) => {
+        return [];
     }
-}))
+})
+
+// TODO: EXAMPLE:
+// getters.register("www.huel.com", shopifyExtender({
+//     checkoutButtons:(e: HTMLElement) => {
+//         const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
+//         return Array.from(buttons)
+//     },  
+//     addToCartButtons: (e: HTMLElement) => {
+//         const buttons = e.querySelectorAll<HTMLElement>('div[class="product-actions__add-to-cart"]');
+//         return Array.from(buttons);
+//     },
+//     checkoutButtonLabels: (e: HTMLElement) => {
+//         const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], button[class="palette-button palette-button--primary-boozt palette-button--medium palette-button--rectangle palette-button--expanded palette-button--horizontal-align-center shopcart-quick-checkout__button"], .checkout-order-confirmation__content button')
+//         return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
+//     }
+// }))

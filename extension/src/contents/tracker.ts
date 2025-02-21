@@ -9,7 +9,7 @@ import { consent, sendAnalytics } from "~lib/analytics";
 import { PersistentValue } from "~lib/utils";
 
 export const config: PlasmoCSConfig = {
-  matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://*.ebay.com/*", "https://www.matas.dk/*", "https://www.proshop.dk/*", "https://www.boozt.com/*"], // or specific URLs
+  matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://*.ebay.com/*", "https://www.matas.dk/*", "https://www.proshop.dk/*", "https://www.boozt.com/*", "https://www2.hm.com/*"], // or specific URLs
   all_frames: true,
 }
 
