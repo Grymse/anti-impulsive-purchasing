@@ -25,6 +25,8 @@ function splitPriceCurrency(price: string) {
     return { price: parseFloat(numericPrice[0].replace(',', '.')), currency };
 }
 
+const shopifyDomains = ["klaedeskabet.dk", "jeffreestarcosmetics.com"]
+
 /**
  * A registry for storing and retrieving element getters based on domain.
  */
@@ -51,6 +53,14 @@ export const getters: GetterRegister = {
      */
     getDomainGetters: function() {
         const domain = document.location.hostname;
+
+        if (shopifyDomains.includes(domain)) return this._getters.get("shopify") || {
+            checkoutButtons: (e: HTMLElement) => [],
+            placeOrderButtons: (e: HTMLElement) => [],
+            checkoutButtonLabels: (e: HTMLElement) => [],
+            addToCartButtons: (e: HTMLElement) => [],
+            getCartItems: (e: HTMLElement) => []
+        } 
         return this._getters.get(domain) || {
             checkoutButtons: (e: HTMLElement) => [],
             placeOrderButtons: (e: HTMLElement) => [],
@@ -404,7 +414,6 @@ getters.register("www2.hm.com", {
         const buttons1 = e.querySelectorAll<HTMLElement>('button[data-elid="header-cart-button"]');
         const buttons2 = minicart.querySelectorAll<HTMLElement>('button')[1];
         const allButtons = Array.from(buttons1).concat(Array.from([buttons2]));
-        allButtons.forEach(e => e.style.backgroundColor = 'green');
         return Array.from(allButtons);
     },  
 
@@ -413,7 +422,6 @@ getters.register("www2.hm.com", {
         if (!minicart) return [];
         const buttons = e.querySelectorAll<HTMLElement>('button[data-testid="continue-button-cart-sidebar"]')
         const button2 = minicart.querySelectorAll<HTMLElement>('button');
-        buttons.forEach(e => e.style.backgroundColor = 'blue');
         return Array.from(buttons).concat(button2[1]);  
     },
 
@@ -421,14 +429,36 @@ getters.register("www2.hm.com", {
         const minicart = e.querySelector<HTMLElement>('div[data-testid="minicart-open"]');
         if (!minicart) return [];
         const buttons = minicart.querySelectorAll<HTMLElement>('button');
-        buttons.forEach(e => e.style.backgroundColor = 'blue');
         return [buttons[0]];
     },
 
     addToCartButtons: (e: HTMLElement) => {
         const buttons = e.querySelectorAll<HTMLElement>('button[data-testid="pdp_add_to_cart_button"]');
-        buttons.forEach(e => e.style.backgroundColor = 'red');
         return Array.from(buttons);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        return [];
+    }
+})
+
+getters.register("shopify", {
+    checkoutButtons:(e: HTMLElement) => {
+        return [];
+    },  
+
+    placeOrderButtons:(e: HTMLElement) => {
+        const button = e.querySelectorAll<HTMLElement>('button[id="checkout-pay-button"]');
+        return Array.from(button);
+    },
+
+    checkoutButtonLabels:(e: HTMLElement) => {
+        const button = e.querySelectorAll<HTMLElement>('button[id="checkout-pay-button"]');
+        return Array.from(button);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+       return [];
     },
 
     getCartItems: (e: HTMLElement) => {
