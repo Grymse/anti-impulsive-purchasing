@@ -26,6 +26,8 @@ type AnalyticsPayloads = {
   "time-spent": { duration: number };
   "consent": { allow: boolean };
   "remove-data": undefined;
+  "cancel": undefined;
+  "answer": { question: string; answer: string };
 };
 
 export async function sendAnalytics<T extends keyof AnalyticsPayloads>(
