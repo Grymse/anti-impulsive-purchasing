@@ -9,14 +9,134 @@ import { consent, sendAnalytics } from "~lib/analytics";
 import { PersistentValue } from "~lib/utils";
 
 export const config: PlasmoCSConfig = {
-  matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://*.ebay.com/*", "https://www.matas.dk/*", "https://www.proshop.dk/*", "https://www.boozt.com/*", "https://www2.hm.com/*", "https://klaedeskabet.dk/*", "https://jeffreestarcosmetics.com/*"],
-  all_frames: true,
+  matches: [
+    // ----- Your original domains -----
+    "https://www.amazon.com/*",
+    "https://www.zalando.dk/*",
+    "https://*.ebay.com/*",
+    "https://www.matas.dk/*",
+    "https://www.proshop.dk/*",
+    "https://www.boozt.com/*",
+    "https://www2.hm.com/*",
+    "https://klaedeskabet.dk/*",
+    "https://jeffreestarcosmetics.com/*",
+
+    // ----- 100 Shopify domains -----
+    // Using "www." where the site is confirmed to redirect to or be served at "www"
+    "https://www.fashionnova.com/*",
+    "https://kyliecosmetics.com/*",
+    "https://colourpop.com/*",
+    // jeffreestarcosmetics.com already in original list
+    "https://www.gymshark.com/*",
+    "https://us.checkout.gymshark.com/*", // subdomain
+    "https://www.allbirds.com/*",
+    "https://www.brooklinen.com/*",
+    "https://bombas.com/*",
+    "https://ruggable.com/*",
+    "https://www.chubbiesshorts.com/*",
+    "https://www.beardbrand.com/*",
+    "https://www.mvmt.com/*",
+    "https://www.puravidabracelets.com/*",
+    "https://www.fashionphile.com/*",
+    "https://www.nativecos.com/*",
+    "https://hauslabs.com/*",
+    "https://kkwbeauty.com/*",
+    "https://harney.com/*",
+    "https://www.redbullshopus.com/*",
+    "https://tula.com/*",
+    "https://shop.tesla.com/*",    // subdomain
+    "https://www.spiritualgangster.com/*",
+    "https://outdoorvoices.com/*",
+    "https://taylorstitch.com/*",
+    "https://american-giant.com/*",
+    "https://manscaped.com/*",
+    "https://drsquatch.com/*",
+    "https://mejuri.com/*",
+    "https://www.peets.com/*",
+    "https://deathwishcoffee.com/*",
+    "https://bluebottlecoffee.com/*",
+    "https://drink.haus/*",
+    "https://hellotushy.com/*",
+    "https://brooklyncandlestudio.com/*",
+    "https://bando.com/*",
+    "https://moroccanoil.com/*",
+    "https://decenmia.com/*",
+    "https://negativeunderwear.com/*",
+    "https://kotn.com/*",
+    "https://birdies.com/*",
+    "https://naadam.co/*",
+    "https://adoreme.com/*",
+    "https://primalkitchen.com/*",
+    "https://huel.com/*",
+    "https://flovitamins.com/*",
+    "https://popflexactive.com/*",
+    "https://aloyoga.com/*",
+    "https://sugarfina.com/*",
+    "https://moderncitizen.com/*",
+    "https://greatjonesgoods.com/*",
+    "https://buffy.co/*",
+    "https://pinklily.com/*",
+    "https://misen.com/*",
+    "https://carawayhome.com/*",
+    "https://materialkitchen.com/*",
+    "https://glossier.com/*",
+    "https://hedleyandbennett.com/*",
+    "https://starface.world/*",
+    "https://youthtothepeople.com/*",
+    "https://myhydro.hydroflask.com/*", // subdomain
+    "https://rumpl.com/*",
+    "https://therabody.com/*",
+    "https://aesop.com/*",
+    "https://iliabeauty.com/*",
+    "https://mizzenandmain.com/*",
+    "https://marinelayer.com/*",
+    "https://ohpolly.com/*",
+    "https://happysocks.com/*",
+    "https://tecovas.com/*",
+    "https://stance.com/*",
+    "https://eu.stance.com/*",
+    "https://spongelle.com/*",
+    "https://trueclassictees.com/*",
+    "https://meundies.com/*",
+    "https://nuggetsofwisdom.com/*",
+    "https://studs.com/*",
+    "https://jackhenry.co/*",
+    "https://luxyhair.com/*",
+    "https://juicycouture.com/*",
+    "https://everlast.com/*",
+    "https://getstix.co/*",
+    "https://skims.com/*",
+    "https://feals.com/*",
+    "https://foursigmatic.com/*",
+    "https://golde.co/*",
+    "https://liquid-iv.com/*",
+    "https://readyjudy.com/*",
+    "https://thesill.com/*",
+    "https://wearlively.com/*",
+    "https://andieswim.com/*",
+    "https://yourparade.com/*",
+    "https://brightland.co/*",
+    "https://omsom.com/*",
+    "https://jenis.com/*",
+    "https://partakefoods.com/*",
+    "https://snowehome.com/*",
+    "https://imperfectfoods.com/*",
+    // Updated Graza domain to www
+    "https://www.graza.co/*",
+    "https://flybyjing.com/*",
+    "https://getmaude.com/*",
+    "https://ugmonk.com/*"
+  ],
+  all_frames: true
 }
+
 
 const DOMAIN = document.location.hostname;
 const LOCAL_CART_STORAGE_KEY = DOMAIN + "-cart";
 const INTERVAL_LENGTH = 1000 * 5; // 5 seconds
 const cart = new PersistentValue<ShoppingItem[]>(LOCAL_CART_STORAGE_KEY);
+
+console.log("Tracker loaded for domain: " + DOMAIN);
 
 function effect(signal: {signal: AbortSignal}) {
   const addToCartButtons = getters.getDomainGetters().addToCartButtons(document.body);
