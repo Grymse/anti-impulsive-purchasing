@@ -1,10 +1,9 @@
 import type { PlasmoCSConfig, PlasmoGetOverlayAnchor } from "plasmo";
-import React, { useEffect, useRef, useState, type MouseEvent, type MouseEventHandler } from 'react'
+import { useEffect, useRef, useState, type MouseEventHandler } from 'react'
 import cssText from "data-text:~style.css"
- import "../style.css";
+import "../style.css";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~components/ui/card";
 import { Button } from "~components/ui/button";
-import { Input } from "~components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import {Progress } from "~components/ui/progress";
 import { Textarea } from "~components/ui/textarea";
@@ -25,7 +24,6 @@ export const config: PlasmoCSConfig = {
 
 export const getOverlayAnchor: PlasmoGetOverlayAnchor = async () =>
     document.body
-
 
 type Question = {
 	label: string
@@ -63,11 +61,11 @@ const questions : Array<Question> = [
 
 
 type F = () => void;
-let onBuyInjector: (buy: F) => void;
+let createQuestionary: ({onFinish}: {onFinish: F}) => void;
 
 export default function needThis() {
 	const [show, setShow] = useState(false);
-	const buy = useRef<null | F>(null);
+	const onFinish = useRef<null | F>(null);
 	const [text, setText] = useState("");
 	const [page, setPage] = useState(questions[0].label);
 	const [error, setError] = useState<string | null>(null);
@@ -78,9 +76,11 @@ export default function needThis() {
 	const isLast = labels.indexOf(page) === labels.length - 1;
 	const isFirst = labels.indexOf(page) === 0;
 
-	onBuyInjector = (f) => {
+	// Here we assign the function that can be called outside the component.
+	// This is a way to communicate between the content script and the popup-questionary.
+	createQuestionary = ({onFinish: f}) => {
 		setShow(true);
-		buy.current = f;
+		onFinish.current = f;
 	};
 
 	useEffect(() => {
@@ -124,7 +124,7 @@ export default function needThis() {
 
 	const submit = () => {
 		setShow(false);
-		buy.current?.();
+		onFinish.current?.();
 	}
 
 	if (!show) return null;
@@ -162,27 +162,29 @@ export default function needThis() {
   )
 }
 
-
-let allowPurchase = false;
-function onPlaceOrderClick(e: MouseEvent) {
-	if (allowPurchase) return;
+const onPlaceOrderClick = (e: MouseEvent) => {
+	
+	const isBlocked = document.body.getAttribute('data-plasmo-place-order-blocked') === "true";
+	if (!isBlocked) return; // If the button is not blocked, we don't need to show the questionary.
 
 	e.preventDefault();
 	e.stopPropagation();
-	onBuyInjector(() => {
-		allowPurchase = true;
-		// @ts-expect-error the mouse event will always hit a button, so it is clickable afterwards
-		e.target.click();
+	createQuestionary({onFinish: () => {
+			document.body.setAttribute('data-plasmo-place-order-blocked','false');
+
+			const button = e.target as HTMLButtonElement;
+			button.click();
+		}
 	});
 }
 
-consent.onInit((hasConsent) => {
+/* consent.onInit((hasConsent) => {
   if (!hasConsent) return;
 
   observer.addEffect((signal) => {
 	getters.getDomainGetters().placeOrderButtons(document.body).forEach((button) => {
-		// @ts-expect-error the button will always be clickable
-		button.addEventListener("click", onPlaceOrderClick);
+		document.body.setAttribute('data-plasmo-place-order-blocked','true');
+		(button as HTMLButtonElement).addEventListener("click", onPlaceOrderClick);
 	}, signal);
   })
-});
+}); */

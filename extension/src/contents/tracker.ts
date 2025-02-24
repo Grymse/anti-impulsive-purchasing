@@ -4,7 +4,6 @@ import type { PlasmoCSConfig } from "plasmo";
 import { getters, type ShoppingItem } from "~lib/getters";
 import { observer } from "~lib/observer";
 import { Stopwatch } from "ts-stopwatch";
-import permit from "~lib/permit";
 import { consent, sendAnalytics } from "~lib/analytics";
 import { PersistentValue } from "~lib/utils";
 
@@ -38,21 +37,25 @@ function effect(signal: {signal: AbortSignal}) {
   saveCurrentItems();
 }
 
-function onPlaceOrderClick(e: Event) {
-  if (!permit.isValid()) return;
+function onPlaceOrderClick(e: MouseEvent) {
+  const isBlocked = document.body.getAttribute('data-plasmo-place-order-blocked') === "true";
+  if (isBlocked) return;
 
   sendAnalytics('place-order', cart.value ?? []);
 }
 
 function saveCurrentItems() {
   const items = getters.getDomainGetters().getCartItems(document.body);
+
   if(items.length === 0) return;
 
   cart.value = items;
 }
 
-function onCheckoutClick(e: Event) {
-  if (!permit.isValid()) return;
+function onCheckoutClick(e: MouseEvent) {
+  const isBlocked = document.body.getAttribute('data-plasmo-checkout-blocked') === "true";
+  if (isBlocked) return;
+
   sendAnalytics('checkout', undefined);
 }
 

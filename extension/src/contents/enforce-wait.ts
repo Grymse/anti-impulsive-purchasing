@@ -18,11 +18,15 @@ function effect(signal: {signal: AbortSignal}) {
 
   // Add event listeners to the checkout buttons
   getters.checkoutButtons(currentTarget).forEach((button) => {
+    document.body.setAttribute('data-plasmo-checkout-blocked', permit.isValid() ? "false" : "true");
+
     button.addEventListener("click", onCheckoutClick);
   }, signal);
 
   // Add event listeners to the place order buttons
   getters.placeOrderButtons(currentTarget).forEach((button) => {
+    document.body.setAttribute('data-plasmo-place-order-blocked', permit.isValid() ? "false" : "true");
+
     button.addEventListener("click", onPlaceOrderClick);
   }, signal);
 }
@@ -42,6 +46,7 @@ function onPlaceOrderClick(e: Event)  {
   // Clear the permit if it is valid
   permit.markAsUsed();
 }
+
 
 
 function onCheckoutClick(e: Event) {
@@ -81,8 +86,7 @@ function updateVisuals() {
   getters.checkoutButtonLabels(currentTarget).forEach(injectVisuals);
 }
 
-/* consent.onInit((hasConsent) => {
+consent.onInit((hasConsent) => {
   if (!hasConsent) return;
   observer.addEffect(effect)
 });
- */

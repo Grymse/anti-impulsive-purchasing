@@ -4,10 +4,9 @@ export type Permit = {
   start: number;
   end: number;
 }
-
-const PERMIT_LENGTH = 1_000 * 60 * 60 * 24 * 2; //1000 * 60 * 60 * 24 * 3; // 2 days
-const PERMIT_WAIT_TIME = 1_000 * 60 * 60 * 24; //1000 * 60 * 60 * 24 * 1; // 1 days
-const PERMIT_ON_PAY_GRACE = 1_000 * 60 * 10; // 1000 * 60 * 10; // 10 minutter
+const PERMIT_LENGTH = parseInt(process.env.PLASMO_PUBLIC_PERMIT_LENGTH || "172800000"); // default: 2 days
+const PERMIT_WAIT_TIME = parseInt(process.env.PLASMO_PUBLIC_PERMIT_WAIT_TIME || "86400000"); // default: 1 day
+const PERMIT_ON_PAY_GRACE = parseInt(process.env.PLASMO_PUBLIC_PERMIT_ON_PAY_GRACE || "3000000"); // default: 10 minutes
 const DOMAIN = document.location.hostname;
 const LOCAL_STORAGE_KEY = DOMAIN + "-permit";
 const permit = new PersistentValue<Permit>(LOCAL_STORAGE_KEY);

@@ -46,6 +46,14 @@ Analytics are opt-in. Only if the user activates the plugins features, does the 
 - **TypeScript**: Strongly typed JavaScript for better reliability.
 - **Tailwind CSS**: Utility-first styling for a highly customizable design.
 
+### Setup Environment variables
+
+Copy `.env.example` into two files:
+- `.env.production`
+- `.env.development`
+
+These define the variables for each environment. Remember to setup the correct variables for the correct environment.
+
 ### How to get started
 
 First, run the development server:
@@ -55,6 +63,8 @@ cd extension
 npm i
 npm run dev
 ```
+
+The build uses `.env.development` as variables.
 
 You can start editing the popup by modifying `popup.tsx`. It should auto-update as you make changes.
 
@@ -70,9 +80,12 @@ pnpm build
 npm run build
 ```
 
+The build uses `.env.production` as variables
+
 ### Folder structure
 
 ```go
+// PLASMO EXTENSION
 extension/
 ├── assets
 │   └── icon.png // Extension Icon
@@ -92,6 +105,7 @@ extension/
 │   │       └── button.tsx // Shadcn button
 │   ├── contents
 │   │   ├── enforce-wait.ts // Enforce wait-time (24hrs) before allowing users to buy
+│   │   ├── need-this.tsx // Pop-up questionary to seed doubt about the users purchase
 │   │   └── tracker.ts // Track analytics
 │   ├── hooks
 │   │   └── useConsent.ts // A hook to interact with user-consent
@@ -115,4 +129,48 @@ extension/
 ├── README.md
 ├── tailwind.config.js // Tailwind config
 └── tsconfig.json
+
+// Supabase edge functions and db
+edge/
+├── package.json
+└── supabase
+    ├── config.toml
+    ├── functions
+    │   └── analytics
+    │       └── index.ts // Endpoint to receive analytics
+    └── seed.sql // Empty SQL file. We setup the analytics table in the browser
+
+
+// FLASK ENDPOINT
+data/
+└── event-catcher.py // Script for debugging analytical endpoint
+
+// REACT APP
+policy-web/
+├── public
+│   ├── icon.png
+│   └── icon128.png
+├── src
+│   ├── App.tsx // Full app in here
+│   ├── Header.tsx // Header component
+│   ├── Lists.tsx // List component
+│   ├── Text.tsx // Text component
+│   ├── components
+│   │   └── ui // Shadcn/ui components are imported here
+│   ├── lib
+│   │   └── utils.ts
+│   ├── main.tsx
+│   ├── style.css
+│   └── vite-env.d.ts
+├── components.json
+├── eslint.config.js
+├── index.html
+├── package-lock.json
+├── package.json
+├── postcss.config.js
+├── tailwind.config.js
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+└── vite.config.ts
 ```
