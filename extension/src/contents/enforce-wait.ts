@@ -14,15 +14,13 @@ export const config: PlasmoCSConfig = {
     "https://www.proshop.dk/*",
     "https://www.boozt.com/*",
     "https://www2.hm.com/*",
-    "https://klaedeskabet.dk/*",
-    "https://jeffreestarcosmetics.com/*",
 
     // ----- 100 Shopify domains -----
-    // Using "www." where the site is confirmed to redirect to or be served at "www"
+    "https://klaedeskabet.dk/*",
     "https://www.fashionnova.com/*",
     "https://kyliecosmetics.com/*",
     "https://colourpop.com/*",
-    // jeffreestarcosmetics.com already in original list
+    "https://jeffreestarcosmetics.com/*",
     "https://www.gymshark.com/*",
     "https://www.allbirds.com/*",
     "https://www.brooklinen.com/*",
@@ -113,24 +111,21 @@ export const config: PlasmoCSConfig = {
 const getters = getterRegistry.getDomainGetters();
 let currentTarget = document.body;
 
-
-
 function effect(signal: {signal: AbortSignal}) {
   updateVisuals();
 
   // Add event listeners to the checkout buttons
   getters.checkoutButtons(currentTarget).forEach((button) => {
-    document.body.setAttribute('data-plasmo-checkout-blocked', permit.isValid() ? "false" : "true");
-
     button.addEventListener("click", onCheckoutClick);
   }, signal);
 
   // Add event listeners to the place order buttons
   getters.placeOrderButtons(currentTarget).forEach((button) => {
-    document.body.setAttribute('data-plasmo-place-order-blocked', permit.isValid() ? "false" : "true");
-
     button.addEventListener("click", onPlaceOrderClick);
   }, signal);
+
+  document.body.setAttribute('data-plasmo-place-order-blocked', permit.isValid() ? "false" : "true");
+  document.body.setAttribute('data-plasmo-checkout-blocked', permit.isValid() ? "false" : "true");
 }
 
 function onPlaceOrderClick(e: Event)  {

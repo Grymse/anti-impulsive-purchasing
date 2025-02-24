@@ -18,13 +18,108 @@ import { settings } from "~lib/settings";
     return style
   }
 
-export const config: PlasmoCSConfig = {
-    matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*"], // or specific URLs
-    all_frames: true,
-}
-
-export const getOverlayAnchor: PlasmoGetOverlayAnchor = async () =>
-    document.body
+  export const config: PlasmoCSConfig = {
+	matches: [
+	  // ----- Your original domains -----
+	  "https://www.amazon.com/*",
+	  "https://www.zalando.dk/*",
+	  "https://*.ebay.com/*",
+	  "https://www.matas.dk/*",
+	  "https://www.proshop.dk/*",
+	  "https://www.boozt.com/*",
+	  "https://www2.hm.com/*",
+  
+	  // ----- 100 Shopify domains -----
+	  "https://klaedeskabet.dk/*",
+	  "https://www.fashionnova.com/*",
+	  "https://kyliecosmetics.com/*",
+	  "https://colourpop.com/*",
+	  "https://jeffreestarcosmetics.com/*",
+	  "https://www.gymshark.com/*",
+	  "https://www.allbirds.com/*",
+	  "https://www.brooklinen.com/*",
+	  "https://ruggable.com/*",
+	  "https://shop.ruggable.com/*", // subdomain
+	  "https://www.chubbiesshorts.com/*",
+	  "https://checkout.chubbiesshorts.com/*",
+	  "https://www.puravidabracelets.com/*",
+	  "https://www.nativecos.com/*",
+	  "https://www.hauslabs.com/*",
+	  "https://skknbykim.com/*",
+	  "https://www.harney.com/*",
+	  "https://www.redbullshopus.com/*",
+	  "https://tula.com/*",
+	  "https://checkout.tula.com/*",
+	  "https://shop.tesla.com/*",    // subdomain
+	  "https://spiritualgangster.com/*",
+	  "https://www.taylorstitch.com/*",
+	  "https://www.american-giant.com/*",
+	  "https://www.drsquatch.com/*",
+	  "https://mejuri.com/*",
+	  "https://checkout-uk.mejuri.com/*", // subdomain
+	  "https://www.peets.com/*",
+	  "https://www.deathwishcoffee.com/*",
+	  "https://hellotushy.com/*",
+	  "https://www.bando.com/*",
+	  "https://www.moroccanoil.com/*",
+	  "https://negativeunderwear.com/*",
+	  "https://birdies.com/*",
+	  "https://naadam.co/*",
+	  "https://www.popflexactive.com/*",
+	  "https://www.moderncitizen.com/*",
+	  "https://greatjonesgoods.com/*",
+	  "https://pinklily.com/*",
+	  "https://misen.com/*",
+	  "https://materialkitchen.com/*",
+	  "https://glossier.com/*",
+	  "https://hedleyandbennett.com/*",
+	  "https://starface.world/*",
+	  "https://youthtothepeople.com/*",
+	  "https://myhydro.hydroflask.com/*", // subdomain
+	  "https://rumpl.com/*",
+	  "https://therabody.com/*",
+	  "https://aesop.com/*",
+	  "https://iliabeauty.com/*",
+	  "https://mizzenandmain.com/*",
+	  "https://marinelayer.com/*",
+	  "https://ohpolly.com/*",
+	  "https://happysocks.com/*",
+	  "https://tecovas.com/*",
+	  "https://*.stance.com/*",
+	  "https://spongelle.com/*",
+	  "https://trueclassictees.com/*",
+	  "https://meundies.com/*",
+	  "https://nuggetsofwisdom.com/*",
+	  "https://studs.com/*",
+	  "https://jackhenry.co/*",
+	  "https://luxyhair.com/*",
+	  "https://juicycouture.com/*",
+	  "https://everlast.com/*",
+	  "https://getstix.co/*",
+	  "https://skims.com/*",
+	  "https://feals.com/*",
+	  "https://foursigmatic.com/*",
+	  "https://golde.co/*",
+	  "https://liquid-iv.com/*",
+	  "https://readyjudy.com/*",
+	  "https://thesill.com/*",
+	  "https://wearlively.com/*",
+	  "https://andieswim.com/*",
+	  "https://yourparade.com/*",
+	  "https://brightland.co/*",
+	  "https://omsom.com/*",
+	  "https://jenis.com/*",
+	  "https://partakefoods.com/*",
+	  "https://snowehome.com/*",
+	  "https://imperfectfoods.com/*",
+	  // Updated Graza domain to www
+	  "https://www.graza.co/*",
+	  "https://flybyjing.com/*",
+	  "https://getmaude.com/*",
+	  "https://ugmonk.com/*"
+	],
+	all_frames: true
+  }
 
 type Question = {
 	label: string
@@ -54,7 +149,7 @@ const questions : Array<Question> = [
 	},
 	{
 		label: "Alternative",
-		title: "What could you do with your money and time instead?",
+		title: "What alternatives could you invest your time and money in?",
 		minWords: 5,
 		content: '',
 	}
@@ -128,10 +223,12 @@ export default function needThis() {
 		onFinish.current?.();
 	}
 
-	if (!show) return null;
+  if (!show) return null;
+
+  const isShopify = document.querySelector('link').href.includes('https://cdn.shopify.com');
 
   return (
-    <main className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center" onClick={cancel}>
+    <div id="popover-questionary" className={`fixed text-base ${isShopify ? 'transform scale-150' : ''} bg-black/75 z-50 w-screen h-screen flex items-center justify-center`} onClick={cancel}>
         <Card className="max-w-xl" onClick={e => e.stopPropagation()}>
 			<CardHeader>
 				<CardTitle>Reflection Questions</CardTitle>
@@ -159,17 +256,18 @@ export default function needThis() {
 				</div>
 			</CardContent>
         </Card>
-    </main>
+    </div>
   )
 }
 
-const onPlaceOrderClick = (e: MouseEvent) => {
+const onPlaceOrderClick = (e: Event) => {
 	
 	const isBlocked = document.body.getAttribute('data-plasmo-place-order-blocked') === "true";
 	if (!isBlocked) return; // If the button is not blocked, we don't need to show the questionary.
 
 	e.preventDefault();
 	e.stopPropagation();
+
 	createQuestionary({onFinish: () => {
 			document.body.setAttribute('data-plasmo-place-order-blocked','false');
 
@@ -179,14 +277,14 @@ const onPlaceOrderClick = (e: MouseEvent) => {
 	});
 }
 
-
 settings.onInit((settings) => {
 	if (!settings.active || !settings.activeStrategies.includes('need-this')) return;
 
-  observer.addEffect((signal) => {
-	getters.getDomainGetters().placeOrderButtons(document.body).forEach((button) => {
+	observer.addEffect((signal) => {
 		document.body.setAttribute('data-plasmo-place-order-blocked','true');
-		(button as HTMLButtonElement).addEventListener("click", onPlaceOrderClick);
-	}, signal);
-  })
+	
+		getters.getDomainGetters().placeOrderButtons(document.body).forEach((button) => {
+			button.addEventListener("click", onPlaceOrderClick);
+		}, signal);
+	});
 });

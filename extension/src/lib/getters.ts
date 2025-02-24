@@ -1,4 +1,3 @@
-
 export type ElementGetters = {
     checkoutButtons: (e: HTMLElement) => Element[];
     placeOrderButtons: (e: HTMLElement) => Element[];
@@ -356,7 +355,8 @@ getters.register("www.matas.dk", {
     placeOrderButtons:(e: HTMLElement) => {
         if(!location.href.includes('oversigt')) return [];
         
-        const x = Array.from(document.querySelectorAll<HTMLElement>('button[less-button="place-order"]'))
+        const x = Array.from(document.querySelectorAll<HTMLElement>('button'))
+            .filter(e => e.textContent.includes('til betaling') || e.getAttribute('less-button') === "place-order");
         
         return x;
     },
@@ -423,7 +423,7 @@ getters.register("www.proshop.dk", {
         let items = [];
         for (let i = 0; i < priceFraction.length; i++) {
             items.push({
-                //@ts-expect-error .value is a valid field.
+                //@ts-expect-error: value is a valid field.
                 quantity: parseInt(quantities[i].value),
                 price: parseFloat(priceFraction[i].innerText),
                 currency: priceSymbol
@@ -474,30 +474,6 @@ getters.register("www.boozt.com", {
     }
 })
 
-
-
-function shopifyExtender(remainders: Omit<ElementGetters, 'getCartItems' | 'placeOrderButtons'>) : ElementGetters {
-    return {
-        ...remainders,
-        checkoutButtonLabels: (e: HTMLElement) => {
-            // TODO: REPLACE WITH ACTUAL SELECTOR
-            const buttons = e.querySelectorAll('SOME BUTTONS');
-
-            // merge
-            return [...Array.from(buttons), ...remainders.checkoutButtonLabels(e)];
-        },
-        getCartItems: (e: HTMLElement) => {
-            // TODO: REPLACE WITH ACTUAL SELECTOR
-            return [];
-        },
-        placeOrderButtons: (e: HTMLElement) => {
-            // TODO: REPLACE WITH ACTUAL SELECTOR
-            return [];
-        }
-    };
-
-}
-
 getters.register("www2.hm.com", {
     checkoutButtons:(e: HTMLElement) => {
         const minicart = e.querySelector<HTMLElement>('div[data-testid="minicart-open"]');
@@ -539,7 +515,6 @@ getters.register("shopify", {
     },  
 
     placeOrderButtons:(e: HTMLElement) => {
-        console.log("OH YES WE ARE POPPING")
         const button = e.querySelectorAll<HTMLElement>('button[id="checkout-pay-button"]');
         return Array.from(button);
     },
@@ -557,19 +532,3 @@ getters.register("shopify", {
         return [];
     }
 })
-
-// TODO: EXAMPLE:
-// getters.register("www.huel.com", shopifyExtender({
-//     checkoutButtons:(e: HTMLElement) => {
-//         const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
-//         return Array.from(buttons)
-//     },  
-//     addToCartButtons: (e: HTMLElement) => {
-//         const buttons = e.querySelectorAll<HTMLElement>('div[class="product-actions__add-to-cart"]');
-//         return Array.from(buttons);
-//     },
-//     checkoutButtonLabels: (e: HTMLElement) => {
-//         const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], button[class="palette-button palette-button--primary-boozt palette-button--medium palette-button--rectangle palette-button--expanded palette-button--horizontal-align-center shopcart-quick-checkout__button"], .checkout-order-confirmation__content button')
-//         return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
-//     }
-// }))

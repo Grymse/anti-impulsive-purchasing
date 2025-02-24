@@ -18,17 +18,14 @@ export const config: PlasmoCSConfig = {
     "https://www.proshop.dk/*",
     "https://www.boozt.com/*",
     "https://www2.hm.com/*",
-    "https://klaedeskabet.dk/*",
-    "https://jeffreestarcosmetics.com/*",
 
     // ----- 100 Shopify domains -----
-    // Using "www." where the site is confirmed to redirect to or be served at "www"
+    "https://klaedeskabet.dk/*",
     "https://www.fashionnova.com/*",
     "https://kyliecosmetics.com/*",
     "https://colourpop.com/*",
-    // jeffreestarcosmetics.com already in original list
+    "https://jeffreestarcosmetics.com/*",
     "https://www.gymshark.com/*",
-    "https://us.checkout.gymshark.com/*", // subdomain
     "https://www.allbirds.com/*",
     "https://www.brooklinen.com/*",
     "https://ruggable.com/*",
@@ -49,7 +46,7 @@ export const config: PlasmoCSConfig = {
     "https://www.american-giant.com/*",
     "https://www.drsquatch.com/*",
     "https://mejuri.com/*",
-    "https://checkout-uk.mejuri.com/*", // subdomain                                                                                                                                                            
+    "https://checkout-uk.mejuri.com/*", // subdomain
     "https://www.peets.com/*",
     "https://www.deathwishcoffee.com/*",
     "https://hellotushy.com/*",
@@ -78,8 +75,7 @@ export const config: PlasmoCSConfig = {
     "https://ohpolly.com/*",
     "https://happysocks.com/*",
     "https://tecovas.com/*",
-    "https://stance.com/*",
-    "https://eu.stance.com/*",
+    "https://*.stance.com/*",
     "https://spongelle.com/*",
     "https://trueclassictees.com/*",
     "https://meundies.com/*",
@@ -120,8 +116,6 @@ const DOMAIN = document.location.hostname;
 const LOCAL_CART_STORAGE_KEY = DOMAIN + "-cart";
 const INTERVAL_LENGTH = 1000 * 5; // 5 seconds
 const cart = new PersistentValue<ShoppingItem[]>(LOCAL_CART_STORAGE_KEY);
-
-console.log("Tracker loaded for domain: " + DOMAIN);
 
 function effect(signal: {signal: AbortSignal}) {
   const addToCartButtons = getters.getDomainGetters().addToCartButtons(document.body);
@@ -196,9 +190,9 @@ function setupTimeMeasurement() {
   window.addEventListener("beforeunload", sendTimeEvent); // When the tab is closed
 }
 
-settings.onInit((settings) => {
+/* settings.onInit((settings) => {
   if (!settings.active) return;
   setupTimeMeasurement();
   observer.addEffect(effect)
   sendAnalytics('page-view', undefined);
-});
+}); */
