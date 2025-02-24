@@ -1,8 +1,8 @@
 import type { PlasmoCSConfig } from "plasmo";
-import { consent } from "~lib/analytics";
 import { getters as getterRegistry } from "~lib/getters";
 import { observer } from "~lib/observer";
 import permit, { type Permit } from "~lib/permit";
+import { settings } from "~lib/settings";
 
 export const config: PlasmoCSConfig = {
     matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://*.ebay.com/*", "https://www.matas.dk/*", "https://www.proshop.dk/*", "https://www.boozt.com/*"], // or specific URLs
@@ -86,7 +86,7 @@ function updateVisuals() {
   getters.checkoutButtonLabels(currentTarget).forEach(injectVisuals);
 }
 
-consent.onInit((hasConsent) => {
-  if (!hasConsent) return;
+settings.onInit((settings) => {
+  if (!settings.active || !settings.activeStrategies.includes('enforce-wait')) return;
   observer.addEffect(effect)
 });

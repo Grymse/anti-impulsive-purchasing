@@ -4,8 +4,9 @@ import type { PlasmoCSConfig } from "plasmo";
 import { getters, type ShoppingItem } from "~lib/getters";
 import { observer } from "~lib/observer";
 import { Stopwatch } from "ts-stopwatch";
-import { consent, sendAnalytics } from "~lib/analytics";
+import { sendAnalytics } from "~lib/analytics";
 import { PersistentValue } from "~lib/utils";
+import { settings } from "~lib/settings";
 
 export const config: PlasmoCSConfig = {
   matches: ["https://www.amazon.com/*", "https://www.zalando.dk/*", "https://www.walmart.com/*", "https://*.ebay.com/*", "https://www.matas.dk/*", "https://www.proshop.dk/*", "https://www.boozt.com/*"], // or specific URLs
@@ -90,8 +91,8 @@ function setupTimeMeasurement() {
   window.addEventListener("beforeunload", sendTimeEvent); // When the tab is closed
 }
 
-consent.onInit((hasConsent) => {
-  if (!hasConsent) return;
+settings.onInit((settings) => {
+  if (!settings.active) return;
   setupTimeMeasurement();
   observer.addEffect(effect)
   sendAnalytics('page-view', undefined);

@@ -12,7 +12,8 @@ export class PersistentValue<T> {
   private _onInitListeners : ((value: T | null) => void)[] = [];
   private _initialized = false;
 
-  constructor(key: string) {
+  constructor(key: string, defaultValue: T | null = null) {
+    this._value = defaultValue;
     this._key = key;
     this._init();
   }
@@ -27,6 +28,10 @@ export class PersistentValue<T> {
     chrome.storage.local.set({[this._key]: value}).then(() => {
       this._listeners.forEach((listener) => listener(value));
     });
+  }
+
+  update(f: (value: T | null) => T | null) {
+    this.value = f(this._value);
   }
 
   onChange(f: (value: T | null) => void) {
@@ -47,7 +52,7 @@ export class PersistentValue<T> {
 
   private _init() {
     chrome.storage.local.get(this._key, (data) => {
-      this._value = data[this._key] ?? null;
+      this._value = data[this._key] ?? this._value;
       this._initialized = true;
       this._onInitListeners.forEach((listener) => listener(this._value));
     });

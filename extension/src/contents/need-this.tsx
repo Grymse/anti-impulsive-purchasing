@@ -7,9 +7,10 @@ import { Button } from "~components/ui/button";
 import { Label } from "@radix-ui/react-label";
 import {Progress } from "~components/ui/progress";
 import { Textarea } from "~components/ui/textarea";
-import { consent, sendAnalytics } from "~lib/analytics";
+import { sendAnalytics } from "~lib/analytics";
 import { observer } from "~lib/observer";
 import { getters } from "~lib/getters";
+import { settings } from "~lib/settings";
 
  export const getStyle = () => {
     const style = document.createElement("style")
@@ -178,8 +179,9 @@ const onPlaceOrderClick = (e: MouseEvent) => {
 	});
 }
 
-/* consent.onInit((hasConsent) => {
-  if (!hasConsent) return;
+
+settings.onInit((settings) => {
+	if (!settings.active || !settings.activeStrategies.includes('need-this')) return;
 
   observer.addEffect((signal) => {
 	getters.getDomainGetters().placeOrderButtons(document.body).forEach((button) => {
@@ -187,4 +189,4 @@ const onPlaceOrderClick = (e: MouseEvent) => {
 		(button as HTMLButtonElement).addEventListener("click", onPlaceOrderClick);
 	}, signal);
   })
-}); */
+});
