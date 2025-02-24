@@ -4,13 +4,13 @@ import cssText from "data-text:~style.css"
 import "../style.css";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~components/ui/card";
 import { Button } from "~components/ui/button";
-import { Label } from "@radix-ui/react-label";
 import {Progress } from "~components/ui/progress";
 import { Textarea } from "~components/ui/textarea";
 import { sendAnalytics } from "~lib/analytics";
 import { observer } from "~lib/observer";
 import { getters } from "~lib/getters";
 import { settings } from "~lib/settings";
+import { Label } from "~components/ui/label";
 
  export const getStyle = () => {
     const style = document.createElement("style")
@@ -229,7 +229,7 @@ export default function needThis() {
 
   return (
     <div id="popover-questionary" className={`fixed text-base ${isShopify ? 'transform scale-150' : ''} bg-black/75 z-50 w-screen h-screen flex items-center justify-center`} onClick={cancel}>
-        <Card className="max-w-xl" onClick={e => e.stopPropagation()}>
+        <Card className="max-w-xl bg-white" onClick={e => e.stopPropagation()}>
 			<CardHeader>
 				<CardTitle>Reflection Questions</CardTitle>
 				<CardDescription>Before committing to the purchase, please reflect on the following questions.</CardDescription>

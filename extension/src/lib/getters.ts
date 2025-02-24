@@ -21,7 +21,7 @@ type GetterRegister = {
 function splitPriceCurrency(price: string) {
     const numericPrice = price.match(/[\d,.]+/);
     const currency = price.replace(numericPrice ? numericPrice[0] : '', '');
-    return { price: parseFloat(numericPrice[0].replace(',', '.')), currency };
+    return { price: parseFloat(numericPrice[0].replace(',', '.')), currency: currency.trim() };
 }
 
 const shopifyDomains = [
@@ -515,12 +515,12 @@ getters.register("shopify", {
     },  
 
     placeOrderButtons:(e: HTMLElement) => {
-        const button = e.querySelectorAll<HTMLElement>('button[id="checkout-pay-button"]');
+        const button = e.querySelectorAll<HTMLElement>('button[id="checkout-pay-button"], button[type="submit"], #shop-pay-button');
         return Array.from(button);
     },
 
     checkoutButtonLabels:(e: HTMLElement) => {
-        const button = e.querySelectorAll<HTMLElement>('button[id="checkout-pay-button"]');
+        const button = e.querySelectorAll<HTMLElement>('button[id="checkout-pay-button"], button[type="submit"], #shop-pay-button');
         return Array.from(button);
     },
 
@@ -529,6 +529,18 @@ getters.register("shopify", {
     },
 
     getCartItems: (e: HTMLElement) => {
-        return [];
+        if (!location.href.includes('checkout')) return [];
+
+        const basket = document.querySelectorAll('aside div[role="rowgroup"]')[1];
+        const items = basket.querySelectorAll('div[role="row"]');
+
+        return Array.from(items).map(item => {
+            const {price, currency} = splitPriceCurrency(item.querySelectorAll('div[role="cell"]')[3].textContent);
+            return {
+                quantity: parseInt(item.querySelectorAll('div[role="cell"]')[2].textContent),
+                price,
+                currency,
+            }
+        });
     }
 })

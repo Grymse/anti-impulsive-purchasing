@@ -190,9 +190,9 @@ function setupTimeMeasurement() {
   window.addEventListener("beforeunload", sendTimeEvent); // When the tab is closed
 }
 
-/* settings.onInit((settings) => {
+settings.onInit((settings) => {
   if (!settings.active) return;
   setupTimeMeasurement();
   observer.addEffect(effect)
   sendAnalytics('page-view', undefined);
-}); */
+});

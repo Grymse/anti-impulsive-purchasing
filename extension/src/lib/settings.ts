@@ -24,7 +24,6 @@ export const strategies : Strategy[] = [
 ]
 
 export type Settings = {
-    // Add settings here
     active: boolean;
     activeStrategies: StrategyType[];
 }
@@ -32,7 +31,7 @@ export type Settings = {
 export const settings = new PersistentValue<Settings>("settings",
     {
         active: true,
-        activeStrategies: ["need-this", "enforce-wait"]
+        activeStrategies: ["need-this"]
     }
 );
 

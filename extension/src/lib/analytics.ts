@@ -45,8 +45,11 @@ export async function sendAnalytics<T extends keyof AnalyticsPayloads>(
     apikey: process.env.PLASMO_PUBLIC_ANALYTICS_SECRET,
   };
 
+  if (process.env.NODE_ENV === "development") {
+    console.log(`${data.type} - ${data.url} - ${data.payload}`);
+  }
+
   // Send the analytics data to the server
-  console.log(`${data.type} - ${data.url} - ${data.payload}`);
   const URL = process.env.PLASMO_PUBLIC_ANALYTICS_URL
   /* fetch(URL, {
     method: "POST",
