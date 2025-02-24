@@ -25,6 +25,99 @@ function splitPriceCurrency(price: string) {
     return { price: parseFloat(numericPrice[0].replace(',', '.')), currency };
 }
 
+const shopifyDomains = [
+    "klaedeskabet.dk",
+    "www.fashionnova.com",
+    "kyliecosmetics.com",
+    "colourpop.com",
+    "jeffreestarcosmetics.com",
+    "www.gymshark.com",
+    "us.checkout.gymshark.com",
+    "www.allbirds.com",
+    "www.brooklinen.com",
+    "ruggable.com",
+    "shop.ruggable.com", // subdomain
+    "www.chubbiesshorts.com",
+    "checkout.chubbiesshorts.com",
+    "www.puravidabracelets.com",
+    "www.nativecos.com",
+    "www.hauslabs.com",
+    "skknbykim.com",
+    "www.harney.com",
+    "www.redbullshopus.com",
+    "tula.com",
+    "checkout.tula.com",
+    "shop.tesla.com",
+    "spiritualgangster.com",
+    "www.taylorstitch.com",
+    "www.american-giant.com",
+    "www.drsquatch.com",
+    "mejuri.com",
+    "checkout-uk.mejuri.com",  
+    "www.peets.com",
+    "www.deathwishcoffee.com",
+    "hellotushy.com",
+    "www.bando.com",
+    "www.moroccanoil.com",
+    "negativeunderwear.com",
+    "birdies.com",
+    "naadam.co", 
+    "www.popflexactive.com", 
+    "www.moderncitizen.com",
+    "greatjonesgoods.com",
+    "pinklily.com",
+    "misen.com", 
+    "materialkitchen.com", //current
+    "glossier.com",
+    "hedleyandbennett.com",
+    "starface.world",
+    "youthtothepeople.com",
+    "myhydro.hydroflask.com",
+    "rumpl.com",
+    "therabody.com",
+    "aesop.com",
+    "iliabeauty.com",
+    "mizzenandmain.com",
+    "marinelayer.com",
+    "ohpolly.com",
+    "happysocks.com",
+    "tecovas.com",
+    "stance.com",
+    "eu.stance.com",
+    "spongelle.com",
+    "trueclassictees.com",
+    "meundies.com",
+    "nuggetsofwisdom.com",
+    "studs.com",
+    "jackhenry.co",
+    "luxyhair.com",
+    "juicycouture.com",
+    "everlast.com",
+    "getstix.co",
+    "skims.com",
+    "feals.com",
+    "foursigmatic.com",
+    "golde.co",
+    "liquid-iv.com",
+    "readyjudy.com",
+    "thesill.com",
+    "wearlively.com",
+    "andieswim.com",
+    "yourparade.com",
+    "brightland.co",
+    "omsom.com",
+    "jenis.com",
+    "partakefoods.com",
+    "snowehome.com",
+    "imperfectfoods.com",
+    "graza.co",
+    "flybyjing.com",
+    "getmaude.com",
+    "ugmonk.com",
+]
+
+
+
 /**
  * A registry for storing and retrieving element getters based on domain.
  */
@@ -51,6 +144,14 @@ export const getters: GetterRegister = {
      */
     getDomainGetters: function() {
         const domain = document.location.hostname;
+
+        if (shopifyDomains.includes(domain)) return this._getters.get("shopify") || {
+            checkoutButtons: (e: HTMLElement) => [],
+            placeOrderButtons: (e: HTMLElement) => [],
+            checkoutButtonLabels: (e: HTMLElement) => [],
+            addToCartButtons: (e: HTMLElement) => [],
+            getCartItems: (e: HTMLElement) => []
+        } 
         return this._getters.get(domain) || {
             checkoutButtons: (e: HTMLElement) => [],
             placeOrderButtons: (e: HTMLElement) => [],
@@ -112,7 +213,6 @@ getters.register('www.zalando.dk', {
     
     checkoutButtonLabels: (e: HTMLElement) => {
         const buttons = e.querySelectorAll('button[data-id="proceed-to-checkout-button"], button[data-id="buy-now-button-top"], button[data-id="buy-now-button-bottom"]');
-        //@ts-expect-error
         return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
     },
 
@@ -398,18 +498,78 @@ function shopifyExtender(remainders: Omit<ElementGetters, 'getCartItems' | 'plac
 
 }
 
-// TODO: EXAMPLE:
-getters.register("www.huel.com", shopifyExtender({
+getters.register("www2.hm.com", {
     checkoutButtons:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
-        return Array.from(buttons)
+        const minicart = e.querySelector<HTMLElement>('div[data-testid="minicart-open"]');
+        if (!minicart) return [];
+        const buttons1 = e.querySelectorAll<HTMLElement>('button[data-elid="header-cart-button"]');
+        const buttons2 = minicart.querySelectorAll<HTMLElement>('button')[1];
+        const allButtons = Array.from(buttons1).concat(Array.from([buttons2]));
+        return Array.from(allButtons);
     },  
+
+    placeOrderButtons:(e: HTMLElement) => {
+        const minicart = e.querySelector<HTMLElement>('div[data-testid="minicart-open"]');
+        if (!minicart) return [];
+        const buttons = e.querySelectorAll<HTMLElement>('button[data-testid="continue-button-cart-sidebar"]')
+        const button2 = minicart.querySelectorAll<HTMLElement>('button');
+        return Array.from(buttons).concat(button2[1]);  
+    },
+
+    checkoutButtonLabels:(e: HTMLElement) => {
+        const minicart = e.querySelector<HTMLElement>('div[data-testid="minicart-open"]');
+        if (!minicart) return [];
+        const buttons = minicart.querySelectorAll<HTMLElement>('button');
+        return [buttons[0]];
+    },
+
     addToCartButtons: (e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('div[class="product-actions__add-to-cart"]');
+        const buttons = e.querySelectorAll<HTMLElement>('button[data-testid="pdp_add_to_cart_button"]');
         return Array.from(buttons);
     },
-    checkoutButtonLabels: (e: HTMLElement) => {
-        const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], button[class="palette-button palette-button--primary-boozt palette-button--medium palette-button--rectangle palette-button--expanded palette-button--horizontal-align-center shopcart-quick-checkout__button"], .checkout-order-confirmation__content button')
-        return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
+
+    getCartItems: (e: HTMLElement) => {
+        return [];
     }
-}))
+})
+
+getters.register("shopify", {
+    checkoutButtons:(e: HTMLElement) => {
+        return [];
+    },  
+
+    placeOrderButtons:(e: HTMLElement) => {
+        console.log("OH YES WE ARE POPPING")
+        const button = e.querySelectorAll<HTMLElement>('button[id="checkout-pay-button"]');
+        return Array.from(button);
+    },
+
+    checkoutButtonLabels:(e: HTMLElement) => {
+        const button = e.querySelectorAll<HTMLElement>('button[id="checkout-pay-button"]');
+        return Array.from(button);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+       return [];
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        return [];
+    }
+})
+
+// TODO: EXAMPLE:
+// getters.register("www.huel.com", shopifyExtender({
+//     checkoutButtons:(e: HTMLElement) => {
+//         const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
+//         return Array.from(buttons)
+//     },  
+//     addToCartButtons: (e: HTMLElement) => {
+//         const buttons = e.querySelectorAll<HTMLElement>('div[class="product-actions__add-to-cart"]');
+//         return Array.from(buttons);
+//     },
+//     checkoutButtonLabels: (e: HTMLElement) => {
+//         const buttons = e.querySelectorAll('div[class="shopcart-order-summary__action"], button[class="palette-button palette-button--primary-boozt palette-button--medium palette-button--rectangle palette-button--expanded palette-button--horizontal-align-center shopcart-quick-checkout__button"], .checkout-order-confirmation__content button')
+//         return Array.from(buttons.entries().map(([_, element]) => element.querySelector('span')));
+//     }
+// }))
