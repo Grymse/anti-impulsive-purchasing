@@ -8,7 +8,6 @@ type AnalyticsEvent = {
   user_id: string;
   session_id: string;
   created_at: string;
-  apikey: string;
 };
 
 export async function sendAnalytics<T extends keyof AnalyticsPayloads>(
@@ -23,8 +22,15 @@ export async function sendAnalytics<T extends keyof AnalyticsPayloads>(
     user_id: userID,
     session_id: "none",
     created_at: new Date().toISOString(),
-    apikey: import.meta.env.VITE_ANALYTICS_SECRET || "",
   };
-  const URL = import.meta.env.VITE_ANALYTICS_URL || "";
-  navigator.sendBeacon(URL,JSON.stringify(data));
+
+  const URL = import.meta.env.VITE_SUPABASE_URL + "analytics?apikey=" + import.meta.env.VITE_ANALYTICS_SECRET
+
+  fetch(URL, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json"
+    },
+  });
 }
