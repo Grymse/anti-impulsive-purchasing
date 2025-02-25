@@ -1,3 +1,4 @@
+import { getUserId } from "./analytics";
 import { PersistentValue } from "./utils";
 
 
@@ -35,7 +36,25 @@ export const settings = new PersistentValue<Settings>("settings",
     }
 );
 
+
+function hexToNumber(hex: string) {
+    return parseInt(hex, 16);
+}
+
+function idToIndex(id: string, max: number) {
+    const segment = id.split("-")[0];
+    const number = hexToNumber(segment);
+    return number % max;
+}
+
+function selectStrategyFromId(id: string) : StrategyType {
+    const index = idToIndex(id, strategies.length);
+    return strategies[index].code;
+}
+
 // Enforce activeStrategy changes
-/* settings.onInit(_ => {
-    settings.value.activeStrategies = ["need-this", "enforce-wait"];
-}) */
+getUserId().then(userId => {
+    settings.onInit(_ => {
+        settings.value.activeStrategies = [selectStrategyFromId(userId)];
+    })
+});

@@ -83,7 +83,7 @@ async function getSessionId(): Promise<string> {
   return session.id;
 }
 
-async function getUserId(): Promise<string> {
+export async function getUserId(): Promise<string> {
   const id = (await chrome.storage.local.get("userid"))?.["userid"];
   if (id) return id;
 
