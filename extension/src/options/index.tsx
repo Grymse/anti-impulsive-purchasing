@@ -9,6 +9,7 @@ import Header from "./Header"
 import Text from './Text';
 import { Li, Ul } from "./Lists"
 import { Link } from './Text';
+import SettingsPage from "./Settings"
 
 function OptionsPage() {
   let { isActive, toggleActive } = useConsent()
@@ -17,6 +18,10 @@ function OptionsPage() {
   const preferDarkmode = window.matchMedia(
     "(prefers-color-scheme: dark)"
   ).matches
+
+  const secretSettings = window.location.search.includes("secret");
+
+  if (secretSettings) return <SettingsPage />
 
   return (
     <main

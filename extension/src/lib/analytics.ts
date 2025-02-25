@@ -1,8 +1,7 @@
 import type { ShoppingItem } from "./getters";
-import { PersistentValue } from "./utils";
+import { settings } from "./settings";
 
 const SESSION_LENGTH = 1000 * 30; // 1000 * 60 * 15; // 30 minutes
-export const consent = new PersistentValue<boolean>("content");
 
 export function removeData() {
   sendAnalytics("remove-data", undefined);
@@ -24,15 +23,17 @@ type AnalyticsPayloads = {
   "place-order": ShoppingItem[];
   "page-view": undefined;
   "time-spent": { duration: number };
-  "consent": { allow: boolean };
+  "active": boolean;
   "remove-data": undefined;
+  "cancel": undefined;
+  "answer": { question: string; answer: string };
 };
 
 export async function sendAnalytics<T extends keyof AnalyticsPayloads>(
   type: T,
   payload: AnalyticsPayloads[T],
 ) {
-  if (type !== "remove-data" && type !== "consent" && !consent.value) return;
+  if (!(["active", "remove-data"].includes(type)) && !settings.value.active) return;
 
   const data: AnalyticsEvent = {
     type,
@@ -44,8 +45,11 @@ export async function sendAnalytics<T extends keyof AnalyticsPayloads>(
     apikey: process.env.PLASMO_PUBLIC_ANALYTICS_SECRET,
   };
 
+  if (process.env.NODE_ENV === "development") {
+    console.log(`${data.type} - ${data.url} - ${data.payload}`);
+  }
+
   // Send the analytics data to the server
-  console.log(`${data.type} - ${data.url} - ${data.payload}`);
   const URL = process.env.PLASMO_PUBLIC_ANALYTICS_URL
   /* fetch(URL, {
     method: "POST",

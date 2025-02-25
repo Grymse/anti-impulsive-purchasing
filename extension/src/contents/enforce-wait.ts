@@ -1,8 +1,8 @@
 import type { PlasmoCSConfig } from "plasmo";
-import { consent } from "~lib/analytics";
 import { getters as getterRegistry } from "~lib/getters";
 import { observer } from "~lib/observer";
 import permit, { type Permit } from "~lib/permit";
+import { settings } from "~lib/settings";
 
 export const config: PlasmoCSConfig = {
   matches: [
@@ -14,15 +14,13 @@ export const config: PlasmoCSConfig = {
     "https://www.proshop.dk/*",
     "https://www.boozt.com/*",
     "https://www2.hm.com/*",
-    "https://klaedeskabet.dk/*",
-    "https://jeffreestarcosmetics.com/*",
 
     // ----- 100 Shopify domains -----
-    // Using "www." where the site is confirmed to redirect to or be served at "www"
+    "https://klaedeskabet.dk/*",
     "https://www.fashionnova.com/*",
     "https://kyliecosmetics.com/*",
     "https://colourpop.com/*",
-    // jeffreestarcosmetics.com already in original list
+    "https://jeffreestarcosmetics.com/*",
     "https://www.gymshark.com/*",
     "https://www.allbirds.com/*",
     "https://www.brooklinen.com/*",
@@ -113,8 +111,6 @@ export const config: PlasmoCSConfig = {
 const getters = getterRegistry.getDomainGetters();
 let currentTarget = document.body;
 
-
-
 function effect(signal: {signal: AbortSignal}) {
   updateVisuals();
 
@@ -127,6 +123,9 @@ function effect(signal: {signal: AbortSignal}) {
   getters.placeOrderButtons(currentTarget).forEach((button) => {
     button.addEventListener("click", onPlaceOrderClick);
   }, signal);
+
+  document.body.setAttribute('data-plasmo-place-order-blocked', permit.isValid() ? "false" : "true");
+  document.body.setAttribute('data-plasmo-checkout-blocked', permit.isValid() ? "false" : "true");
 }
 
 function onPlaceOrderClick(e: Event)  {
@@ -144,6 +143,7 @@ function onPlaceOrderClick(e: Event)  {
   // Clear the permit if it is valid
   permit.markAsUsed();
 }
+
 
 
 function onCheckoutClick(e: Event) {
@@ -183,7 +183,7 @@ function updateVisuals() {
   getters.checkoutButtonLabels(currentTarget).forEach(injectVisuals);
 }
 
-consent.onInit((hasConsent) => {
-  if (!hasConsent) return;
+settings.onInit((settings) => {
+  if (!settings.active || !settings.activeStrategies.includes('enforce-wait')) return;
   observer.addEffect(effect)
 });

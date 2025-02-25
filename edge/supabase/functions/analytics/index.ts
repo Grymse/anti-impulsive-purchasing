@@ -66,8 +66,6 @@ Deno.serve(async (req) => {
     },
   });
 
-  console.log(res.statusText);
-
   return new Response(await res.text(), { status: res.status });
 });
 

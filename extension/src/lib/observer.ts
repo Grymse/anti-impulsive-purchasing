@@ -1,5 +1,5 @@
 import { debounce } from 'lodash';
-import { consent } from './analytics';
+import { settings } from './settings';
 
 const BOUNCE_TIME = 100;
 
@@ -50,7 +50,7 @@ export function withCleanUp(f: Effect) {
     return () => {
         if (abortController) abortController.abort();
         if (cleanUp) cleanUp();
-        if (!consent.value) return;
+        if (!settings.value.active) return;
         abortController = new AbortController();
         cleanUp = f({signal: abortController.signal});
     };
