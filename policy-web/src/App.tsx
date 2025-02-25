@@ -72,7 +72,97 @@ function GoodbyePage() {
           />
         </div>
         <Header variant="h1">Are you sure? We'd hate to see you leave.</Header>
-        <div className="mt-12" />
+        <div className="mt-12 mb-6">
+          <Header variant="h3">What is the reason for uninstalling?</Header>
+        </div>
+        <div className="flex flex-wrap justify-center gap-4">
+          <Button
+            className="w-full sm:w-auto"
+            onClick={(e) => {
+              const userID = new URLSearchParams(window.location.search).get(
+                "userid"
+              );
+              sendQuestionaryResponse(
+                userID || "",
+                "Reason for Leaving",
+                "Not Useful",
+                "uninstall"
+              );
+              disableButtons(e);
+            }}
+          >
+            Not Useful
+          </Button>
+          <Button
+            className="w-full sm:w-auto"
+            onClick={(e) => {
+              const userID = new URLSearchParams(window.location.search).get(
+                "userid"
+              );
+              sendQuestionaryResponse(
+                userID || "",
+                "Reason for Leaving",
+                "Found a Better Extension",
+                "uninstall"
+              );
+              disableButtons(e);
+            }}
+          >
+            Found alternative
+          </Button>
+          <Button
+            className="w-full sm:w-auto"
+            onClick={(e) => {
+              const userID = new URLSearchParams(window.location.search).get(
+                "userid"
+              );
+              sendQuestionaryResponse(
+                userID || "",
+                "Reason for Leaving",
+                "Privacy Concerns",
+                "uninstall"
+              );
+              disableButtons(e);
+            }}
+          >
+            Privacy Concerns
+          </Button>
+          <Button
+            className="w-full sm:w-auto"
+            onClick={(e) => {
+              const userID = new URLSearchParams(window.location.search).get(
+                "userid"
+              );
+              sendQuestionaryResponse(
+                userID || "",
+                "Reason for Leaving",
+                "Too Many Bugs",
+                "uninstall"
+              );
+              disableButtons(e);
+            }}
+          >
+            Buggy
+          </Button>
+          <Button
+            className="w-full sm:w-auto"
+            onClick={(e) => {
+              const userID = new URLSearchParams(window.location.search).get(
+                "userid"
+              );
+              sendQuestionaryResponse(
+                userID || "",
+                "Reason for Leaving",
+                "Other",
+                "uninstall"
+              );
+              disableButtons(e);
+            }}
+          >
+            Other
+          </Button>
+        </div>
+        <div className="mt-14"></div>
         <Header variant="h3">
           Please provide your feedback on the extension
         </Header>
@@ -81,33 +171,41 @@ function GoodbyePage() {
           placeholder="Please let us know your thoughts..."
           rows={5}
         />
-        <Button
-          className="w-full mt-4"
-          onClick={() => {
-            const feedback = document.querySelector("textarea")?.value;
-            const userID = new URLSearchParams(window.location.search).get(
-              "userid"
-            );
-            if (feedback) {
-              sendQuestionaryResponse(
-                userID || "",
-                "Typed Feedback",
-                feedback,
-                "uninstall"
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+          <Button
+            className="w-full"
+            onClick={(e: any) => {
+              const feedback = document.querySelector("textarea")?.value;
+              const userID = new URLSearchParams(window.location.search).get(
+                "userid"
               );
-              const button = document.querySelector("button");
-              if (button) {
-                button.disabled = true;
-                button.textContent = "Response Sent!";
+              if (feedback) {
+                sendQuestionaryResponse(
+                  userID || "",
+                  "Typed Feedback",
+                  feedback,
+                  "uninstall"
+                );
+                const button = e.target;
+                if (button) {
+                  button.disabled = true;
+                  button.textContent = "Feedback Submitted";
+                }
+                alert("Thank you for your feedback!");
+                window.location.href = "https://www.google.com";
+              } else {
+                alert("Please provide your feedback before continuing.");
               }
-              alert("Thank you for your feedback!");
-            } else {
-              alert("Please provide your feedback before submitting.");
-            }
-          }}
-        >
-          Submit Feedback
-        </Button>
+            }}
+          >
+            Continue
+          </Button>
+          <Button className="w-full ">
+            <a href="https://chromewebstore.google.com/detail/less/kcgblchgejkpnemehaojecgbamdiacml">
+              Reinstall
+            </a>
+          </Button>
+        </div>
         <div className="mt-8 absolute bottom-10"></div>
       </div>
     </div>
@@ -357,4 +455,11 @@ function IndexPage() {
       </Text>
     </div>
   );
+}
+
+function disableButtons(event: any) {
+  const buttons = event.target.parentElement.querySelectorAll("button");
+  buttons.forEach((button: any) => {
+    button.disabled = true;
+  });
 }
