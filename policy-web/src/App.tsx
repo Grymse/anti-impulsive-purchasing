@@ -174,8 +174,8 @@ function GoodbyePage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
           <Button
             className="w-full"
-            onClick={(e: any) => {
-              const feedback = document.querySelector("textarea")?.value;
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              const feedback = document.querySelector<HTMLTextAreaElement>("textarea")?.value;
               const userID = new URLSearchParams(window.location.search).get(
                 "userid"
               );
@@ -186,7 +186,7 @@ function GoodbyePage() {
                   feedback,
                   "uninstall"
                 );
-                const button = e.target;
+                const button = e.target as HTMLButtonElement;
                 if (button) {
                   button.disabled = true;
                   button.textContent = "Feedback Submitted";
