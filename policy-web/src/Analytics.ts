@@ -9,6 +9,12 @@ type AnalyticsEvent = {
   session_id: string;
   created_at: string;
 };
+type QuestionaryResponse = {
+  user_id: string;
+  question: string;
+  answer: string;
+  questionary: string;
+};
 
 export async function sendAnalytics<T extends keyof AnalyticsPayloads>(
   type: T,
@@ -26,6 +32,28 @@ export async function sendAnalytics<T extends keyof AnalyticsPayloads>(
 
   const URL = import.meta.env.VITE_SUPABASE_URL + "analytics?apikey=" + import.meta.env.VITE_ANALYTICS_SECRET
 
+  fetch(URL, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json"
+    },
+  });
+}
+
+export async function sendQuestionaryResponse (
+  userid : string,
+  question : string,
+  answer : string,
+  questionary : string 
+) {
+  const data: QuestionaryResponse = {
+    user_id: userid,
+    question: question,
+    answer: answer,
+    questionary: questionary
+  };
+  const URL = import.meta.env.VITE_SUPABASE_URL + "questionary?apikey=" + import.meta.env.VITE_ANALYTICS_SECRET
   fetch(URL, {
     method: "POST",
     body: JSON.stringify(data),

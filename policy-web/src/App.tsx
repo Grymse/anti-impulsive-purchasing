@@ -3,7 +3,7 @@ import Text from "./Text";
 import { Li, Ul } from "./Lists";
 import { Link } from "./Text";
 import { Button } from "./components/ui/button";
-import { sendAnalytics } from "./Analytics";
+import { sendAnalytics, sendQuestionaryResponse } from "./Analytics";
 import { ReactNode, useEffect } from "react";
 
 export default function App() {
@@ -85,9 +85,16 @@ function GoodbyePage() {
           className="w-full mt-4"
           onClick={() => {
             const feedback = document.querySelector("textarea")?.value;
+            const userID = new URLSearchParams(window.location.search).get(
+              "userid"
+            );
             if (feedback) {
-              // Handle the feedback submission logic here
-              console.log("Feedback submitted:", feedback);
+              sendQuestionaryResponse(
+                userID || "",
+                "Typed Feedback",
+                feedback,
+                "uninstall"
+              );
               alert("Thank you for your feedback!");
             } else {
               alert("Please provide your feedback before submitting.");
