@@ -95,6 +95,11 @@ function GoodbyePage() {
                 feedback,
                 "uninstall"
               );
+              const button = document.querySelector("button");
+              if (button) {
+                button.disabled = true;
+                button.textContent = "Response Sent!";
+              }
               alert("Thank you for your feedback!");
             } else {
               alert("Please provide your feedback before submitting.");
