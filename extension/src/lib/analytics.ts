@@ -27,6 +27,7 @@ type AnalyticsPayloads = {
   "remove-data": undefined;
   "cancel": undefined;
   "answer": { question: string; answer: string };
+  'uninstall': undefined;
 };
 
 export async function sendAnalytics<T extends keyof AnalyticsPayloads>(
@@ -37,7 +38,7 @@ export async function sendAnalytics<T extends keyof AnalyticsPayloads>(
 
   const data: AnalyticsEvent = {
     type,
-    url: window.location.hostname + window.location.pathname,
+    url: window ? window.location.hostname + window.location.pathname : "",
     payload: JSON.stringify(payload),
     user_id: await getUserId(),
     session_id: await getSessionId(),
