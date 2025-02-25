@@ -28,7 +28,7 @@ export default function App() {
       >
         <div className="max-w-2xl space-y-2">
           <div className="flex flex-col items-center justify-center mb-8">
-            <div className="mb-12">
+            <div className="mb-12 mt-28">
               <img
                 src="/icon.png"
                 alt="Extension Logo (On)"
@@ -43,32 +43,6 @@ export default function App() {
               <Text>Sustainable Consumption ✅</Text>
               <Text>Financial Freedom ✅</Text>
               <Text>Reducing Impulsive Purchasing ✅</Text>
-            </div>
-            <div className="absolute top-4 right-60 flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="white"
-                className="w-12 h-12 animate-bounce"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={5}
-                  d="M5 10l7-7m0 0l7 7m-7-7v18"
-                />
-              </svg>
-              <img
-                src="/puzzle.svg"
-                alt="Puzzle Icon"
-                width={48}
-                height={48}
-                className="w-12 h-12 ml-4 filter invert"
-              />
-            </div>
-            <div className="mt-12">
-              <Header variant="h1"> Remember to turn on the extension!</Header>
             </div>
             <div className="mt-8 absolute bottom-10">
               <a href="/">
