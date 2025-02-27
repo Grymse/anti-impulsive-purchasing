@@ -5,6 +5,7 @@ import { Link } from "./Text";
 import { Button } from "./components/ui/button";
 import { sendAnalytics, sendQuestionaryResponse } from "./Analytics";
 import { ReactNode, useEffect } from "react";
+import BackgroundWave from "./BackgroundWave";
 
 export default function App() {
   const pathname = window.location.pathname;
@@ -32,22 +33,26 @@ export default function App() {
 }
 
 function Layout({ children }: { children: ReactNode }) {
-  const preferDarkmode = window.matchMedia(
-    "(prefers-color-scheme: dark)"
-  ).matches;
-
   return (
-    <main
-      className={`
-        ${preferDarkmode ? "dark" : ""}
-        min-h-screen
-        flex flex-col items-center justify-center
-        bg-background
-        px-8 py-6
-      `}
-    >
-      {children}
-    </main>
+    <div className="dark">
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: '#0a0a14', // Dark background
+        zIndex: -2
+      }} />
+      <BackgroundWave />
+      <main
+        className="min-h-screen flex flex-col items-center justify-center p-6 relative z-10 text-white"
+      >
+        <div className="w-full max-w-2xl bg-black/30 p-8 rounded-xl backdrop-blur-sm shadow-xl">
+          {children}
+        </div>
+      </main>
+    </div>
   );
 }
 
@@ -258,6 +263,12 @@ function IndexPage() {
             height={128}
             className="w-full h-full max-w-[200px] animation-breathe"
           />
+        </div>
+        {/* Inspirational message */}
+        <div className="w-full mb-6">
+          <Text className="text-center text-sm text-muted-foreground mt-2">
+            Take a breath and think before you buy
+          </Text>
         </div>
         {/* Toggle Button */}
         <Button
