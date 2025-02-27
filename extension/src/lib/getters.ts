@@ -586,3 +586,48 @@ getters.register("www.elgiganten.dk", {
         return items;
     }
 })
+
+getters.register("www.magasin.dk", {
+    checkoutButtons:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('div[class="minicart__icon"], button[class="checkout-btn button -primary -full-width"]');
+        return Array.from(buttons);
+    },  
+
+    placeOrderButtons:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[id="submitPayment"]');
+        return Array.from(buttons);
+    },
+
+    checkoutButtonLabels:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="checkout-btn button -primary -full-width"]');
+        return Array.from(buttons);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="button -primary -fw --brand-default add-to-cart js-size-selection-modal  is-disabled"], button[ref="add-to-cart-btn"], svg[class="svg-icon svg-icon-quickAddButton"]');
+        return Array.from(buttons);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const cart = e.querySelector<HTMLElement>('aside[class="checkout__summary hidden-until-lg"]');
+        if (cart === null) return [];
+        const priceElements = Array.from(cart.querySelectorAll<HTMLElement>('div[class="sales-wrapper"]')).map(e => {
+            if (e.textContent.includes("Normal")) {
+                return parseInt(e.textContent.split("Normal pris")[1]);
+            } else {
+                return parseInt(e.textContent);
+            }
+        });
+        const quantityElements = Array.from(cart.querySelectorAll<HTMLElement>('div[class="product_card-item-quantity"]')).map(e => e.textContent.split(" ")[0]);
+
+        let items = [];
+        for (let i = 0; i < priceElements.length; i++) {
+            items.push({
+                quantity: parseInt(quantityElements[i]),
+                price: priceElements[i],
+                currency: "kr"
+            });
+        }
+        return items;
+    }
+})

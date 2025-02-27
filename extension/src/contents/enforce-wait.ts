@@ -15,6 +15,7 @@ export const config: PlasmoCSConfig = {
     "https://www.boozt.com/*",
     "https://www2.hm.com/*",
     "https://www.elgiganten.dk/*",
+    "https://www.magasin.dk/*",
 
     // ----- 100 Shopify domains -----
     "https://klaedeskabet.dk/*",
