@@ -35,7 +35,7 @@ const shopifyDomains = [
     "www.allbirds.com",
     "www.brooklinen.com",
     "ruggable.com",
-    "shop.ruggable.com", // subdomain
+    "shop.ruggable.com",
     "www.chubbiesshorts.com",
     "checkout.chubbiesshorts.com",
     "www.puravidabracelets.com",
@@ -66,53 +66,53 @@ const shopifyDomains = [
     "greatjonesgoods.com",
     "pinklily.com",
     "misen.com", 
-    "materialkitchen.com", //current
-    "glossier.com",
-    "hedleyandbennett.com",
-    "starface.world",
-    "youthtothepeople.com",
-    "myhydro.hydroflask.com",
-    "rumpl.com",
-    "therabody.com",
-    "aesop.com",
-    "iliabeauty.com",
-    "mizzenandmain.com",
-    "marinelayer.com",
-    "ohpolly.com",
-    "happysocks.com",
-    "tecovas.com",
-    "stance.com",
-    "eu.stance.com",
-    "spongelle.com",
-    "trueclassictees.com",
-    "meundies.com",
-    "nuggetsofwisdom.com",
-    "studs.com",
-    "jackhenry.co",
-    "luxyhair.com",
-    "juicycouture.com",
-    "everlast.com",
-    "getstix.co",
-    "skims.com",
-    "feals.com",
-    "foursigmatic.com",
-    "golde.co",
-    "liquid-iv.com",
-    "readyjudy.com",
-    "thesill.com",
-    "wearlively.com",
-    "andieswim.com",
-    "yourparade.com",
-    "brightland.co",
-    "omsom.com",
-    "jenis.com",
-    "partakefoods.com",
-    "snowehome.com",
-    "imperfectfoods.com",
-    "graza.co",
-    "flybyjing.com",
-    "getmaude.com",
-    "ugmonk.com",
+    "materialkitchen.com",
+    // "glossier.com",
+    // "hedleyandbennett.com",
+    // "starface.world",
+    // "youthtothepeople.com",
+    // "myhydro.hydroflask.com",
+    // "rumpl.com",
+    // "therabody.com",
+    // "aesop.com",
+    // "iliabeauty.com",
+    // "mizzenandmain.com",
+    // "marinelayer.com",
+    // "ohpolly.com",
+    // "happysocks.com",
+    // "tecovas.com",
+    // "stance.com",
+    // "eu.stance.com",
+    // "spongelle.com",
+    // "trueclassictees.com",
+    // "meundies.com",
+    // "nuggetsofwisdom.com",
+    // "studs.com",
+    // "jackhenry.co",
+    // "luxyhair.com",
+    // "juicycouture.com",
+    // "everlast.com",
+    // "getstix.co",
+    // "skims.com",
+    // "feals.com",
+    // "foursigmatic.com",
+    // "golde.co",
+    // "liquid-iv.com",
+    // "readyjudy.com",
+    // "thesill.com",
+    // "wearlively.com",
+    // "andieswim.com",
+    // "yourparade.com",
+    // "brightland.co",
+    // "omsom.com",
+    // "jenis.com",
+    // "partakefoods.com",
+    // "snowehome.com",
+    // "imperfectfoods.com",
+    // "graza.co",
+    // "flybyjing.com",
+    // "getmaude.com",
+    // "ugmonk.com",
 ]
 
 
@@ -542,5 +542,49 @@ getters.register("shopify", {
                 currency,
             }
         });
+    }
+})
+
+getters.register("www.elgiganten.dk", {
+    checkoutButtons:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('a[href="/checkout-integration"]');
+        buttons.forEach(e => e.style.backgroundColor = 'red');
+        return Array.from(buttons);
+    },  
+
+    placeOrderButtons:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[data-ta="checkoutPlaceOrder-button"]');
+        buttons.forEach(e => e.style.backgroundColor = 'black');
+        return Array.from(buttons);
+    },
+
+    checkoutButtonLabels:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('a[href="/checkout-integration"]');
+        buttons.forEach(e => e.style.backgroundColor = 'red');
+        return Array.from(buttons);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[data-testid="addToCart-buyBox"], button[data-animating="false"]');
+        buttons.forEach(e => e.style.backgroundColor = 'blue');
+        return Array.from(buttons);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const cart = e.querySelector<HTMLElement>('ul[data-testid="order-summary"]');
+        if (cart === null) return [];
+        const priceElements = Array.from(cart.querySelectorAll<HTMLElement>('div.grid.grid-cols-subgrid.grid-rows-subgrid.row-span-2.gap-1.items-end')).map(e => e.textContent.split(".")[0]);
+        //@ts-expect-error: value is a valid field.
+        const quantityElements = Array.from(cart.querySelectorAll<HTMLElement>('input[pattern="[0-9]*"]')).map(e => e.value);
+
+        let items = [];
+        for (let i = 0; i < priceElements.length; i++) {
+            items.push({
+                quantity: parseInt(quantityElements[i]),
+                price: parseFloat(priceElements[i]),
+                currency: "kr"
+            });
+        }
+        return items;
     }
 })
