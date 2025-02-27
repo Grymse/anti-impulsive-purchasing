@@ -657,3 +657,43 @@ getters.register("euqs.shein.com", {
         return [];
     }
 })
+
+getters.register("www.apple.com", {
+    checkoutButtons:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[name="proceed"], button[id="globalnav-menubutton-link-bag"], a[data-analytics-title="Review Bag"]');
+        return Array.from(buttons);
+    },  
+
+    placeOrderButtons:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[id="shoppingCart.actions.navApwCheckout"], button[id="shoppingCart.actions.apwCheckout"], button[id="shoppingCart.actions.navCheckoutOtherPayments"], button[id="shoppingCart.actions.checkoutOtherPayments"]');
+        return Array.from(buttons);
+    },
+
+    checkoutButtonLabels:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[name="proceed"]');
+        return Array.from(buttons);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[name="add-to-cart"], div[class="rc-addtobag-container"], button[data-autom="recommendations-addToBag-button"]');
+        return Array.from(buttons);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const cart = e.querySelector<HTMLElement>('ol[data-autom="bag-items"]');
+        if (cart === null) return [];
+        const priceElements = Array.from(cart.querySelectorAll<HTMLElement>('div[data-autom="Monthly_price"]')).map(e => e.textContent);
+        //@ts-expect-error: value is a valid field.
+        const quantityElements = Array.from(cart.querySelectorAll<HTMLElement>('select[class="rs-quantity-dropdown form-dropdown-select"]')).map(e => e.value);
+
+        let items = [];
+        for (let i = 0; i < priceElements.length; i++) {
+            items.push({
+                quantity: parseInt(quantityElements[i]),
+                price: parseFloat(priceElements[i]),
+                currency: splitPriceCurrency(priceElements[i]).currency
+            });
+        }
+        return items;
+    }
+})
