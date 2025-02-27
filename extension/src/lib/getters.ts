@@ -548,25 +548,23 @@ getters.register("shopify", {
 getters.register("www.elgiganten.dk", {
     checkoutButtons:(e: HTMLElement) => {
         const buttons = e.querySelectorAll<HTMLElement>('a[href="/checkout-integration"]');
-        buttons.forEach(e => e.style.backgroundColor = 'red');
         return Array.from(buttons);
     },  
 
     placeOrderButtons:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[data-ta="checkoutPlaceOrder-button"]');
-        buttons.forEach(e => e.style.backgroundColor = 'black');
+        const section = e.querySelector('div[class="md:self-start"]');
+        if (section == null) return [];
+        const buttons = section.querySelectorAll<HTMLElement>('button');
         return Array.from(buttons);
     },
 
     checkoutButtonLabels:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('a[href="/checkout-integration"]');
-        buttons.forEach(e => e.style.backgroundColor = 'red');
+        const buttons = e.querySelectorAll<HTMLElement>('a[href="/checkout-integration"], button[data-ta="checkoutPlaceOrder-button"]');
         return Array.from(buttons);
     },
 
     addToCartButtons: (e: HTMLElement) => {
         const buttons = e.querySelectorAll<HTMLElement>('button[data-testid="addToCart-buyBox"], button[data-animating="false"]');
-        buttons.forEach(e => e.style.backgroundColor = 'blue');
         return Array.from(buttons);
     },
 
