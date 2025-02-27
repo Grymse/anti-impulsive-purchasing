@@ -612,8 +612,8 @@ getters.register("www.magasin.dk", {
         const cart = e.querySelector<HTMLElement>('aside[class="checkout__summary hidden-until-lg"]');
         if (cart === null) return [];
         const priceElements = Array.from(cart.querySelectorAll<HTMLElement>('div[class="sales-wrapper"]')).map(e => {
-            if (e.textContent.includes("Normal")) {
-                return parseInt(e.textContent.split("Normal pris")[1]);
+            if (e.textContent.includes("Normal pris")) {
+                return parseInt(e.textContent.split("Normal pris")[1].replaceAll(".", ""));
             } else {
                 return parseInt(e.textContent);
             }
