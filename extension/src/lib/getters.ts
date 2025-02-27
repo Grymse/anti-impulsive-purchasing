@@ -35,7 +35,7 @@ const shopifyDomains = [
     "www.allbirds.com",
     "www.brooklinen.com",
     "ruggable.com",
-    "shop.ruggable.com", // subdomain
+    "shop.ruggable.com",
     "www.chubbiesshorts.com",
     "checkout.chubbiesshorts.com",
     "www.puravidabracelets.com",
@@ -66,53 +66,53 @@ const shopifyDomains = [
     "greatjonesgoods.com",
     "pinklily.com",
     "misen.com", 
-    "materialkitchen.com", //current
-    "glossier.com",
-    "hedleyandbennett.com",
-    "starface.world",
-    "youthtothepeople.com",
-    "myhydro.hydroflask.com",
-    "rumpl.com",
-    "therabody.com",
-    "aesop.com",
-    "iliabeauty.com",
-    "mizzenandmain.com",
-    "marinelayer.com",
-    "ohpolly.com",
-    "happysocks.com",
-    "tecovas.com",
-    "stance.com",
-    "eu.stance.com",
-    "spongelle.com",
-    "trueclassictees.com",
-    "meundies.com",
-    "nuggetsofwisdom.com",
-    "studs.com",
-    "jackhenry.co",
-    "luxyhair.com",
-    "juicycouture.com",
-    "everlast.com",
-    "getstix.co",
-    "skims.com",
-    "feals.com",
-    "foursigmatic.com",
-    "golde.co",
-    "liquid-iv.com",
-    "readyjudy.com",
-    "thesill.com",
-    "wearlively.com",
-    "andieswim.com",
-    "yourparade.com",
-    "brightland.co",
-    "omsom.com",
-    "jenis.com",
-    "partakefoods.com",
-    "snowehome.com",
-    "imperfectfoods.com",
-    "graza.co",
-    "flybyjing.com",
-    "getmaude.com",
-    "ugmonk.com",
+    "materialkitchen.com",
+    // "glossier.com",
+    // "hedleyandbennett.com",
+    // "starface.world",
+    // "youthtothepeople.com",
+    // "myhydro.hydroflask.com",
+    // "rumpl.com",
+    // "therabody.com",
+    // "aesop.com",
+    // "iliabeauty.com",
+    // "mizzenandmain.com",
+    // "marinelayer.com",
+    // "ohpolly.com",
+    // "happysocks.com",
+    // "tecovas.com",
+    // "stance.com",
+    // "eu.stance.com",
+    // "spongelle.com",
+    // "trueclassictees.com",
+    // "meundies.com",
+    // "nuggetsofwisdom.com",
+    // "studs.com",
+    // "jackhenry.co",
+    // "luxyhair.com",
+    // "juicycouture.com",
+    // "everlast.com",
+    // "getstix.co",
+    // "skims.com",
+    // "feals.com",
+    // "foursigmatic.com",
+    // "golde.co",
+    // "liquid-iv.com",
+    // "readyjudy.com",
+    // "thesill.com",
+    // "wearlively.com",
+    // "andieswim.com",
+    // "yourparade.com",
+    // "brightland.co",
+    // "omsom.com",
+    // "jenis.com",
+    // "partakefoods.com",
+    // "snowehome.com",
+    // "imperfectfoods.com",
+    // "graza.co",
+    // "flybyjing.com",
+    // "getmaude.com",
+    // "ugmonk.com",
 ]
 
 
@@ -542,5 +542,202 @@ getters.register("shopify", {
                 currency,
             }
         });
+    }
+})
+
+getters.register("www.elgiganten.dk", {
+    checkoutButtons:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('a[href="/checkout-integration"]');
+        return Array.from(buttons);
+    },  
+
+    placeOrderButtons:(e: HTMLElement) => {
+        const section = e.querySelector('div[class="md:self-start"]');
+        if (section == null) return [];
+        const buttons = section.querySelectorAll<HTMLElement>('button');
+        return Array.from(buttons);
+    },
+
+    checkoutButtonLabels:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('a[href="/checkout-integration"], button[data-ta="checkoutPlaceOrder-button"]');
+        return Array.from(buttons);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[data-testid="addToCart-buyBox"], button[data-animating="false"]');
+        return Array.from(buttons);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const cart = e.querySelector<HTMLElement>('ul[data-testid="order-summary"]');
+        if (cart === null) return [];
+        const priceElements = Array.from(cart.querySelectorAll<HTMLElement>('div.grid.grid-cols-subgrid.grid-rows-subgrid.row-span-2.gap-1.items-end')).map(e => e.textContent.split(".")[0]);
+        //@ts-expect-error: value is a valid field.
+        const quantityElements = Array.from(cart.querySelectorAll<HTMLElement>('input[pattern="[0-9]*"]')).map(e => e.value);
+
+        let items = [];
+        for (let i = 0; i < priceElements.length; i++) {
+            items.push({
+                quantity: parseInt(quantityElements[i]),
+                price: parseFloat(priceElements[i]),
+                currency: "kr"
+            });
+        }
+        return items;
+    }
+})
+
+getters.register("www.magasin.dk", {
+    checkoutButtons:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('div[class="minicart__icon"], button[class="checkout-btn button -primary -full-width"]');
+        return Array.from(buttons);
+    },  
+
+    placeOrderButtons:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[id="submitPayment"]');
+        return Array.from(buttons);
+    },
+
+    checkoutButtonLabels:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="checkout-btn button -primary -full-width"]');
+        return Array.from(buttons);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="button -primary -fw --brand-default add-to-cart js-size-selection-modal  is-disabled"], button[ref="add-to-cart-btn"], svg[class="svg-icon svg-icon-quickAddButton"]');
+        return Array.from(buttons);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const cart = e.querySelector<HTMLElement>('aside[class="checkout__summary hidden-until-lg"]');
+        if (cart === null) return [];
+        const priceElements = Array.from(cart.querySelectorAll<HTMLElement>('div[class="sales-wrapper"]')).map(e => {
+            if (e.textContent.includes("Normal pris")) {
+                return parseInt(e.textContent.split("Normal pris")[1].replaceAll(".", ""));
+            } else {
+                return parseInt(e.textContent);
+            }
+        });
+        const quantityElements = Array.from(cart.querySelectorAll<HTMLElement>('div[class="product_card-item-quantity"]')).map(e => e.textContent.split(" ")[0]);
+
+        let items = [];
+        for (let i = 0; i < priceElements.length; i++) {
+            items.push({
+                quantity: parseInt(quantityElements[i]),
+                price: priceElements[i],
+                currency: "kr"
+            });
+        }
+        return items;
+    }
+})
+
+getters.register("euqs.shein.com", {
+    checkoutButtons:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="sui-button-common sui-button-common__primary sui-button-common__H54PX j-cart-check incentive-button"], button[class="sui-button-common sui-button-common__primary sui-button-common__H44PX bsc-mini-cart-footer__button"]');
+        return Array.from(buttons);
+    },  
+
+    placeOrderButtons:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="sui-button-common sui-button-common__primary sui-button-common__H54PX j-cart-check incentive-button"]');
+        return Array.from(buttons);
+    },
+
+    checkoutButtonLabels:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('span[class="checkout-btn-content"], button[class="sui-button-common sui-button-common__primary sui-button-common__H44PX bsc-mini-cart-footer__button"]');
+        return Array.from(buttons);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[id="ProductDetailAddBtn"], button[aria-label="ADD TO CART"], button[class="goods-btn__add goods-btn__horizontal"]');
+        return Array.from(buttons);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        return [];
+    }
+})
+
+getters.register("www.apple.com", {
+    checkoutButtons:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[name="proceed"], button[id="globalnav-menubutton-link-bag"], a[data-analytics-title="Review Bag"]');
+        return Array.from(buttons);
+    },  
+
+    placeOrderButtons:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[id="shoppingCart.actions.navApwCheckout"], button[id="shoppingCart.actions.apwCheckout"], button[id="shoppingCart.actions.navCheckoutOtherPayments"], button[id="shoppingCart.actions.checkoutOtherPayments"]');
+        return Array.from(buttons);
+    },
+
+    checkoutButtonLabels:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[name="proceed"]');
+        return Array.from(buttons);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[name="add-to-cart"], div[class="rc-addtobag-container"], button[data-autom="recommendations-addToBag-button"]');
+        return Array.from(buttons);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const cart = e.querySelector<HTMLElement>('ol[data-autom="bag-items"]');
+        if (cart === null) return [];
+        const priceElements = Array.from(cart.querySelectorAll<HTMLElement>('div[data-autom="Monthly_price"]')).map(e => e.textContent);
+        //@ts-expect-error: value is a valid field.
+        const quantityElements = Array.from(cart.querySelectorAll<HTMLElement>('select[class="rs-quantity-dropdown form-dropdown-select"]')).map(e => e.value);
+
+        let items = [];
+        for (let i = 0; i < priceElements.length; i++) {
+            items.push({
+                quantity: parseInt(quantityElements[i]),
+                price: parseFloat(priceElements[i]),
+                currency: splitPriceCurrency(priceElements[i]).currency
+            });
+        }
+        return items;
+    }
+})
+
+
+
+getters.register("www.jemogfix.dk", {
+    checkoutButtons:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[title="Indkøbskurv"], a[class="mini-basket__button btn btn-success w-100"], button[class="btn btn-success w-100"], div[class="product-price-summary__checkout"]');
+        return Array.from(buttons);
+    },  
+
+    placeOrderButtons:(e: HTMLElement) => {
+        const section = e.querySelector<HTMLElement>('div[class="checkout-step-payment"]');
+        if (section == null) return [];
+        const buttons = section.querySelectorAll<HTMLElement>('button[type="submit"]');
+        return Array.from(buttons);
+    },
+
+    checkoutButtonLabels:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[title="Indkøbskurv"], button[class="btn btn-success w-100"], div[class="product-price-summary__checkout"]');
+        return Array.from(buttons);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="product-details__button-add btn btn-success btn-add icon"]');
+        buttons.forEach(e => e.style.backgroundColor = "blue");
+        return Array.from(buttons);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const cart = e.querySelector<HTMLElement>('div[class="checkout-aside-module__products-list"]');
+        if (cart === null) return [];
+        const priceElements = Array.from(cart.querySelectorAll<HTMLElement>('div[class="checkout-aside-module__product-item-price"]')).map(e => e.textContent);
+        const quantityElements = Array.from(cart.querySelectorAll<HTMLElement>('div[class="checkout-aside-module__product-item-name"]')).map(e => parseInt(e.textContent.split("stk.")[0].replaceAll('(', '')));
+
+        let items = [];
+        for (let i = 0; i < priceElements.length; i++) {
+            items.push({
+                quantity: quantityElements[i],
+                price: parseFloat(priceElements[i]),
+                currency: "kr"
+            });
+        }
+        return items;
     }
 })
