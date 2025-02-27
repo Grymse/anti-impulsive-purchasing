@@ -697,3 +697,47 @@ getters.register("www.apple.com", {
         return items;
     }
 })
+
+
+
+getters.register("www.jemogfix.dk", {
+    checkoutButtons:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[title="Indkøbskurv"], a[class="mini-basket__button btn btn-success w-100"], button[class="btn btn-success w-100"], div[class="product-price-summary__checkout"]');
+        return Array.from(buttons);
+    },  
+
+    placeOrderButtons:(e: HTMLElement) => {
+        const section = e.querySelector<HTMLElement>('div[class="checkout-step-payment"]');
+        if (section == null) return [];
+        const buttons = section.querySelectorAll<HTMLElement>('button[type="submit"]');
+        return Array.from(buttons);
+    },
+
+    checkoutButtonLabels:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[title="Indkøbskurv"], button[class="btn btn-success w-100"], div[class="product-price-summary__checkout"]');
+        return Array.from(buttons);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="product-details__button-add btn btn-success btn-add icon"]');
+        buttons.forEach(e => e.style.backgroundColor = "blue");
+        return Array.from(buttons);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const cart = e.querySelector<HTMLElement>('div[class="checkout-aside-module__products-list"]');
+        if (cart === null) return [];
+        const priceElements = Array.from(cart.querySelectorAll<HTMLElement>('div[class="checkout-aside-module__product-item-price"]')).map(e => e.textContent);
+        const quantityElements = Array.from(cart.querySelectorAll<HTMLElement>('div[class="checkout-aside-module__product-item-name"]')).map(e => parseInt(e.textContent.split("stk.")[0].replaceAll('(', '')));
+
+        let items = [];
+        for (let i = 0; i < priceElements.length; i++) {
+            items.push({
+                quantity: quantityElements[i],
+                price: parseFloat(priceElements[i]),
+                currency: "kr"
+            });
+        }
+        return items;
+    }
+})
