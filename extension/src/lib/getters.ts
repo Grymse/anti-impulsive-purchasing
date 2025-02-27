@@ -635,7 +635,6 @@ getters.register("www.magasin.dk", {
 getters.register("euqs.shein.com", {
     checkoutButtons:(e: HTMLElement) => {
         const buttons = e.querySelectorAll<HTMLElement>('button[class="sui-button-common sui-button-common__primary sui-button-common__H54PX j-cart-check incentive-button"], button[class="sui-button-common sui-button-common__primary sui-button-common__H44PX bsc-mini-cart-footer__button"]');
-        buttons.forEach(e => e.style.backgroundColor = "red");
         return Array.from(buttons);
     },  
 
@@ -651,7 +650,6 @@ getters.register("euqs.shein.com", {
 
     addToCartButtons: (e: HTMLElement) => {
         const buttons = e.querySelectorAll<HTMLElement>('button[id="ProductDetailAddBtn"], button[aria-label="ADD TO CART"], button[class="goods-btn__add goods-btn__horizontal"]');
-        buttons.forEach(e => e.style.backgroundColor = "blue");
         return Array.from(buttons);
     },
 
