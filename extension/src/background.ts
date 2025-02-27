@@ -10,9 +10,4 @@ getUserId().then((id) => {
     })
 })
 
-// Add a listener to make sure the service worker stays active
-chrome.runtime.onInstalled.addListener(() => {
-    console.log("Extension installed")
-})
-
 export {}
