@@ -4,6 +4,7 @@ export type ElementGetters = {
     checkoutButtonLabels: (e: HTMLElement) => HTMLElement[];
     addToCartButtons: (e: HTMLElement) => HTMLElement[];
     getCartItems: (e: HTMLElement) => ShoppingItem[];
+    getOneClickBuyNow?: (e: HTMLElement) => {button?: HTMLElement, label?: HTMLElement, item: ShoppingItem}[];
 }
 
 export type ShoppingItem = {
@@ -181,7 +182,7 @@ getters.register('www.amazon.com', {
     },
 
     getCartItems: (e: HTMLElement) => {
-        const cartItems0 = e.querySelector<HTMLElement>('.sc-list-body');
+        const cart = e.querySelector<HTMLElement>('.sc-list-body');
         const cartItems1 = e.querySelectorAll<HTMLElement>('.a-fixed-left-grid-col.item-details-right-column.a-col-right');
         const cartItems2 = e.querySelectorAll<HTMLElement>('.lineitem-container');
 
@@ -219,7 +220,8 @@ getters.register('www.amazon.com', {
             });
         }
 
-        const itemsElements = cartItems0.querySelectorAll<HTMLElement>('div[data-csa-c-type="item"]');
+        if (!cart) return [];
+        const itemsElements = cart.querySelectorAll<HTMLElement>('div[data-csa-c-type="item"]');
         return Array.from(itemsElements).map((item) => {
             const obj = JSON.parse(item.getAttribute('data-subtotal'));
             const totalPrice = parseInt(obj["subtotal"]?.["value"]);
@@ -230,6 +232,38 @@ getters.register('www.amazon.com', {
                 currency: obj["subtotal"]?.["code"],
             };
         });
+    },
+
+    getOneClickBuyNow: (e: HTMLElement) => {
+        const products = e.querySelectorAll<HTMLElement>('.s-product-image-container');
+
+        if (products.length > 0) {
+            return Array.from(products).map(product => {
+                const productContainer = product.closest('.a-section');
+                const unsplitPrice = productContainer.querySelector<HTMLElement>('.a-price .a-offscreen').textContent;
+                const { price, currency } = splitPriceCurrency(unsplitPrice);
+                const button = productContainer.querySelector<HTMLElement>('.a-button-input');
+                const label = productContainer.querySelector<HTMLElement>('.a-button-text');
+
+                return {
+                    button,
+                    label,
+                    item: {
+                        quantity: 1,
+                        price,
+                        currency,
+                    }
+                }
+            });
+        }
+
+        const button = e.querySelector<HTMLElement>('#one-click-button');
+        const item = e.querySelector<HTMLElement>('.a-price');
+        const label = button?.parentElement.querySelector<HTMLElement>('.a-button-text');
+
+        if (!button || !item || !label) return [];
+
+        return [{button, label, item: {quantity: 1, price: 0, currency: item.textContent} }];
     }
 });
 

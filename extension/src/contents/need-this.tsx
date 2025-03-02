@@ -282,9 +282,14 @@ settings.onInit((settings) => {
 
 	observer.addEffect((signal) => {
 		document.body.setAttribute('data-plasmo-place-order-blocked','true');
-	
-		getters.getDomainGetters().placeOrderButtons(document.body).forEach((button) => {
+		
+		const domainGetters = getters.getDomainGetters();
+		domainGetters.placeOrderButtons(document.body).forEach((button) => {
 			button.addEventListener("click", onPlaceOrderClick);
+		}, signal);
+
+		domainGetters.getOneClickBuyNow(document.body)?.forEach((p) => {
+			p.button?.addEventListener("click", onPlaceOrderClick);
 		}, signal);
 	});
 });

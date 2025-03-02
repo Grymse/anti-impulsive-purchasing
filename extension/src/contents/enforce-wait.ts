@@ -124,6 +124,10 @@ function effect(signal: {signal: AbortSignal}) {
     button.addEventListener("click", onPlaceOrderClick);
   }, signal);
 
+  getters.getOneClickBuyNow(currentTarget)?.forEach((p) => {
+    p.button?.addEventListener("click", onPlaceOrderClick);
+  }, signal);
+
   document.body.setAttribute('data-plasmo-place-order-blocked', permit.isValid() ? "false" : "true");
   document.body.setAttribute('data-plasmo-checkout-blocked', permit.isValid() ? "false" : "true");
 }
@@ -177,10 +181,13 @@ function injectVisuals(e: HTMLElement) {
   else if (Date.now() < currentPermit.start) {
     e.innerText = "Wait " + permitToWaitTime(currentPermit) + " before checking out";
   }
+
+  console.log(e);
 }
 
 function updateVisuals() {
   getters.checkoutButtonLabels(currentTarget).forEach(injectVisuals);
+  getters.getOneClickBuyNow(currentTarget)?.forEach(e => {if(e.label) injectVisuals(e.label)});
 }
 
 settings.onInit((settings) => {
