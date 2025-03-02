@@ -129,7 +129,7 @@ function effect(signal: {signal: AbortSignal}) {
     button.addEventListener("click", onPlaceOrderClick);
   }, signal);
 
-  getters.getOneClickBuyNow(currentTarget)?.forEach((p) => {
+  getters.getOneClickBuyNow?.(currentTarget)?.forEach((p) => {
     p.button?.addEventListener("click", onPlaceOrderClick);
   }, signal);
 
@@ -186,13 +186,11 @@ function injectVisuals(e: HTMLElement) {
   else if (Date.now() < currentPermit.start) {
     e.innerText = "Wait " + permitToWaitTime(currentPermit) + " before checking out";
   }
-
-  console.log(e);
 }
 
 function updateVisuals() {
   getters.checkoutButtonLabels(currentTarget).forEach(injectVisuals);
-  getters.getOneClickBuyNow(currentTarget)?.forEach(e => {if(e.label) injectVisuals(e.label)});
+  getters.getOneClickBuyNow?.(currentTarget)?.forEach(e => {if(e.label) injectVisuals(e.label)});
 }
 
 settings.onInit((settings) => {

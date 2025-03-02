@@ -1,5 +1,5 @@
 import cssText from "data-text:~style.css"
-import type { PlasmoCSConfig, PlasmoGetOverlayAnchor } from "plasmo"
+import type { PlasmoCSConfig } from "plasmo"
 import { useEffect, useRef, useState, type MouseEventHandler } from "react"
 
 import "../style.css"
@@ -322,7 +322,7 @@ settings.onInit((settings) => {
 			button.addEventListener("click", onPlaceOrderClick);
 		}, signal);
 
-		domainGetters.getOneClickBuyNow(document.body)?.forEach((p) => {
+		domainGetters.getOneClickBuyNow?.(document.body)?.forEach((p) => {
 			p.button?.addEventListener("click", onPlaceOrderClick);
 		}, signal);
 	});
