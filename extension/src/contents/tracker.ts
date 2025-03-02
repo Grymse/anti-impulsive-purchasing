@@ -121,6 +121,7 @@ function effect(signal: {signal: AbortSignal}) {
   const addToCartButtons = getters.getDomainGetters().addToCartButtons(document.body);
   const placeOrderButtons = getters.getDomainGetters().placeOrderButtons(document.body);
   const checkoutButtons = getters.getDomainGetters().checkoutButtons(document.body);
+  const oneClickBuy = getters.getDomainGetters().getOneClickBuyNow(document.body);
 
   checkoutButtons.forEach((button) => {
     button.addEventListener("click", onCheckoutClick);
@@ -134,7 +135,15 @@ function effect(signal: {signal: AbortSignal}) {
     button.addEventListener("click", onPlaceOrderClick);
   }, signal);
 
+  oneClickBuy.forEach((p) => {
+    p.button?.addEventListener("click", (e) => {onInstantBuyClick([p.item]); e.stopPropagation; e.preventDefault()});
+  }, signal);
+
   saveCurrentItems();
+}
+
+function onInstantBuyClick(items: ShoppingItem[]) {
+  sendAnalytics('place-order', items);
 }
 
 function onPlaceOrderClick(e: MouseEvent) {
