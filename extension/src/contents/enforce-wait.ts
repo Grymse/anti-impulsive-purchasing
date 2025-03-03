@@ -144,6 +144,7 @@ function onPlaceOrderClick(e: Event)  {
   if (!permit.isValid()) {
     // Prevent the default action and stop event propagation if the permit is not valid
     e.preventDefault();
+    e.stopImmediatePropagation();
     e.stopPropagation();
     alert("Please wait before checking out.");
     return;

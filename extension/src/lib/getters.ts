@@ -588,34 +588,34 @@ getters.register(shopifyDomains, {
     },  
 
     placeOrderButtons:(e: HTMLElement) => {
-        const quickCheckout = e.querySelector<HTMLElement>('#express-checkout-wallets-wrapper');
-        let overlay: HTMLElement | undefined;
-        /* if(quickCheckout) {
-            overlay = quickCheckout.querySelector<HTMLElement>('#express-overlay');
-            if(!overlay) {
-                overlay = document.createElement('div');
-                overlay.id = 'express-overlay';
-                overlay.style.position = 'absolute';
-                overlay.style.width = '100%';
-                overlay.style.height = '100%';
-                overlay.style.cursor = 'pointer';
-                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-                overlay.style.pointerEvents = 'none';
-                overlay.style.zIndex = '1000';
-                quickCheckout.appendChild(overlay);
-            }
-        } */
-        const button = e.querySelectorAll<HTMLElement>('button[id="checkout-pay-button"], button[type="submit"], #shop-pay-button, #express-checkout-wallets-wrapper');
+        const paypalBtn = document.querySelector('.paypal-buttons');
+        paypalBtn?.parentElement?.remove();
+        
+        const button = e.querySelectorAll<HTMLElement>('button[id="checkout-pay-button"], button[type="submit"], #shop-pay-button');
+        const googleButton = e.querySelector<HTMLElement>('#gpay-button-online-api-id');
 
-        if (overlay) {
-            return Array.from(button).concat([overlay]);
+        if(googleButton) {
+            googleButton.style.backgroundImage = 'none';
+            let inner: HTMLElement | undefined;
+            if(googleButton.childNodes.length === 0) {
+                inner = document.createElement('div');
+                inner.style.width = "100%";
+                inner.style.height = "100%";
+                inner.style.color = "white";
+                inner.style.fontSize = "1.5rem";
+                inner.style.padding = "";
+                inner.id = "gpay-button-text";
+                googleButton.appendChild(inner);
+            } 
+            if (!inner) inner = googleButton.childNodes[0] as HTMLElement;
+            return Array.from(button).concat([inner]);
         }
+        
         return Array.from(button);
     },
 
     checkoutButtonLabels:(e: HTMLElement) => {
-        const button = e.querySelectorAll<HTMLElement>('button[id="checkout-pay-button"], button[type="submit"], #shop-pay-button');
-
+        const button = e.querySelectorAll<HTMLElement>('button[id="checkout-pay-button"], button[type="submit"], #shop-pay-button, #gpay-button-text');
         return Array.from(button);
     },
 
