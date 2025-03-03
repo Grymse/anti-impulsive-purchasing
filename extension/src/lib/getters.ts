@@ -17,6 +17,8 @@ type GetterRegister = {
     register: (domain: string | string[], getters: ElementGetters) => void;
     _getters: Map<string,ElementGetters>;
     getDomainGetters : () => ElementGetters;
+    hasDomain: (domain: string) => boolean;
+    hasCurrentDomain : () => boolean;
 }
 
 function splitPriceCurrency(price: string) {
@@ -142,6 +144,23 @@ export const getters: GetterRegister = {
             addToCartButtons: (e: HTMLElement) => [],
             getCartItems: (e: HTMLElement) => []
         };
+    },
+
+    /**
+     * Checks if a domain has element getters registered.
+     * @param domain - The domain to check.
+     * @returns True if the domain has element getters registered, false otherwise.
+     */
+    hasDomain: function(domain: string) {
+        return this._getters.has(domain);
+    },
+
+    /**
+     * Checks if the current domain has element getters registered.
+     * @returns True if the current domain has element getters registered, false otherwise.
+     */
+    hasCurrentDomain: function() {
+        return this._getters.has(document.location.hostname);
     }
 }
 
