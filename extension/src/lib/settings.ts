@@ -1,6 +1,6 @@
 import { PersistentValue } from "./utils";
 
-type StrategyType = "need-this" | "enforce-wait" | "visualize-alternatives"  | "max-purchases" | "corporate-agenda";
+type StrategyType = "need-this" | "enforce-wait" | "visualize-alternatives"  | "max-purchases" | "corporate-agenda" | "review-third-party" | "see-alternatives";
 
 type Strategy = {
     name: string;
@@ -33,6 +33,16 @@ export const strategies : Strategy[] = [
         code: "max-purchases",
         name: "Max Purchases",
         description: "Set a limit on the number of purchases you can make in a month",
+    },
+    {
+        code: "review-third-party",
+        name: "Review Third-party",
+        description: "Before buying, review the third-party sellers' reputation and customer reviews",
+    },
+    {
+        code: "see-alternatives",
+        name: "See Alternatives",
+        description: "Before buying, see if there are any alternative things to spend your time on",
     }
 ]
 
