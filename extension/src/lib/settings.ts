@@ -1,15 +1,12 @@
-import { getUserId } from "./analytics";
 import { PersistentValue } from "./utils";
 
-
-type StrategyType = "need-this" | "enforce-wait";
+type StrategyType = "need-this" | "enforce-wait" | "max-purchases";
 
 type Strategy = {
     name: string;
     description: string;
     code: StrategyType;
 }
-
 
 export const strategies : Strategy[] = [
     {

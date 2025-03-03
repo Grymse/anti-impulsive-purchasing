@@ -629,7 +629,7 @@ getters.register(shopifyDomains, {
             if (!inner) inner = googleButton.childNodes[0] as HTMLElement;
             return Array.from(button).concat([inner]);
         }
-        
+
         return Array.from(button);
     },
 

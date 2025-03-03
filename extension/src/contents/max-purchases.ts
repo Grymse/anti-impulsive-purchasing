@@ -1,13 +1,8 @@
-// content.ts
-
 import type { PlasmoCSConfig } from "plasmo";
-import { getters, type ShoppingItem } from "~lib/getters";
+import { getters as getterRegistry } from "~lib/getters";
 import { observer } from "~lib/observer";
-import { Stopwatch } from "ts-stopwatch";
-import { sendAnalytics } from "~lib/analytics";
-import { PersistentValue } from "~lib/utils";
+import permit, { type Permit } from "~lib/permit";
 import { settings } from "~lib/settings";
-import { purchases } from "~lib/purchases";
 
 export const config: PlasmoCSConfig = {
   matches: [
@@ -117,102 +112,86 @@ export const config: PlasmoCSConfig = {
   all_frames: true
 }
 
-
-const DOMAIN = document.location.hostname;
-const LOCAL_CART_STORAGE_KEY = DOMAIN + "-cart";
-const INTERVAL_LENGTH = 1000 * 5; // 5 seconds
-const cart = new PersistentValue<ShoppingItem[]>(LOCAL_CART_STORAGE_KEY);
+const getters = getterRegistry.getDomainGetters();
+let currentTarget = document.body;
 
 function effect(signal: {signal: AbortSignal}) {
-  const addToCartButtons = getters.getDomainGetters().addToCartButtons(document.body);
-  const placeOrderButtons = getters.getDomainGetters().placeOrderButtons(document.body);
-  const checkoutButtons = getters.getDomainGetters().checkoutButtons(document.body);
-  const oneClickBuy = getters.getDomainGetters().getOneClickBuyNow?.(document.body);
+  updateVisuals();
 
-  checkoutButtons.forEach((button) => {
+  // Add event listeners to the checkout buttons
+  getters.checkoutButtons(currentTarget).forEach((button) => {
     button.addEventListener("click", onCheckoutClick);
   }, signal);
 
-  addToCartButtons.forEach((button) => {
-    button.addEventListener("click", onAddToCartClick);
-  }, signal);
-
-  placeOrderButtons.forEach((button) => {
+  // Add event listeners to the place order buttons
+  getters.placeOrderButtons(currentTarget).forEach((button) => {
     button.addEventListener("click", onPlaceOrderClick);
   }, signal);
 
-  oneClickBuy?.forEach((p) => {
-    p.button?.addEventListener("click", (e) => {onInstantBuyClick([p.item]); e.stopPropagation; e.preventDefault()});
+  getters.getOneClickBuyNow?.(currentTarget)?.forEach((p) => {
+    p.button?.addEventListener("click", onPlaceOrderClick);
   }, signal);
 
-  saveCurrentItems();
+  document.body.setAttribute('data-plasmo-place-order-blocked', permit.isValid() ? "false" : "true");
+  document.body.setAttribute('data-plasmo-checkout-blocked', permit.isValid() ? "false" : "true");
 }
 
-function onInstantBuyClick(items: ShoppingItem[]) {
-  const isBlocked = document.body.getAttribute('data-plasmo-place-order-blocked') === "true";
-  if (isBlocked) return;
-  
-  purchases.value = purchases.value.concat({time: Date.now(), items});
-  sendAnalytics('place-order', items);
-}
+function onPlaceOrderClick(e: Event)  {
+  permit.createIfNone();
+  updateVisuals();
 
-function onPlaceOrderClick(e: MouseEvent) {
-  const isBlocked = document.body.getAttribute('data-plasmo-place-order-blocked') === "true";
-  if (isBlocked) return;
-
-  purchases.value = purchases.value.concat({time: Date.now(), items: cart.value ?? []});
-  sendAnalytics('place-order', cart.value ?? []);
-}
-
-function saveCurrentItems() {
-  const items = getters.getDomainGetters().getCartItems(document.body);
-
-  if(items.length === 0) return;
-
-  cart.value = items;
-}
-
-function onCheckoutClick(e: MouseEvent) {
-  const isBlocked = document.body.getAttribute('data-plasmo-checkout-blocked') === "true";
-  if (isBlocked) return;
-
-  sendAnalytics('checkout', undefined);
-}
-
-function onAddToCartClick(e: Event) {
-  sendAnalytics('add-to-cart', undefined);
-}
-
-function setupTimeMeasurement() {
-  const stopWatch = new Stopwatch();
-  stopWatch.start();
-
-  // Is triggered by the browser when the tab is hidden or visible
-  document.addEventListener("visibilitychange", () => {
-    document.hidden ? stopWatch.stop() : stopWatch.start();
-  });
-
-  // If another application is opened on top of the browser, the focus changes
-  window.addEventListener("focus", () => {
-    stopWatch.start();
-  });
-  window.addEventListener("blur", () => {
-    stopWatch.stop();
-  });
-
-  const sendTimeEvent = () => {
-    if (!stopWatch.isRunning()) return;
-    sendAnalytics('time-spent', {duration: stopWatch.getTime()});
-    stopWatch.start(true);
+  if (!permit.isValid()) {
+    // Prevent the default action and stop event propagation if the permit is not valid
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    e.stopPropagation();
+    alert("Please wait before checking out.");
+    return;
   }
 
-  setInterval(sendTimeEvent, INTERVAL_LENGTH); // Every so often
-  window.addEventListener("beforeunload", sendTimeEvent); // When the tab is closed
+  // Clear the permit if it is valid
+  permit.markAsUsed();
+}
+
+function onCheckoutClick(e: Event) {
+  permit.createIfNone();
+  updateVisuals();
+
+  if (!permit.isValid()) {
+    // Prevent the default action and stop event propagation if the permit is not valid
+    e.preventDefault();
+    e.stopPropagation();
+    alert("Please wait before checking out.");
+  }
+}
+
+function permitToWaitTime(permit: Permit) : string {
+  // Calculate the remaining wait time in hours and minutes
+  const now = Date.now();
+  const diff = permit.start - now;
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  return `${hours}h ${minutes}m`;
+}
+
+function injectVisuals(e: HTMLElement) {
+  const currentPermit = permit.get();
+
+  // Update the button label based on the permit status
+  if (!currentPermit || currentPermit.end < Date.now()) {
+    e.innerText = "Start checkout wait timer";  
+  }
+  else if (Date.now() < currentPermit.start) {
+    e.innerText = "Wait " + permitToWaitTime(currentPermit) + " before checking out";
+  }
+}
+
+function updateVisuals() {
+  getters.checkoutButtonLabels(currentTarget).forEach(injectVisuals);
+  getters.getOneClickBuyNow?.(currentTarget)?.forEach(e => {if(e.label) injectVisuals(e.label)});
 }
 
 settings.onInit((settings) => {
-  if (!settings.active) return;
-  setupTimeMeasurement();
+  if (!settings.active || !settings.activeStrategies.includes('max-purchases')) return;
   observer.addEffect(effect)
-  sendAnalytics('page-view', undefined);
 });
