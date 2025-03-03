@@ -1,6 +1,6 @@
 import { PersistentValue } from "./utils";
 
-type StrategyType = "need-this" | "enforce-wait" | "max-purchases";
+type StrategyType = "need-this" | "enforce-wait" | "visualize-alternatives"  | "max-purchases"
 
 type Strategy = {
     name: string;
@@ -18,6 +18,11 @@ export const strategies : Strategy[] = [
         code: "enforce-wait",
         name: "Enforce Wait-time",
         description: "Enforce a 24-hour wait time before you are allowed to buy",
+    },
+    {
+        code: "visualize-alternatives",
+        name: "Visualize Alternatives",
+        description: "See how your money could grow over time if invested instead of spent on this purchase",
     }
 ]
 
@@ -29,7 +34,7 @@ export type Settings = {
 export const settings = new PersistentValue<Settings>("settings",
     {
         active: true,
-        activeStrategies: ["need-this"]
+        activeStrategies: ["visualize-alternatives"]
     }
 );
 

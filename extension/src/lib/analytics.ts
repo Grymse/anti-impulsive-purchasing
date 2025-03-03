@@ -28,6 +28,10 @@ type AnalyticsPayloads = {
   "cancel": undefined;
   "answer": { question: string; answer: string };
   'uninstall': undefined;
+  "visualize_alternatives_continue": { amount: number; from: string };
+  "visualize_alternatives_cancel": { amount: number; from: string };
+  "visualize_alternatives_select_option": { amount: number; option: string };
+  "visualize_alternatives_back": { amount: number; from: string };
 };
 
 export async function sendAnalytics<T extends keyof AnalyticsPayloads>(
