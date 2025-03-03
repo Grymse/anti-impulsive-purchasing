@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 export default function BackgroundWave() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -33,13 +33,15 @@ export default function BackgroundWave() {
     };
     
     function animate() {
+      // We've already checked that ctx and canvas are not null above
+      // TypeScript needs a non-null assertion operator to understand this
       // Clear the canvas with transparent background to keep original bg color
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
       
       // Draw the sine waves - adjusted for better visibility on dark background
-      drawSineWave(ctx, canvas.width, canvas.height * 0.25, 60, 0.005, colorOffset, offset, 0.7);
-      drawSineWave(ctx, canvas.width, canvas.height * 0.5, 70, 0.003, colorOffset + 1, offset * 0.7, 0.7);
-      drawSineWave(ctx, canvas.width, canvas.height * 0.75, 50, 0.007, colorOffset + 2, offset * 1.3, 0.7);
+      drawSineWave(ctx!, canvas!.width, canvas!.height * 0.25, 60, 0.005, colorOffset, offset, 0.7);
+      drawSineWave(ctx!, canvas!.width, canvas!.height * 0.5, 70, 0.003, colorOffset + 1, offset * 0.7, 0.7);
+      drawSineWave(ctx!, canvas!.width, canvas!.height * 0.75, 50, 0.007, colorOffset + 2, offset * 1.3, 0.7);
       
       // Update animation values
       offset += 0.02;
