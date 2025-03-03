@@ -23,6 +23,11 @@ export const strategies : Strategy[] = [
         code: "visualize-alternatives",
         name: "Visualize Alternatives",
         description: "See how your money could grow over time if invested instead of spent on this purchase",
+    },
+    {
+        code: "max-purchases",
+        name: "Max Purchases",
+        description: "Set a limit on the number of purchases you can make in a month",
     }
 ]
 
@@ -34,7 +39,7 @@ export type Settings = {
 export const settings = new PersistentValue<Settings>("settings",
     {
         active: true,
-        activeStrategies: ["visualize-alternatives"]
+        activeStrategies: ["need-this"]
     }
 );
 

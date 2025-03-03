@@ -1,8 +1,32 @@
-import type { PlasmoCSConfig } from "plasmo";
-import { getters as getterRegistry } from "~lib/getters";
-import { observer } from "~lib/observer";
-import permit, { type Permit } from "~lib/permit";
-import { settings } from "~lib/settings";
+import cssText from "data-text:~style.css"
+import type { PlasmoCSConfig } from "plasmo"
+import { useEffect, useRef, useState } from "react"
+
+import "../style.css"
+
+import { Button } from "~components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle
+} from "~components/ui/card"
+import { sendAnalytics } from "~lib/analytics"
+import { getters, type ShoppingItem } from "~lib/getters"
+import { observer } from "~lib/observer"
+import { settings } from "~lib/settings"
+import StepProgress from "~components/ui/step-progress"
+import { PersistentValue } from "~lib/utils"
+import { Minus, Pencil, Plus } from "lucide-react"
+import { cart, purchases } from "~lib/purchases"
+
+export const getStyle = () => {
+  const style = document.createElement("style")
+  style.textContent = cssText
+  return style
+}
+
+const maxItemsValue = new PersistentValue("max-items", 3);
 
 export const config: PlasmoCSConfig = {
   matches: [
@@ -215,89 +239,170 @@ export const config: PlasmoCSConfig = {
   all_frames: true
 }
 
+type F = () => void
+let createMaxPurchases: ({ onFinish, amountOfItems }: { onFinish: F, amountOfItems: number }) => void
 
-const getters = getterRegistry.getDomainGetters();
-let currentTarget = document.body;
+export default function maxPurchases() {
+  const [show, setShow] = useState(false)
+  const [showEdit, setShowEdit] = useState(false)
+  const [maxItems, setMaxItems] = useState(maxItemsValue.value);
+  const [itemsInCart, setItemsInCart] = useState(0)
+  const onFinish = useRef<null | F>(null)
 
-function effect(signal: {signal: AbortSignal}) {
-  updateVisuals();
-
-  // Add event listeners to the checkout buttons
-  getters.checkoutButtons(currentTarget).forEach((button) => {
-    button.addEventListener("click", onCheckoutClick);
-  }, signal);
-
-  // Add event listeners to the place order buttons
-  getters.placeOrderButtons(currentTarget).forEach((button) => {
-    button.addEventListener("click", onPlaceOrderClick);
-  }, signal);
-
-  getters.getOneClickBuyNow?.(currentTarget)?.forEach((p) => {
-    p.button?.addEventListener("click", onPlaceOrderClick);
-  }, signal);
-
-  document.body.setAttribute('data-plasmo-place-order-blocked', permit.isValid() ? "false" : "true");
-  document.body.setAttribute('data-plasmo-checkout-blocked', permit.isValid() ? "false" : "true");
-}
-
-function onPlaceOrderClick(e: Event)  {
-  permit.createIfNone();
-  updateVisuals();
-
-  if (!permit.isValid()) {
-    // Prevent the default action and stop event propagation if the permit is not valid
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    e.stopPropagation();
-    alert("Please wait before checking out.");
-    return;
+  // Here we assign the function that can be called outside the component.
+  // This is a way to communicate between the content script and the popup-questionary.
+  createMaxPurchases = ({ onFinish: f, amountOfItems }) => {
+    setShow(true)
+    onFinish.current = f
+    setItemsInCart(amountOfItems)
   }
 
-  // Clear the permit if it is valid
-  permit.markAsUsed();
-}
+  useEffect(() => {
+    const f = (value: number) => {
+      setMaxItems(value)
+    }
+    maxItemsValue.onChange(f);
+    maxItemsValue.onInit(f);
+
+    return () => {
+      maxItemsValue.removeOnChange(f);
+    }
+  }, []);
 
 
+  if (!show) return null
 
-function onCheckoutClick(e: Event) {
-  permit.createIfNone();
-  updateVisuals();
-
-  if (!permit.isValid()) {
-    // Prevent the default action and stop event propagation if the permit is not valid
-    e.preventDefault();
-    e.stopPropagation();
-    alert("Please wait before checking out.");
+  const cancel = () => {
+    sendAnalytics("cancel", undefined)
+    setShow(false)
   }
-}
 
-function permitToWaitTime(permit: Permit) : string {
-  // Calculate the remaining wait time in hours and minutes
-  const now = Date.now();
-  const diff = permit.start - now;
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  return `${hours}h ${minutes}m`;
-}
-
-function injectVisuals(e: HTMLElement) {
-  const currentPermit = permit.get();
-
-  // Update the button label based on the permit status
-  if (!currentPermit || currentPermit.end < Date.now()) {
-    e.innerText = "Start checkout wait timer";  
+  const commitToPurchase = () => {
+    onFinish.current?.()
+    setShow(false)
   }
-  else if (Date.now() < currentPermit.start) {
-    e.innerText = "Wait " + permitToWaitTime(currentPermit) + " before checking out";
+
+  const increaseMaxItems = () => {
+    maxItemsValue.value = maxItemsValue.value + 1
   }
+
+  const decreaseMaxItems = () => {
+    if (maxItemsValue.value <= 1) return;
+    maxItemsValue.value = maxItemsValue.value - 1
+  }
+
+  const isShopify = document
+    .querySelector("link")
+    .href.includes("https://cdn.shopify.com")
+
+  const current = currentlyPurchasedItems();
+
+  const hasSufficient = (current + itemsInCart) <= maxItems
+  const hasRunOut = current >= maxItems
+
+  return (
+    <div
+      id="popover-questionary"
+      className={`fixed text-base ${isShopify ? "transform scale-150" : ""} bg-black/75 z-50 w-screen h-screen flex items-center justify-center`}
+      onClick={cancel}>
+      <Card className="max-w-xl bg-white" onClick={(e) => e.stopPropagation()}>
+        <CardHeader className="relative">
+          <Button variant="secondary" className="w-10 absolute right-6" onClick={() => setShowEdit(!showEdit)}>
+            <Pencil />
+          </Button>
+          <CardTitle>Limited purchases</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col mt-4 gap-8">
+            <div className="flex flex-col gap-4">
+            <p>
+              You have purchased <span className={`${hasRunOut ? 'text-destructive' : 'text-primary'} font-bold text-xl`}>{current}</span> out of <span className={`${hasRunOut ? 'text-destructive' : 'text-primary'} font-bold text-xl`}>{maxItems}</span> items this month.
+            </p>
+            <div className="flex gap-2 items-center">
+              {showEdit &&
+                <Button variant="secondary" className="w-10" onClick={decreaseMaxItems}>
+                  <Minus />
+                </Button>
+              }
+            <StepProgress length={maxItems} current={current} />
+              {showEdit &&
+                <Button variant="secondary" className="w-10" onClick={increaseMaxItems}>
+                  <Plus />
+                </Button>
+              }
+            </div>
+            </div>
+            {hasSufficient ? (
+              <p>You are about to use <span className="text-primary font-bold">{itemsInCart}</span> of your remaining <span className="text-primary font-bold">{maxItems - current}</span> items this month</p>
+            ) : (
+              <p>You do not have enough purchases left, to buy <span className="text-destructive font-bold">{itemsInCart}</span> items</p>
+            )}
+
+            <div className="flex justify-between gap-4">
+              <Button variant="outline" className="w-full" onClick={cancel}>
+                Cancel
+              </Button>
+              {hasSufficient && <Button type="submit" className="w-full" onClick={commitToPurchase}>
+                Continue to purchase
+              </Button>}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
 }
 
-function updateVisuals() {
-  getters.checkoutButtonLabels(currentTarget).forEach(injectVisuals);
-  getters.getOneClickBuyNow?.(currentTarget)?.forEach(e => {if(e.label) injectVisuals(e.label)});
+function currentlyPurchasedItems() {
+  const currentPurchases = purchases.value; // Do some time-based filtering
+  return currentPurchases.reduce((acc, purchase) => acc + purchase.items.reduce((acc,item) => acc + item.quantity, 0), 0);
+}
+
+const onPlaceOrderClick = (e: Event, item: ShoppingItem = undefined) => {
+  const isBlocked =
+    document.body.getAttribute("data-plasmo-place-order-blocked") === "true"
+  if (!isBlocked) return // If the button is not blocked, we don't need to show the questionary.
+
+  e.preventDefault()
+  e.stopPropagation()
+
+  const onFinish = () => {
+    document.body.setAttribute("data-plasmo-place-order-blocked", "false")
+
+    const button = e.target as HTMLButtonElement
+    button.click()
+  };
+
+  if (item) {
+    createMaxPurchases({
+      amountOfItems: item.quantity,
+      onFinish 
+    })
+  }
+  
+  cart.getFromStorage().then((cart) => {
+    createMaxPurchases({
+      amountOfItems: cart?.reduce((acc, item) => acc + item.quantity, 0) ?? 1,
+      onFinish 
+    })
+  });
 }
 
 settings.onInit((settings) => {
-  if (!settings.active || !settings.activeStrategies.includes('enforce-wait')) return;
-  observer.addEffect(effect)
-});
+  if (!settings.active || !settings.activeStrategies.includes("max-purchases"))
+    return
+
+  observer.addEffect((signal) => {
+    document.body.setAttribute("data-plasmo-place-order-blocked", "true")
+
+    const domainGetters = getters.getDomainGetters()
+    domainGetters.placeOrderButtons(document.body).forEach((button) => {
+      button.addEventListener("click", onPlaceOrderClick)
+    }, signal)
+
+    domainGetters.getOneClickBuyNow?.(document.body)?.forEach((p) => {
+      
+      p.button?.addEventListener("click", (e) => onPlaceOrderClick(e, p.item))
+    }, signal)
+  })
+})
