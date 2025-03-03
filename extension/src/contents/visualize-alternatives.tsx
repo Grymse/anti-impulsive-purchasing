@@ -26,19 +26,136 @@ export const getStyle = () => {
 
 export const config: PlasmoCSConfig = {
   matches: [
-    // ----- Your original domains -----
-    "https://www.amazon.com/*",
+    // ----- Danish Domains -----
+    "https://www.temu.com/*",
+    "https://www.amazon.de/*",
+    "https://www.amazon.co.uk/*",
+    "https://www.amazon.se/*",
+    "https://*.ebay.co.uk/*",
+    "https://*.ebay.de/*",
+    "https://www.harald-nyborg.dk/*",
+    "https://jysk.dk/*",
     "https://www.zalando.dk/*",
-    "https://*.ebay.com/*",
     "https://www.matas.dk/*",
     "https://www.proshop.dk/*",
-    "https://www.boozt.com/*",
-    "https://www2.hm.com/*",
     "https://www.elgiganten.dk/*",
     "https://www.magasin.dk/*",
-    "https://euqs.shein.com/*",
-    "https://www.apple.com/*",
     "https://www.jemogfix.dk/*",
+    "https://www.bilka.dk/*",
+    "https://www.foetex.dk/*",
+    "https://www.saxo.com/*",
+    "https://www.thansen.dk/*",
+    "https://www.imerco.dk/*",
+    "https://www.xl-byg.dk/*",
+    "https://www.sport24.dk/*",
+    "https://www.bog-ide.dk/*",
+    "https://www.power.dk/*",
+    "https://www.Plantorama.dk/*",
+    "https://www.kop-kande.dk/*",
+    "https://www.avxperten.dk/*",
+    "https://www.fleggaard.dk/*",
+    "https://ilva.dk/*",
+    "https://www.sportsworld.dk/*",
+    "https://www.telenor.dk/*",
+    "https://www.kids-world.dk/*",
+    "https://www.telia.dk/*",
+    "https://www.10-4.dk/*",
+    "https://www.asos.com/*",
+    "https://www.billigvvs.dk/*",
+    "https://intersport.dk/*",
+    "https://www.ticketmaster.dk/*",
+    "https://www.telmore.dk/*",
+    "https://www.ditur.dk/*",
+    "https://www.quint.dk/*",
+    "https://www.maxizoo.dk/*",
+    "https://www.fribikeshop.dk/*",
+    "https://www.just-eat.dk/*",
+    "https://www.bygma.dk/*",
+    "https://www.williamdam.dk/*",
+    "https://www.av-cables.dk/*",
+    "https://www.plantetorvet.dk/*",
+    "https://salling.dk/*",
+    "https://luksusbaby.dk/*",
+    "https://www.apotekeren.dk/*",
+    "https://www.lampeguru.dk/*",
+    "https://www.billetlugen.dk/*",
+    "https://www.computersalg.dk/*",
+    "https://havehandel.dk/*",
+    "https://www.sinful.dk/*",
+    "https://www.kaufmann.dk/*",
+    "https://www.callme.dk/*",
+    "https://www.hyggeonkel.dk/*",
+    "https://legeakademiet.dk/*",
+    "https://www.lampemesteren.dk/*",
+    "https://www.zooplus.dk/*",
+    "https://www.loebeshop.dk/*",
+    "https://loberen.dk/*",
+    "https://www.cocopanda.dk/*",
+    "https://www.calle.dk/*",
+    "https://www.mytrendyphone.dk/*",
+    "https://www.jacobsenplus.dk/*",
+    "https://greenmind.dk/*",
+    "https://www.cchobby.dk/*",
+    "https://www.komplett.dk/*",
+    "https://www.billigparfume.dk/*",
+    "https://www.faraos.dk/*",
+    "https://www.feline.dk/*",
+    "https://www.kitchenone.dk/*",
+    "https://moebelkompagniet.dk/*",
+    "https://www.luxoliving.dk/*",
+    "https://www.av-connection.dk/*",
+    "https://sneakerzone.dk/*",
+    "https://www.partyking.dk/*",
+    "https://www.bygmax.dk/*",
+    "https://www.daells-bolighus.dk/*",
+    "https://www.greenline.dk/*",
+    "https://www.punkt1.dk/*",
+    "https://www.illumsbolighus.dk/*",
+    "https://www.lirumlarumleg.dk/*",
+    "https://www.coolstuff.dk/*",
+    "https://www.mobilcovers.dk/*",
+    "https://www.grejfreak.dk/*",
+    "https://www.flugger.dk/*",
+    "https://ingvardchristensen.dk/*",
+    "https://mobler.dk/*",
+    "https://www.adidas.dk/*",
+
+    // ----- Common domains -----
+    "https://*.shein.com/*",
+    "https://www.apple.com/*",
+    "https://www2.hm.com/*",
+    "https://www.boozt.com/*",
+
+    // ----- American domains -----
+    "https://*.ebay.com/*",
+    "https://www.amazon.com/*",
+    "https://www.target.com/*",
+    "https://www.homedepot.com/*",
+    "https://www.costco.com/*",
+    "https://www.bestbuy.com/*",
+    "https://www.costco.com/*",
+    "https://www.kroger.com/*",
+    "https://www.aliexpress.com/*",
+    "https://www.etsy.com/*",
+    "https://www.adidas.com/*",
+    "https://www.samsung.com/*",
+    "https://www.nike.com/*",
+    "https://www.wayfair.com/*",
+    "https://www.lowes.com/*",
+    "https://www.macys.com/*",
+    "https://www.chewy.com/*",
+    "https://www.gap.com/*",
+    "https://www.wish.com/*",
+    "https://www.lg.com/*",
+    "https://www.dell.com/*",
+    "https://www.kohls.com/*",
+    "https://www.walgreens.com/*",
+    "https://www.lenovo.com/*",
+    "https://www.zara.com/*",
+    "https://www.hp.com/*",
+    "https://www.ikea.com/*",
+    "https://www.nordstrom.com/*",
+    "https://us.shein.com/*",
 
     // ----- 100 Shopify domains -----
     "https://klaedeskabet.dk/*",
@@ -82,50 +199,35 @@ export const config: PlasmoCSConfig = {
     "https://pinklily.com/*",
     "https://misen.com/*",
     "https://materialkitchen.com/*",
-    "https://glossier.com/*",
-    "https://hedleyandbennett.com/*",
-    "https://starface.world/*",
-    "https://youthtothepeople.com/*",
-    "https://myhydro.hydroflask.com/*", // subdomain
-    "https://rumpl.com/*",
-    "https://therabody.com/*",
-    "https://aesop.com/*",
-    "https://iliabeauty.com/*",
-    "https://mizzenandmain.com/*",
-    "https://marinelayer.com/*",
+    "https://shop.hedleyandbennett.com/*",
+    "https://www.rumpl.com/*",
+    "https://checkout.mizzenandmain.com/*",
     "https://ohpolly.com/*",
-    "https://happysocks.com/*",
-    "https://tecovas.com/*",
+    "https://checkout.tecovas.com/*",
     "https://*.stance.com/*",
     "https://spongelle.com/*",
-    "https://trueclassictees.com/*",
-    "https://meundies.com/*",
-    "https://nuggetsofwisdom.com/*",
+    "https://www.trueclassictees.com/*",
+    "https://checkout.meundies.com/*",
     "https://studs.com/*",
     "https://jackhenry.co/*",
-    "https://luxyhair.com/*",
+    "https://www.luxyhair.com/*",
     "https://juicycouture.com/*",
-    "https://everlast.com/*",
-    "https://getstix.co/*",
-    "https://skims.com/*",
+    "https://www.everlast.com/*",
+    "https://checkout.skims.com/*",
     "https://feals.com/*",
-    "https://foursigmatic.com/*",
+    "https://us.foursigmatic.com/*",
     "https://golde.co/*",
-    "https://liquid-iv.com/*",
-    "https://readyjudy.com/*",
-    "https://thesill.com/*",
-    "https://wearlively.com/*",
+    "https://shop.liquid-iv.com/*",
+    "https://www.thesill.com/*",
+    "https://www.wearlively.com/*",
     "https://andieswim.com/*",
     "https://yourparade.com/*",
     "https://brightland.co/*",
     "https://omsom.com/*",
     "https://jenis.com/*",
-    "https://partakefoods.com/*",
     "https://snowehome.com/*",
-    "https://imperfectfoods.com/*",
-    // Updated Graza domain to www
     "https://www.graza.co/*",
-    "https://flybyjing.com/*",
+    "https://shop.flybyjing.com/*",
     "https://getmaude.com/*",
     "https://ugmonk.com/*"
   ],
@@ -168,7 +270,7 @@ function AlternativeInvestment({
 }: AlternativeInvestmentProps) {
   const [years, setYears] = useState(10)
   const [editableAmount, setEditableAmount] = useState(amount)
-  
+
   useEffect(() => {
     // Update editable amount when prop changes
     setEditableAmount(amount)
@@ -182,7 +284,7 @@ function AlternativeInvestment({
 
   // Calculate current growth based on slider
   const currentGrowth = calculateInvestmentGrowth(editableAmount, years)
-  
+
   // Handle amount changes
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value)
@@ -218,7 +320,7 @@ function AlternativeInvestment({
     <div className="flex flex-col gap-6">
       <div className="border p-4 rounded-md bg-gray-50">
         <h3 className="font-medium text-lg">Monthly Subscription Value</h3>
-        
+
         <div className="mt-3 mb-4">
           <Label htmlFor="monthly-amount-input" className="text-sm mb-1 block">
             Adjust Amount:
@@ -235,7 +337,7 @@ function AlternativeInvestment({
             />
           </div>
         </div>
-        
+
         <div className="mt-4 p-4 bg-white rounded-md">
           <p className="text-center font-medium text-xl">
             {formatCurrency(editableAmount / 12, currency)} per month
@@ -271,7 +373,7 @@ function AlternativeInvestment({
     <div className="flex flex-col gap-6">
       <div className="border p-4 rounded-md bg-gray-50">
         <h3 className="font-medium text-lg">Savings Goal Contribution</h3>
-        
+
         <div className="mt-3 mb-4">
           <Label htmlFor="savings-amount-input" className="text-sm mb-1 block">
             Adjust Amount:
@@ -288,7 +390,7 @@ function AlternativeInvestment({
             />
           </div>
         </div>
-        
+
         <div className="mt-4 p-4 bg-white rounded-md">
           <p className="text-center font-medium text-xl">
             {formatCurrency(editableAmount, currency)}
@@ -327,9 +429,11 @@ function AlternativeInvestment({
     <div className="flex flex-col gap-6">
       <div className="border p-4 rounded-md bg-gray-50">
         <h3 className="font-medium text-lg">Investment Growth Potential</h3>
-        
+
         <div className="mt-3 mb-4">
-          <Label htmlFor="investment-amount-input" className="text-sm mb-1 block">
+          <Label
+            htmlFor="investment-amount-input"
+            className="text-sm mb-1 block">
             Adjust Amount:
           </Label>
           <div className="flex items-center gap-2">
@@ -437,7 +541,7 @@ function AlternativeInvestment({
           Enter the amount you're planning to spend
         </p>
       </div>
-      
+
       <p className="text-sm font-medium text-center mb-2 text-blue-600">
         Please explore one of these options before continuing
       </p>
@@ -458,12 +562,11 @@ function AlternativeInvestment({
         <Button variant="outline" className="w-full" onClick={onCancel}>
           Cancel
         </Button>
-        <Button 
-          type="submit" 
-          className="w-full" 
+        <Button
+          type="submit"
+          className="w-full"
           disabled
-          title="Please explore one of the options above first"
-        >
+          title="Please explore one of the options above first">
           Continue with Purchase
         </Button>
       </div>
@@ -587,25 +690,25 @@ const onPlaceOrderClick = (e: Event) => {
   // Simple approach to get cart amount
   let totalAmount = 0
   let currencySymbol = "$"
-  
+
   try {
     // Try getting cart items from domain-specific getters only
     const domainGetters = getters.getDomainGetters()
     const cartItems = domainGetters.getCartItems(document.body)
-    
+
     if (cartItems && cartItems.length > 0) {
       // Calculate total amount
       totalAmount = cartItems.reduce((sum, item) => {
-        return sum + (item.price * item.quantity)
+        return sum + item.price * item.quantity
       }, 0)
-      
+
       // Get currency from first item
       currencySymbol = cartItems[0].currency || "$"
     }
   } catch (error) {
     console.error("Error determining cart total:", error)
   }
-  
+
   // Set a default if we couldn't determine the amount
   if (totalAmount === 0 || isNaN(totalAmount)) {
     totalAmount = 100 // Default to $100
