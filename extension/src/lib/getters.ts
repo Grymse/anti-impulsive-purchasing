@@ -614,6 +614,7 @@ getters.register(shopifyDomains, {
             if (!inner) inner = googleButton.childNodes[0] as HTMLElement;
             return Array.from(button).concat([inner]);
         }
+        
         if (location.href.includes('checkout')) {
             const submitButtons = e.querySelectorAll<HTMLElement>('button[type="submit"]');
             return Array.from(button).concat(Array.from(submitButtons));

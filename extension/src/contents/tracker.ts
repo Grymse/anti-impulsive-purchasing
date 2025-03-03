@@ -7,11 +7,11 @@ import { Stopwatch } from "ts-stopwatch";
 import { sendAnalytics } from "~lib/analytics";
 import { PersistentValue } from "~lib/utils";
 import { settings } from "~lib/settings";
+import { cart, purchases } from "~lib/purchases";
 
 export const config: PlasmoCSConfig = {
   matches: [
     // ----- Danish Domains -----
-    "https://www.temu.com/*",
     "https://www.amazon.de/*",
     "https://www.amazon.co.uk/*",
     "https://www.amazon.se/*",
@@ -105,6 +105,7 @@ export const config: PlasmoCSConfig = {
     "https://www.adidas.dk/*",
 
     // ----- Common domains -----
+    "https://www.temu.com/*",
     "https://*.shein.com/*",
     "https://www.apple.com/*",
     "https://www2.hm.com/*",
@@ -218,11 +219,7 @@ export const config: PlasmoCSConfig = {
   all_frames: true
 }
 
-
-const DOMAIN = document.location.hostname;
-const LOCAL_CART_STORAGE_KEY = DOMAIN + "-cart";
 const INTERVAL_LENGTH = 1000 * 5; // 5 seconds
-const cart = new PersistentValue<ShoppingItem[]>(LOCAL_CART_STORAGE_KEY);
 
 function effect(signal: {signal: AbortSignal}) {
   const addToCartButtons = getters.getDomainGetters().addToCartButtons(document.body);
@@ -250,6 +247,10 @@ function effect(signal: {signal: AbortSignal}) {
 }
 
 function onInstantBuyClick(items: ShoppingItem[]) {
+  const isBlocked = document.body.getAttribute('data-plasmo-place-order-blocked') === "true";
+  if (isBlocked) return;
+  
+  purchases.value = purchases.value.concat({time: Date.now(), items});
   sendAnalytics('place-order', items);
 }
 
@@ -257,12 +258,12 @@ function onPlaceOrderClick(e: MouseEvent) {
   const isBlocked = document.body.getAttribute('data-plasmo-place-order-blocked') === "true";
   if (isBlocked) return;
 
+  purchases.value = purchases.value.concat({time: Date.now(), items: cart.value ?? []});
   sendAnalytics('place-order', cart.value ?? []);
 }
 
 function saveCurrentItems() {
   const items = getters.getDomainGetters().getCartItems(document.body);
-
   if(items.length === 0) return;
 
   cart.value = items;

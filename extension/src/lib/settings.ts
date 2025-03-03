@@ -1,15 +1,12 @@
-import { getUserId } from "./analytics";
 import { PersistentValue } from "./utils";
 
-
-type StrategyType = "need-this" | "enforce-wait" | "visualize-alternatives" | "corporate-agenda";
+type StrategyType = "need-this" | "enforce-wait" | "visualize-alternatives"  | "max-purchases" | "corporate-agenda";
 
 type Strategy = {
     name: string;
     description: string;
     code: StrategyType;
 }
-
 
 export const strategies : Strategy[] = [
     {
@@ -31,6 +28,11 @@ export const strategies : Strategy[] = [
         code: "corporate-agenda",
         name: "Corporate Agenda",
         description: "Remind yourself of the marketing tactics used by companies to manipulate you into making impulsive purchases",
+    },
+    {
+        code: "max-purchases",
+        name: "Max Purchases",
+        description: "Set a limit on the number of purchases you can make in a month",
     }
 ]
 
@@ -42,7 +44,7 @@ export type Settings = {
 export const settings = new PersistentValue<Settings>("settings",
     {
         active: true,
-        activeStrategies: ["corporate-agenda"]
+        activeStrategies: ["need-this"]
     }
 );
 

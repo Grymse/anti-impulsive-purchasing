@@ -46,6 +46,15 @@ export class PersistentValue<T> {
     this._onInitListeners.push(f);
   }
 
+  getFromStorage() : Promise<T | null> {
+    return new Promise((resolve) => {
+      chrome.storage.local.get(this._key, (data) => {
+        this._value = data[this._key] ?? this._value;
+        resolve(data[this._key] ?? this._value);
+      });
+    });
+  }
+
   removeOnChange(f: (value: T | null) => void) {
     this._listeners = this._listeners.filter((listener) => listener !== f);
   }

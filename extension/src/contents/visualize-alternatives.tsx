@@ -27,7 +27,6 @@ export const getStyle = () => {
 export const config: PlasmoCSConfig = {
   matches: [
     // ----- Danish Domains -----
-    "https://www.temu.com/*",
     "https://www.amazon.de/*",
     "https://www.amazon.co.uk/*",
     "https://www.amazon.se/*",
@@ -121,6 +120,7 @@ export const config: PlasmoCSConfig = {
     "https://www.adidas.dk/*",
 
     // ----- Common domains -----
+    "https://www.temu.com/*",
     "https://*.shein.com/*",
     "https://www.apple.com/*",
     "https://www2.hm.com/*",

@@ -47,11 +47,8 @@ function IndexPopup() {
   }
 
   const {content: currentDomain} = useAsync(getActiveTabUrl, []);
-
   const domainName = capitalizeFirstLetter(currentDomain?.split(".").at(-2));
-
   const worksOnDomain = getters.hasDomain(currentDomain ?? "");
-  console.log(currentDomain, worksOnDomain);
   
   return <main className={`${preferDarkmode && 'dark'} p-8 py-6 bg-background w-64 flex flex-col gap-4 items-center`}>
     {isActive ? <img src={IconSrc} width={128} height={128} className="w-full h-full animation-breathe" /> :
