@@ -4,6 +4,12 @@ import { useEffect, useRef, useState } from "react"
 
 import "../style.css"
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from "~components/ui/accordion"
 import { Badge } from "~components/ui/badge"
 import { Button } from "~components/ui/button"
 import {
@@ -307,21 +313,6 @@ function CorporateGreedAwareness({
   const [currentCategory, setCurrentCategory] = useState<number | null>(null)
   const [acknowledged, setAcknowledged] = useState(false)
 
-  const handleCategorySelect = (index: number) => {
-    // Toggle - if same category is clicked again, collapse it
-    if (currentCategory === index) {
-      setCurrentCategory(null)
-      sendAnalytics("corporate_agenda_collapse_category", {
-        category: marketingTactics[index].category
-      })
-    } else {
-      setCurrentCategory(index)
-      sendAnalytics("corporate_agenda_select_category", {
-        category: marketingTactics[index].category
-      })
-    }
-  }
-
   const handleAcknowledge = () => {
     setAcknowledged(true)
     sendAnalytics("corporate_agenda_acknowledge", {
@@ -350,24 +341,39 @@ function CorporateGreedAwareness({
           into impulse purchases:
         </p>
 
-        <div className="grid gap-3">
+        <Accordion
+          type="single"
+          collapsible
+          className="space-y-2"
+          onValueChange={(value) => {
+            if (value) {
+              const index = parseInt(value)
+              setCurrentCategory(index)
+              sendAnalytics("corporate_agenda_select_category", {
+                category: marketingTactics[index].category
+              })
+            } else {
+              if (currentCategory !== null) {
+                sendAnalytics("corporate_agenda_collapse_category", {
+                  category: marketingTactics[currentCategory].category
+                })
+              }
+              setCurrentCategory(null)
+            }
+          }}
+          value={
+            currentCategory !== null ? currentCategory.toString() : undefined
+          }>
           {marketingTactics.map((tactic, index) => (
-            <div
+            <AccordionItem
               key={index}
-              className={`border p-3 rounded-md cursor-pointer transition-colors ${
-                currentCategory === index
-                  ? "bg-white border-red-400 shadow-sm"
-                  : "hover:bg-white"
-              }`}
-              onClick={() => handleCategorySelect(index)}>
-              <div className="flex justify-between items-center">
+              value={index.toString()}
+              className="border rounded-md bg-white data-[state=open]:border-red-400 data-[state=open]:shadow-sm">
+              <AccordionTrigger className="px-3 py-2 hover:no-underline">
                 <h4 className="font-medium">{tactic.category}</h4>
-                <Badge variant="outline" className="text-xs">
-                  {currentCategory === index ? "▼" : "▶"}
-                </Badge>
-              </div>
-              {currentCategory === index && (
-                <div className="mt-3 space-y-3">
+              </AccordionTrigger>
+              <AccordionContent className="px-3">
+                <div className="space-y-3">
                   <p className="text-sm text-gray-700">{tactic.description}</p>
                   <div className="bg-gray-50 p-3 rounded-md">
                     <p className="text-xs font-medium mb-1">Common examples:</p>
@@ -380,10 +386,10 @@ function CorporateGreedAwareness({
                     </ul>
                   </div>
                 </div>
-              )}
-            </div>
+              </AccordionContent>
+            </AccordionItem>
           ))}
-        </div>
+        </Accordion>
       </div>
 
       <div className="flex justify-between gap-4 mt-2">
@@ -446,8 +452,10 @@ function CorporateGreedAwareness({
     <div
       className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
       onClick={onCancel}>
-      <Card className="max-w-xl bg-white" onClick={(e) => e.stopPropagation()}>
-        <CardHeader className="bg-red-600 text-white">
+      <Card
+        className="max-w-xl bg-white rounded-lg overflow-hidden"
+        onClick={(e) => e.stopPropagation()}>
+        <CardHeader className="bg-red-600 text-white rounded-t-lg">
           <CardTitle>Marketing Awareness Check</CardTitle>
           <CardDescription className="text-red-100">
             Recognize how companies are trying to influence your purchase
