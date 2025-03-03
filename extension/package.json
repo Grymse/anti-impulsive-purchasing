@@ -51,7 +51,8 @@
       "https://www.boozt.com/*"
     ],
     "permissions": [
-      "storage"
+      "storage",
+      "activeTab"
     ]
   }
 }
