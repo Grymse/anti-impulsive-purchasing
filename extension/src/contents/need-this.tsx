@@ -210,7 +210,7 @@ export const config: PlasmoCSConfig = {
     "https://spongelle.com/*",
     "https://www.trueclassictees.com/*",
     "https://checkout.meundies.com/*",
-    // "https://studs.com/*",
+    "https://studs.com/*",
     "https://jackhenry.co/*",
     "https://www.luxyhair.com/*",
     "https://juicycouture.com/*",

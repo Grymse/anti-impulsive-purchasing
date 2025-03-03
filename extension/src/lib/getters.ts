@@ -77,7 +77,7 @@ const shopifyDomains = [
     "spongelle.com",
     "www.trueclassictees.com",
     "checkout.meundies.com",
-    // "studs.com",
+    "studs.com",
     "jackhenry.co",
     "www.luxyhair.com",
     "juicycouture.com",
