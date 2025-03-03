@@ -36,7 +36,6 @@ type AnalyticsPayloads = {
   "corporate_agenda_collapse_category": { category: string };
   "corporate_agenda_acknowledge": { category: string };
   "corporate_agenda_continue": { acknowledged: boolean };
-  "corporate_agenda_cancel": undefined;
 };
 
 export async function sendAnalytics<T extends keyof AnalyticsPayloads>(

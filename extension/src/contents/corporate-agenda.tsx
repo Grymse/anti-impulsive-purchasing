@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 
 import "../style.css"
 
+import { Badge } from "~components/ui/badge"
 import { Button } from "~components/ui/button"
 import {
   Card,
@@ -13,7 +14,6 @@ import {
   CardTitle
 } from "~components/ui/card"
 import { Label } from "~components/ui/label"
-import { Badge } from "~components/ui/badge"
 import { sendAnalytics } from "~lib/analytics"
 import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
@@ -241,21 +241,23 @@ const marketingTactics = [
     category: "Artificial Scarcity",
     examples: [
       "Limited time offers that aren't actually limited",
-      "\"Only X left in stock\" messages that may be fabricated",
+      '"Only X left in stock" messages that may be fabricated',
       "Exclusive collections that become regular items later",
       "Flash sales that recur frequently"
     ],
-    description: "Creating a false sense of limited availability to drive immediate purchasing decisions."
+    description:
+      "Creating a false sense of limited availability to drive immediate purchasing decisions."
   },
   {
     category: "Social Proof Manipulation",
     examples: [
       "Fake review counts or ratings",
       "Inflated popularity metrics",
-      "\"Customers also bought\" recommendations",
-      "\"Trending now\" labels that may not be accurate"
+      '"Customers also bought" recommendations',
+      '"Trending now" labels that may not be accurate'
     ],
-    description: "Exploiting your natural tendency to trust what others have supposedly chosen or recommended."
+    description:
+      "Exploiting your natural tendency to trust what others have supposedly chosen or recommended."
   },
   {
     category: "Dark Patterns",
@@ -265,17 +267,19 @@ const marketingTactics = [
       "Difficult cancellation processes",
       "Countdown timers creating false urgency"
     ],
-    description: "Deceptive user interface designs that trick you into actions you might not otherwise take."
+    description:
+      "Deceptive user interface designs that trick you into actions you might not otherwise take."
   },
   {
     category: "Price Manipulation",
     examples: [
-      "Artificial price anchoring (inflated \"original\" prices)",
+      'Artificial price anchoring (inflated "original" prices)',
       "Dynamic pricing based on your browsing history",
       "Bundle deals that include unwanted items",
       "Subscription traps with complicated cancellation"
     ],
-    description: "Tactics that make you believe you're getting a better deal than you actually are."
+    description:
+      "Tactics that make you believe you're getting a better deal than you actually are."
   },
   {
     category: "Data Harvesting",
@@ -285,7 +289,8 @@ const marketingTactics = [
       "Using AI to predict and manipulate your next purchase",
       "Creating personalized pricing based on your spending patterns"
     ],
-    description: "Collecting your personal data to build profiles that help companies extract more money from you."
+    description:
+      "Collecting your personal data to build profiles that help companies extract more money from you."
   }
 ]
 
@@ -316,11 +321,14 @@ function CorporateGreedAwareness({
       })
     }
   }
-  
+
   const handleAcknowledge = () => {
     setAcknowledged(true)
     sendAnalytics("corporate_agenda_acknowledge", {
-      category: currentCategory !== null ? marketingTactics[currentCategory].category : "all"
+      category:
+        currentCategory !== null
+          ? marketingTactics[currentCategory].category
+          : "all"
     })
   }
 
@@ -334,20 +342,24 @@ function CorporateGreedAwareness({
   const renderMainView = () => (
     <div className="flex flex-col gap-6">
       <div className="p-4 border rounded-md bg-red-50">
-        <h3 className="font-semibold text-lg text-red-700 mb-2">Before you spend your hard-earned money...</h3>
+        <h3 className="font-semibold text-lg text-red-700 mb-2">
+          Before you spend your hard-earned money...
+        </h3>
         <p className="text-sm mb-4">
-          Be aware of these common marketing tactics designed to manipulate you into impulse purchases:
+          Be aware of these common marketing tactics designed to manipulate you
+          into impulse purchases:
         </p>
-        
+
         <div className="grid gap-3">
           {marketingTactics.map((tactic, index) => (
             <div
               key={index}
               className={`border p-3 rounded-md cursor-pointer transition-colors ${
-                currentCategory === index ? "bg-white border-red-400 shadow-sm" : "hover:bg-white"
+                currentCategory === index
+                  ? "bg-white border-red-400 shadow-sm"
+                  : "hover:bg-white"
               }`}
-              onClick={() => handleCategorySelect(index)}
-            >
+              onClick={() => handleCategorySelect(index)}>
               <div className="flex justify-between items-center">
                 <h4 className="font-medium">{tactic.category}</h4>
                 <Badge variant="outline" className="text-xs">
@@ -378,11 +390,10 @@ function CorporateGreedAwareness({
         <Button variant="outline" className="w-full" onClick={onCancel}>
           Cancel
         </Button>
-        <Button 
-          className="w-full bg-red-600 hover:bg-red-700 text-white" 
+        <Button
+          className="w-full bg-red-600 hover:bg-red-700 text-white"
           onClick={handleAcknowledge}
-          disabled={currentCategory === null}
-        >
+          disabled={currentCategory === null}>
           Continue
         </Button>
       </div>
@@ -392,23 +403,29 @@ function CorporateGreedAwareness({
   const renderAcknowledgedView = () => (
     <div className="flex flex-col gap-6">
       <div className="p-4 border rounded-md bg-red-50">
-        <h3 className="font-semibold text-lg text-red-700 mb-2">One final thought...</h3>
+        <h3 className="font-semibold text-lg text-red-700 mb-2">
+          One final thought...
+        </h3>
         <p className="text-sm mb-4">
-          Remember that corporations spend billions on research to understand your psychology better than you do. 
-          Their goal is to extract maximum profit, not to improve your wellbeing.
+          Remember that corporations spend billions on research to understand
+          your psychology better than you do. Their goal is to extract maximum
+          profit, not to improve your wellbeing.
         </p>
-        
+
         <div className="bg-white p-4 rounded-md border border-red-200">
           <p className="text-sm font-medium mb-2">Ask yourself:</p>
           <ul className="text-sm space-y-2">
             <li className="flex items-start">
-              <span className="text-red-500 mr-2 font-bold">→</span> Am I being manipulated into this purchase?
+              <span className="text-red-500 mr-2 font-bold">→</span> Am I being
+              manipulated into this purchase?
             </li>
             <li className="flex items-start">
-              <span className="text-red-500 mr-2 font-bold">→</span> Would I still buy this without the marketing pressure?
+              <span className="text-red-500 mr-2 font-bold">→</span> Would I
+              still buy this without the marketing pressure?
             </li>
             <li className="flex items-start">
-              <span className="text-red-500 mr-2 font-bold">→</span> Is this product actually worth the price, or am I paying for marketing?
+              <span className="text-red-500 mr-2 font-bold">→</span> Is this
+              product actually worth the price, or am I paying for marketing?
             </li>
           </ul>
         </div>
@@ -418,10 +435,7 @@ function CorporateGreedAwareness({
         <Button variant="outline" className="w-full" onClick={onCancel}>
           Cancel
         </Button>
-        <Button 
-          className="w-full text-white" 
-          onClick={handleContinue}
-        >
+        <Button className="w-full text-white" onClick={handleContinue}>
           Continue with Purchase
         </Button>
       </div>
@@ -436,7 +450,8 @@ function CorporateGreedAwareness({
         <CardHeader className="bg-red-600 text-white">
           <CardTitle>Marketing Awareness Check</CardTitle>
           <CardDescription className="text-red-100">
-            Recognize how companies are trying to influence your purchase decision
+            Recognize how companies are trying to influence your purchase
+            decision
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -453,7 +468,7 @@ let createGreedAwareness: ({ onFinish }: { onFinish: F }) => void
 export default function CorporateAgenda() {
   const [show, setShow] = useState(false)
   const onFinish = useRef<null | F>(null)
-  
+
   // Here we assign the function that can be called outside the component.
   createGreedAwareness = ({ onFinish: f }) => {
     setShow(true)
@@ -466,7 +481,7 @@ export default function CorporateAgenda() {
   }
 
   const handleCancel = () => {
-    sendAnalytics("corporate_agenda_cancel", undefined)
+    sendAnalytics("cancel", undefined)
     setShow(false)
   }
 
