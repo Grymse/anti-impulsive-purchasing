@@ -68,52 +68,37 @@ const shopifyDomains = [
     "pinklily.com",
     "misen.com", 
     "materialkitchen.com",
-    // "glossier.com",
-    // "hedleyandbennett.com",
-    // "starface.world",
-    // "youthtothepeople.com",
-    // "myhydro.hydroflask.com",
-    // "rumpl.com",
-    // "therabody.com",
-    // "aesop.com",
-    // "iliabeauty.com",
-    // "mizzenandmain.com",
-    // "marinelayer.com",
-    // "ohpolly.com",
-    // "happysocks.com",
-    // "tecovas.com",
-    // "stance.com",
-    // "eu.stance.com",
-    // "spongelle.com",
-    // "trueclassictees.com",
-    // "meundies.com",
-    // "nuggetsofwisdom.com",
+    "shop.hedleyandbennett.com",
+    "www.rumpl.com",
+    "checkout.mizzenandmain.com",
+    "ohpolly.com",
+    "checkout.tecovas.com",
+    "eu.stance.com",
+    "spongelle.com",
+    "www.trueclassictees.com",
+    "checkout.meundies.com",
     // "studs.com",
-    // "jackhenry.co",
-    // "luxyhair.com",
-    // "juicycouture.com",
-    // "everlast.com",
-    // "getstix.co",
-    // "skims.com",
-    // "feals.com",
-    // "foursigmatic.com",
-    // "golde.co",
-    // "liquid-iv.com",
-    // "readyjudy.com",
-    // "thesill.com",
-    // "wearlively.com",
-    // "andieswim.com",
-    // "yourparade.com",
-    // "brightland.co",
-    // "omsom.com",
-    // "jenis.com",
-    // "partakefoods.com",
-    // "snowehome.com",
-    // "imperfectfoods.com",
-    // "graza.co",
-    // "flybyjing.com",
-    // "getmaude.com",
-    // "ugmonk.com",
+    "jackhenry.co",
+    "www.luxyhair.com",
+    "juicycouture.com",
+    "www.everlast.com",
+    "checkout.skims.com",
+    "feals.com",
+    "us.foursigmatic.com",
+    "golde.co",
+    "shop.liquid-iv.com",
+    "www.thesill.com",
+    "www.wearlively.com",
+    "andieswim.com",
+    "yourparade.com",
+    "brightland.co",
+    "omsom.com",
+    "jenis.com",
+    "snowehome.com",
+    "graza.co",
+    "shop.flybyjing.com",
+    "getmaude.com",
+    "ugmonk.com",
 ]
 
 
@@ -591,7 +576,7 @@ getters.register(shopifyDomains, {
         const paypalBtn = document.querySelector('.paypal-buttons');
         paypalBtn?.parentElement?.remove();
         
-        const button = e.querySelectorAll<HTMLElement>('button[id="checkout-pay-button"], button[type="submit"], #shop-pay-button');
+        const button = e.querySelectorAll<HTMLElement>('button[id="checkout-pay-button"], #shop-pay-button');
         const googleButton = e.querySelector<HTMLElement>('#gpay-button-online-api-id');
 
         if(googleButton) {
@@ -609,6 +594,10 @@ getters.register(shopifyDomains, {
             } 
             if (!inner) inner = googleButton.childNodes[0] as HTMLElement;
             return Array.from(button).concat([inner]);
+        }
+        if (location.href.includes('checkout')) {
+            const submitButtons = e.querySelectorAll<HTMLElement>('button[type="submit"]');
+            return Array.from(button).concat(Array.from(submitButtons));
         }
         
         return Array.from(button);
