@@ -590,7 +590,7 @@ getters.register(shopifyDomains, {
     placeOrderButtons:(e: HTMLElement) => {
         const quickCheckout = e.querySelector<HTMLElement>('#express-checkout-wallets-wrapper');
         let overlay: HTMLElement | undefined;
-        if(quickCheckout) {
+        /* if(quickCheckout) {
             overlay = quickCheckout.querySelector<HTMLElement>('#express-overlay');
             if(!overlay) {
                 overlay = document.createElement('div');
@@ -604,7 +604,7 @@ getters.register(shopifyDomains, {
                 overlay.style.zIndex = '1000';
                 quickCheckout.appendChild(overlay);
             }
-        }
+        } */
         const button = e.querySelectorAll<HTMLElement>('button[id="checkout-pay-button"], button[type="submit"], #shop-pay-button, #express-checkout-wallets-wrapper');
 
         if (overlay) {
