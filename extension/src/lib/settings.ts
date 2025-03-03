@@ -2,7 +2,7 @@ import { getUserId } from "./analytics";
 import { PersistentValue } from "./utils";
 
 
-type StrategyType = "need-this" | "enforce-wait" | "visualize-alternatives";
+type StrategyType = "need-this" | "enforce-wait" | "visualize-alternatives" | "corporate-agenda";
 
 type Strategy = {
     name: string;
@@ -26,6 +26,11 @@ export const strategies : Strategy[] = [
         code: "visualize-alternatives",
         name: "Visualize Alternatives",
         description: "See how your money could grow over time if invested instead of spent on this purchase",
+    },
+    {
+        code: "corporate-agenda",
+        name: "Corporate Agenda",
+        description: "Remind yourself of the marketing tactics used by companies to manipulate you into making impulsive purchases",
     }
 ]
 
@@ -37,7 +42,7 @@ export type Settings = {
 export const settings = new PersistentValue<Settings>("settings",
     {
         active: true,
-        activeStrategies: ["visualize-alternatives"]
+        activeStrategies: ["corporate-agenda"]
     }
 );
 
