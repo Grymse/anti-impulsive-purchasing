@@ -464,7 +464,7 @@ getters.register("www.matas.dk", {
                 price: splitPriceCurrency(price.innerText).price,
                 currency: "kr"
             };
-        });
+        }); 
     }
 });
 
@@ -792,8 +792,6 @@ getters.register("www.apple.com", {
         return items;
     }
 })
-
-
 
 getters.register("www.jemogfix.dk", {
     checkoutButtons:(e: HTMLElement) => {
