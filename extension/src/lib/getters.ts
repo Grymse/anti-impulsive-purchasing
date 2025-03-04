@@ -863,3 +863,25 @@ function createInnerChild(btn: HTMLElement) {
     btn.appendChild(newInner);
     return newInner;
 }
+
+getters.register("jysk.dk", {
+    checkoutButtons:(e: HTMLElement) => {
+        return [];
+    },  
+
+    placeOrderButtons:(e: HTMLElement) => {
+        return [];
+    },
+
+    checkoutButtonLabels:(e: HTMLElement) => {
+        return [];
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        return [];
+    }
+})
