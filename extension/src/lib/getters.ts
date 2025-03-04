@@ -23,8 +23,11 @@ type GetterRegister = {
     hasCurrentDomain : () => boolean;
 }
 
-function splitPriceCurrency(price: string) {
-    const numericPrice = price.match(/[\d,.]+/);
+function splitPriceCurrency(price?: string | null) {
+    const numericPrice = price?.match(/[\d,.]+/);
+    if (!numericPrice) {
+        return { price: 0, currency: 'none'}
+    }
     const currency = price.replace(numericPrice ? numericPrice[0] : '', '');
     return { price: parseFloat(numericPrice[0].replace(',', '.')), currency: currency.trim() };
 }
@@ -987,7 +990,56 @@ getters.register("homedepot.com", {
                 currency
             }
         });
+    }
+});
+
+getters.register("bestbuy.com", {
+    checkoutButtons: (e: HTMLElement) => {
         return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        const paypal = Array.from(e.querySelectorAll<HTMLElement>('.paypal-component')).map(createInnerChild);
+        return Array.from(e.querySelectorAll<HTMLElement>('button.checkout-buttons__paypal, .payment__order-summary button')).concat(paypal);
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        const paypal = Array.from(e.querySelectorAll<HTMLElement>('.paypal-component')).map(createInnerChild);
+        return Array.from(e.querySelectorAll<HTMLElement>('button.checkout-buttons__paypal, .payment__order-summary button')).concat(paypal);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(e.querySelectorAll('button')).filter(b => b.textContent?.includes('Add to Cart'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        // total
+        if(location.href.includes('checkout/r/payment')) {
+            const items = Array.from(document.querySelectorAll('.item-list__entry'));
+            return items.map(item => {
+                const contents = item.querySelectorAll<HTMLElement>('.item-list__content');
+                if(contents.length < 2) return {
+                    price: 0, currency: "$", quantity: 0
+                }
+                const {price: quantity} = splitPriceCurrency(contents[1].innerText);
+                const {price, currency} = splitPriceCurrency(contents[0].innerText);
+
+                return {price, currency, quantity}
+            }).filter(({price}) => price !== 0);
+        }
+        const qtyHolders = document.querySelectorAll('div.fluid-item__actions')
+
+        return Array.from(qtyHolders).map(qtyHolder => {
+            const qty = qtyHolder.querySelector('select').value;
+            const unsplitPrice = qtyHolder.parentElement.querySelector('div.price-block__primary-price').textContent;
+            const {price, currency} = splitPriceCurrency(unsplitPrice);
+
+            return {
+                price,
+                currency,
+                quantity: parseInt(qty)
+            }
+        })
     }
 });
 
