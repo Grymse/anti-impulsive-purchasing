@@ -107,7 +107,7 @@ export const config: PlasmoCSConfig = {
     // ----- Common domains -----
     "https://www.temu.com/*",
     "https://*.shein.com/*",
-    "https://www.apple.com/*",
+    "https://*.apple.com/*",
     "https://www2.hm.com/*",
     "https://www.boozt.com/*",
 
@@ -266,6 +266,9 @@ function saveCurrentItems() {
   const items = getters.getDomainGetters().getCartItems(document.body);
   if(items.length === 0) return;
 
+  if(process.env.NODE_ENV === "development")
+    console.log("save items", items);
+
   cart.value = items;
 }
 
@@ -293,6 +296,7 @@ function setupTimeMeasurement() {
   window.addEventListener("focus", () => {
     stopWatch.start();
   });
+
   window.addEventListener("blur", () => {
     stopWatch.stop();
   });

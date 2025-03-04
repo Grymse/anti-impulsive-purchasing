@@ -125,7 +125,7 @@ export const config: PlasmoCSConfig = {
 
     // ----- Common domains -----
     "https://*.shein.com/*",
-    "https://www.apple.com/*",
+    "https://*.apple.com/*",
     "https://www2.hm.com/*",
     "https://www.boozt.com/*",
 

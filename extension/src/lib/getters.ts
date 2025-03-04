@@ -332,7 +332,6 @@ getters.register('zalando.dk', {
 
 getters.register("ebay.com", {
     checkoutButtons:(e: HTMLElement) => {
-        console.log("Get buttons");
         const buttons = e.querySelectorAll<HTMLElement>('button[data-test-id="cta-top"], #binBtn_btn_1, div.gh-minicart-action a[aria-label="Checkout"]')
         return Array.from(buttons)
     },  
@@ -503,7 +502,7 @@ getters.register("boozt.com", {
     }
 })
 
-getters.register("www2.hm.com", {
+getters.register("hm.com", {
     checkoutButtons:(e: HTMLElement) => {
         const minicart = e.querySelector<HTMLElement>('div[data-testid="minicart-open"]');
         if (!minicart) return [];
@@ -514,27 +513,47 @@ getters.register("www2.hm.com", {
     },  
 
     placeOrderButtons:(e: HTMLElement) => {
-        const minicart = e.querySelector<HTMLElement>('div[data-testid="minicart-open"]');
-        if (!minicart) return [];
-        const buttons = e.querySelectorAll<HTMLElement>('button[data-testid="continue-button-cart-sidebar"]')
-        const button2 = minicart.querySelectorAll<HTMLElement>('button');
-        return Array.from(buttons).concat(button2[1]);  
+        if (!location.href.includes('checkout')) return [];
+        const buyButtons = Array.from(e.querySelectorAll<HTMLElement>('aside button[type="button"]'))
+            .filter(b => b.textContent?.toLowerCase()?.includes('køb') || b.textContent?.toLowerCase()?.includes('purchase'));
+
+        const alreadyMarkedBuyButtons = Array.from(e.querySelectorAll<HTMLElement>('button[id="buy-button"]'));
+
+        return [...buyButtons, ...alreadyMarkedBuyButtons];
     },
 
     checkoutButtonLabels:(e: HTMLElement) => {
         const minicart = e.querySelector<HTMLElement>('div[data-testid="minicart-open"]');
-        if (!minicart) return [];
+
+        const buyButtons = Array.from(e.querySelectorAll<HTMLElement>('aside button[type="button"]'))
+            .filter(b => b.textContent?.toLowerCase()?.includes('køb') || b.textContent?.toLowerCase()?.includes('purchase'));
+        
+        buyButtons.forEach(b => b.id="buy-button");
+        const alreadyMarkedBuyButtons = Array.from(e.querySelectorAll<HTMLElement>('button[id="buy-button"]'));
+        if (!minicart) return [...buyButtons, ...alreadyMarkedBuyButtons];
         const buttons = minicart.querySelectorAll<HTMLElement>('button');
-        return [buttons[0]];
+        return [...buyButtons, ...alreadyMarkedBuyButtons, buttons[0]];
     },
 
     addToCartButtons: (e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[data-testid="pdp_add_to_cart_button"]');
+        const buttons = e.querySelectorAll<HTMLElement>('button[data-testid="pdp_add_to_cart_button"], .panthera--product-addtobag-add');
         return Array.from(buttons);
     },
 
     getCartItems: (e: HTMLElement) => {
-        return [];
+        if (!location.href.includes('cart')) return [];
+        const input = e.querySelectorAll<HTMLInputElement>('input[type="number"]');
+
+        return Array.from(input).map(input => {
+            const article = (input.closest('article').childNodes[1]) as HTMLElement | undefined;
+            const unsplitPrice = article?.querySelector('div span')?.textContent;
+            const {price, currency} = splitPriceCurrency(unsplitPrice);
+            return {
+                quantity: parseInt(input.value),
+                price,
+                currency
+            };
+        });
     }
 })
 
@@ -712,20 +731,25 @@ getters.register("magasin.dk", {
     }
 })
 
-getters.register("euqs.shein.com", {
+getters.register("shein.com", {
     checkoutButtons:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[class="sui-button-common sui-button-common__primary sui-button-common__H54PX j-cart-check incentive-button"], button[class="sui-button-common sui-button-common__primary sui-button-common__H44PX bsc-mini-cart-footer__button"]');
+        const buttons = e.querySelectorAll<HTMLElement>('button.bsc-mini-cart-footer__button, .bsc-mini-cart__trigger, button.j-cart-check');
         return Array.from(buttons);
     },  
 
     placeOrderButtons:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[class="sui-button-common sui-button-common__primary sui-button-common__H54PX j-cart-check incentive-button"]');
-        return Array.from(buttons);
+        const buttons = Array.from(e.querySelectorAll<HTMLElement>('.j-place-order button.sui-button-common__primary, #paypal-vault-button'));
+        return buttons.map(createInnerChild);
     },
 
     checkoutButtonLabels:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('span[class="checkout-btn-content"], button[class="sui-button-common sui-button-common__primary sui-button-common__H44PX bsc-mini-cart-footer__button"]');
-        return Array.from(buttons);
+        const payButton = Array.from(e.querySelectorAll<HTMLElement>('.j-place-order button.sui-button-common__primary'));
+        const payButtonInner = payButton.map(b => b.querySelector<HTMLElement>('div')).filter(b => !!b);
+
+        console.log(payButtonInner);
+
+        const buttons = e.querySelectorAll<HTMLElement>('button.bsc-mini-cart-footer__button, .bsc-mini-cart__trigger, button.j-cart-check');
+        return Array.from(buttons).concat(payButtonInner);
     },
 
     addToCartButtons: (e: HTMLElement) => {
@@ -740,17 +764,17 @@ getters.register("euqs.shein.com", {
 
 getters.register("apple.com", {
     checkoutButtons:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[name="proceed"], button[id="globalnav-menubutton-link-bag"], a[data-analytics-title="Review Bag"]');
+        const buttons = e.querySelectorAll<HTMLElement>('button[name="proceed"], button[id="globalnav-menubutton-link-bag"], a[data-analytics-title="Review Bag"], button[data-autom="checkout"]');
         return Array.from(buttons);
     },  
 
     placeOrderButtons:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[id="shoppingCart.actions.navApwCheckout"], button[id="shoppingCart.actions.apwCheckout"], button[id="shoppingCart.actions.navCheckoutOtherPayments"], button[id="shoppingCart.actions.checkoutOtherPayments"]');
+        const buttons = e.querySelectorAll<HTMLElement>('#co-options-applePay, #rs-checkout-continue-button-bottom');
         return Array.from(buttons);
     },
 
     checkoutButtonLabels:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[name="proceed"]');
+        const buttons = e.querySelectorAll<HTMLElement>('button[name="proceed"], #co-options-applePay, #rs-checkout-continue-button-bottom');
         return Array.from(buttons);
     },
 
@@ -770,7 +794,7 @@ getters.register("apple.com", {
         for (let i = 0; i < priceElements.length; i++) {
             items.push({
                 quantity: parseInt(quantityElements[i]),
-                price: parseFloat(priceElements[i]),
+                price: splitPriceCurrency(priceElements[i]).price,
                 currency: splitPriceCurrency(priceElements[i]).currency
             });
         }
@@ -819,3 +843,23 @@ getters.register("jemogfix.dk", {
         return items;
     }
 })
+
+function createInnerChild(btn: HTMLElement) {
+    const inner = (btn.querySelector<HTMLElement>('#less-inner-button-text')) as HTMLElement | undefined
+    btn.style.padding = "0";
+    btn.style.position = "relative";
+    if(inner) return inner;
+
+    const newInner = document.createElement('div');
+    newInner.style.width = "100%";
+    newInner.style.height = "100%";
+    newInner.style.color = "white";
+    newInner.style.fontSize = "1.5rem";
+    newInner.style.zIndex = "1000";
+    newInner.style.top = "0";
+    newInner.style.left = "0";
+    newInner.style.position = "absolute";
+    newInner.id = "less-inner-button-text";
+    btn.appendChild(newInner);
+    return newInner;
+}
