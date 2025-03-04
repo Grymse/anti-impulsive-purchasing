@@ -904,7 +904,7 @@ getters.register("jysk.dk", {
     }
 })
 
-getters.register("bilka.dk", {
+getters.register(["bilka.dk", "foetex.dk"], {
     checkoutButtons:(e: HTMLElement) => {
         return [];
     },  
