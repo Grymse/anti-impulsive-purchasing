@@ -107,7 +107,7 @@ export const config: PlasmoCSConfig = {
     // ----- Common domains -----
     "https://www.temu.com/*",
     "https://*.shein.com/*",
-    "https://www.apple.com/*",
+    "https://*.apple.com/*",
     "https://www2.hm.com/*",
     "https://www.boozt.com/*",
 
@@ -154,7 +154,7 @@ export const config: PlasmoCSConfig = {
     "https://ruggable.com/*",
     "https://shop.ruggable.com/*", // subdomain
     "https://www.chubbiesshorts.com/*",
-    "https://checkout.chubbiesshorts.com/*",
+    "https://*.chubbiesshorts.com/*",
     "https://www.puravidabracelets.com/*",
     "https://www.nativecos.com/*",
     "https://www.hauslabs.com/*",
@@ -162,14 +162,14 @@ export const config: PlasmoCSConfig = {
     "https://www.harney.com/*",
     "https://www.redbullshopus.com/*",
     "https://tula.com/*",
-    "https://checkout.tula.com/*",
-    "https://shop.tesla.com/*", // subdomain
+    "https://*.tula.com/*",
+    "https://*.tesla.com/*", // subdomain
     "https://spiritualgangster.com/*",
     "https://www.taylorstitch.com/*",
     "https://www.american-giant.com/*",
     "https://www.drsquatch.com/*",
     "https://mejuri.com/*",
-    "https://checkout-uk.mejuri.com/*", // subdomain
+    "https://*.mejuri.com/*",
     "https://www.peets.com/*",
     "https://www.deathwishcoffee.com/*",
     "https://hellotushy.com/*",
@@ -186,19 +186,19 @@ export const config: PlasmoCSConfig = {
     "https://materialkitchen.com/*",
     "https://shop.hedleyandbennett.com/*",
     "https://www.rumpl.com/*",
-    "https://checkout.mizzenandmain.com/*",
+    "https://*.mizzenandmain.com/*",
     "https://ohpolly.com/*",
-    "https://checkout.tecovas.com/*",
+    "https://*.tecovas.com/*",
     "https://*.stance.com/*",
     "https://spongelle.com/*",
     "https://www.trueclassictees.com/*",
-    "https://checkout.meundies.com/*",
+    "https://*.meundies.com/*",
     "https://studs.com/*",
     "https://jackhenry.co/*",
     "https://www.luxyhair.com/*",
     "https://juicycouture.com/*",
     "https://www.everlast.com/*",
-    "https://checkout.skims.com/*",
+    "https://*.skims.com/*",
     "https://feals.com/*",
     "https://us.foursigmatic.com/*",
     "https://golde.co/*",
@@ -266,6 +266,9 @@ function saveCurrentItems() {
   const items = getters.getDomainGetters().getCartItems(document.body);
   if(items.length === 0) return;
 
+  if(process.env.NODE_ENV === "development")
+    console.log("save items", items);
+
   cart.value = items;
 }
 
@@ -293,6 +296,7 @@ function setupTimeMeasurement() {
   window.addEventListener("focus", () => {
     stopWatch.start();
   });
+
   window.addEventListener("blur", () => {
     stopWatch.stop();
   });
