@@ -29,68 +29,64 @@ function splitPriceCurrency(price: string) {
 
 const shopifyDomains = [
     "klaedeskabet.dk",
-    "www.fashionnova.com",
+    "fashionnova.com",
     "kyliecosmetics.com",
     "colourpop.com",
     "jeffreestarcosmetics.com",
-    "www.gymshark.com",
-    "us.checkout.gymshark.com",
-    "www.allbirds.com",
-    "www.brooklinen.com",
+    "gymshark.com",
+    "allbirds.com",
+    "brooklinen.com",
     "ruggable.com",
-    "shop.ruggable.com",
-    "www.chubbiesshorts.com",
-    "checkout.chubbiesshorts.com",
-    "www.puravidabracelets.com",
-    "www.nativecos.com",
-    "www.hauslabs.com",
+    "chubbiesshorts.com",
+    "puravidabracelets.com",
+    "nativecos.com",
+    "hauslabs.com",
     "skknbykim.com",
-    "www.harney.com",
-    "www.redbullshopus.com",
+    "harney.com",
+    "redbullshopus.com",
     "tula.com",
-    "checkout.tula.com",
-    "shop.tesla.com",
+    "tesla.com",
     "spiritualgangster.com",
-    "www.taylorstitch.com",
-    "www.american-giant.com",
-    "www.drsquatch.com",
+    "taylorstitch.com",
+    "american-giant.com",
+    "drsquatch.com",
     "mejuri.com",
-    "checkout-uk.mejuri.com",  
-    "www.peets.com",
-    "www.deathwishcoffee.com",
+    "mejuri.com",  
+    "peets.com",
+    "deathwishcoffee.com",
     "hellotushy.com",
-    "www.bando.com",
-    "www.moroccanoil.com",
+    "bando.com",
+    "moroccanoil.com",
     "negativeunderwear.com",
     "birdies.com",
     "naadam.co", 
-    "www.popflexactive.com", 
-    "www.moderncitizen.com",
+    "popflexactive.com", 
+    "moderncitizen.com",
     "greatjonesgoods.com",
     "pinklily.com",
     "misen.com", 
     "materialkitchen.com",
-    "shop.hedleyandbennett.com",
-    "www.rumpl.com",
-    "checkout.mizzenandmain.com",
+    "hedleyandbennett.com",
+    "rumpl.com",
+    "mizzenandmain.com",
     "ohpolly.com",
-    "checkout.tecovas.com",
-    "eu.stance.com",
+    "tecovas.com",
+    "stance.com",
     "spongelle.com",
-    "www.trueclassictees.com",
-    "checkout.meundies.com",
+    "trueclassictees.com",
+    "meundies.com",
     "studs.com",
     "jackhenry.co",
-    "www.luxyhair.com",
+    "luxyhair.com",
     "juicycouture.com",
-    "www.everlast.com",
-    "checkout.skims.com",
+    "everlast.com",
+    "skims.com",
     "feals.com",
-    "us.foursigmatic.com",
+    "foursigmatic.com",
     "golde.co",
-    "shop.liquid-iv.com",
-    "www.thesill.com",
-    "www.wearlively.com",
+    "liquid-iv.com",
+    "thesill.com",
+    "wearlively.com",
     "andieswim.com",
     "yourparade.com",
     "brightland.co",
@@ -98,12 +94,15 @@ const shopifyDomains = [
     "jenis.com",
     "snowehome.com",
     "graza.co",
-    "shop.flybyjing.com",
+    "flybyjing.com",
     "getmaude.com",
     "ugmonk.com",
 ]
 
 
+function getTopDomain(domain: string) {
+    return domain.split(".").splice(-2).join(".").replace("/","");
+}
 
 /**
  * A registry for storing and retrieving element getters based on domain.
@@ -121,9 +120,8 @@ export const getters: GetterRegister = {
             return;
         }
 
-        const topdomain = domain.split(".").splice(-2).join(".").replace("/","");
         // TODO: Replace with topdomain
-        this._getters.set(domain, getters);
+        this._getters.set(getTopDomain(domain), getters);
     },
 
     /**
@@ -139,7 +137,7 @@ export const getters: GetterRegister = {
     getDomainGetters: function() {
         const domain = document.location.hostname;
 
-        return this._getters.get(domain) || {
+        return this._getters.get(getTopDomain(domain)) || {
             checkoutButtons: (e: HTMLElement) => [],
             placeOrderButtons: (e: HTMLElement) => [],
             checkoutButtonLabels: (e: HTMLElement) => [],
@@ -154,7 +152,7 @@ export const getters: GetterRegister = {
      * @returns True if the domain has element getters registered, false otherwise.
      */
     hasDomain: function(domain: string) {
-        return this._getters.has(domain);
+        return this._getters.has(getTopDomain(domain));
     },
 
     /**
@@ -162,11 +160,11 @@ export const getters: GetterRegister = {
      * @returns True if the current domain has element getters registered, false otherwise.
      */
     hasCurrentDomain: function() {
-        return this._getters.has(document.location.hostname);
+        return this.hasDomain(document.location.hostname);
     }
 }
 
-getters.register('www.amazon.com', {
+getters.register('amazon.com', {
     checkoutButtons: (e: HTMLElement) => {
       const buttons = e.querySelectorAll<HTMLElement>('input[name="proceedToRetailCheckout"]');
       return Array.from(buttons);
@@ -267,7 +265,7 @@ getters.register('www.amazon.com', {
     }
 });
 
-getters.register('www.zalando.dk', {
+getters.register('zalando.dk', {
     checkoutButtons: (e: HTMLElement) => {
         const buttons = e.querySelectorAll<HTMLElement>('button[data-id="proceed-to-checkout-button"]');
         return Array.from(buttons);
@@ -307,7 +305,7 @@ getters.register('www.zalando.dk', {
     }
 });
 
-/* getters.register("www.walmart.com", {
+/* getters.register("walmart.com", {
     checkoutButtons: (e: HTMLElement) => {
         const buttons = e.querySelectorAll<HTMLElement>('button[id="Continue to checkout button"]')
         return Array.from(buttons)
@@ -332,53 +330,28 @@ getters.register('www.zalando.dk', {
     }
   }) */
 
-getters.register("cart.ebay.com", {
+getters.register("ebay.com", {
     checkoutButtons:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[data-test-id="cta-top"]')
+        console.log("Get buttons");
+        const buttons = e.querySelectorAll<HTMLElement>('button[data-test-id="cta-top"], #binBtn_btn_1, div.gh-minicart-action a[aria-label="Checkout"]')
         return Array.from(buttons)
     },  
     placeOrderButtons:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[data-test-id="cart-checkout-button"]')
+        const buttons = e.querySelectorAll<HTMLElement>('button[data-test-id="cart-checkout-button"], #gpay-button-online-api-id, div[data-test-id="PAYPAL_CTA_BUTTON"], button[data-test-id="CONFIRM_AND_PAY_BUTTON"]')
         return Array.from(buttons)
     },
     checkoutButtonLabels:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[data-test-id="cta-top"]')
-        return Array.from(buttons)
+        const buttons = e.querySelectorAll<HTMLElement>('button[data-test-id="cta-top"], #binBtn_btn_1, div.gh-minicart-action a[aria-label="Checkout"]')
+
+        const buttons2 = e.querySelectorAll<HTMLElement>('#gpay-button-online-api-id, div[data-test-id="PAYPAL_CTA_BUTTON"], button[data-test-id="CONFIRM_AND_PAY_BUTTON"]')
+        buttons2.forEach(e => {e.style.color = 'white'; e.style.fontSize="16px"; e.style.fontWeight="bold"; e.style.backgroundColor="blue"; e.style.padding="10px"; e.style.borderRadius="20px"; e.style.cursor="pointer";});
+
+        return Array.from(buttons).concat(Array.from(buttons2));
     },
     addToCartButtons: (e: HTMLElement) => {
-        return [];
-    },
-
-    getCartItems: (e: HTMLElement) => {
-        return [];
-    }
-})
-
-getters.register("pay.ebay.com", {
-    checkoutButtons:(e: HTMLElement) => {
-        const buttons = [];
-        return Array.from(buttons)
-    },
-    placeOrderButtons:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('#gpay-button-online-api-id, div[data-test-id="PAYPAL_CTA_BUTTON"], button[data-test-id="CONFIRM_AND_PAY_BUTTON"]')
-        return Array.from(buttons)
-    },
-    checkoutButtonLabels:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('#gpay-button-online-api-id, div[data-test-id="PAYPAL_CTA_BUTTON"], button[data-test-id="CONFIRM_AND_PAY_BUTTON"]')
-        buttons.forEach(e => {e.style.color = 'white'; e.style.fontSize="16px"; e.style.fontWeight="bold"; e.style.backgroundColor="blue"; e.style.padding="10px"; e.style.borderRadius="20px"; e.style.cursor="pointer";});
+        const buttons = e.querySelectorAll<HTMLElement>('div.x-atc-action.overlay-placeholder.atcv3modalloading');
         return Array.from(buttons);
     },
-
-    addToCartButtons: (e: HTMLElement) => {
-        return [];
-    },
-
-    /* getOneClickBuyButtons: (e: HTMLElement) => {
-        const button = e.querySelector<HTMLElement>('#buy-now-button');
-        const item = e.querySelector<HTMLElement>('.a-price .a-offscreen');
-
-        return [];  
-    }, */
 
     getCartItems: (e: HTMLElement) => {
         const listings = e.querySelectorAll<HTMLElement>('.line-item--listings');
@@ -401,30 +374,7 @@ getters.register("pay.ebay.com", {
     }
 })
 
-getters.register("www.ebay.com", {
-    checkoutButtons:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('#binBtn_btn_1, div.gh-minicart-action a[aria-label="Checkout"]')
-        return Array.from(buttons)
-    },  
-    placeOrderButtons:(e: HTMLElement) => {
-        const buttons = [];
-        return Array.from(buttons)
-    },
-    checkoutButtonLabels:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('#binBtn_btn_1, div.gh-minicart-action a[aria-label="Checkout"]')
-        return Array.from(buttons);
-    },
-    addToCartButtons: (e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('div.x-atc-action.overlay-placeholder.atcv3modalloading');
-        return Array.from(buttons);
-    },
-
-    getCartItems: (e: HTMLElement) => {
-        return [];
-    }
-})
-
-getters.register("www.matas.dk", {
+getters.register("matas.dk", {
     checkoutButtons:(e: HTMLElement) => {
         if(!location.href.includes('kurv')) return [];
         
@@ -474,7 +424,7 @@ getters.register("www.matas.dk", {
     }
 });
 
-getters.register("www.proshop.dk", {
+getters.register("proshop.dk", {
     checkoutButtons:(e: HTMLElement) => {
         const buttons = e.querySelectorAll<HTMLElement>('a[class="btn site-btn-tall site-btn-green pull-right ml-2"], a[class="btn site-btn-tall site-btn-green"]')
         return Array.from(buttons)
@@ -513,7 +463,7 @@ getters.register("www.proshop.dk", {
     }
 })
 
-getters.register("www.boozt.com", {
+getters.register("boozt.com", {
     checkoutButtons:(e: HTMLElement) => {
         const buttons = e.querySelectorAll<HTMLElement>('div[class="shopcart-order-summary__action"], div[class="shopcart-quick-checkout__content"]')
         return Array.from(buttons)
@@ -675,7 +625,7 @@ getters.register(shopifyDomains, {
     }
 })
 
-getters.register("www.elgiganten.dk", {
+getters.register("elgiganten.dk", {
     checkoutButtons:(e: HTMLElement) => {
         const buttons = e.querySelectorAll<HTMLElement>('a[href="/checkout-integration"]');
         return Array.from(buttons);
@@ -717,7 +667,7 @@ getters.register("www.elgiganten.dk", {
     }
 })
 
-getters.register("www.magasin.dk", {
+getters.register("magasin.dk", {
     checkoutButtons:(e: HTMLElement) => {
         const buttons = e.querySelectorAll<HTMLElement>('div[class="minicart__icon"], button[class="checkout-btn button -primary -full-width"]');
         return Array.from(buttons);
@@ -788,7 +738,7 @@ getters.register("euqs.shein.com", {
     }
 })
 
-getters.register("www.apple.com", {
+getters.register("apple.com", {
     checkoutButtons:(e: HTMLElement) => {
         const buttons = e.querySelectorAll<HTMLElement>('button[name="proceed"], button[id="globalnav-menubutton-link-bag"], a[data-analytics-title="Review Bag"]');
         return Array.from(buttons);
@@ -828,7 +778,7 @@ getters.register("www.apple.com", {
     }
 })
 
-getters.register("www.jemogfix.dk", {
+getters.register("jemogfix.dk", {
     checkoutButtons:(e: HTMLElement) => {
         const buttons = e.querySelectorAll<HTMLElement>('button[title="Indkøbskurv"], a[class="mini-basket__button btn btn-success w-100"], button[class="btn btn-success w-100"], div[class="product-price-summary__checkout"]');
         return Array.from(buttons);
