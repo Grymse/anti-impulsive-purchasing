@@ -1,3 +1,5 @@
+import { it } from "node:test";
+
 export type ElementGetters = {
     checkoutButtons: (e: HTMLElement) => HTMLElement[];
     placeOrderButtons: (e: HTMLElement) => HTMLElement[];
@@ -865,12 +867,14 @@ getters.register("jemogfix.dk", {
 
 
 getters.register("temu.com", {
-    // TODO: Remove quick paypal button
+    
     checkoutButtons:(e: HTMLElement) => {
         return [];
     },  
 
+    // TODO: Fix placeOrderButton on non-label buttons;
     placeOrderButtons:(e: HTMLElement) => {
+        // Remove quick paypal button
         Array.from(document.body.querySelectorAll('div[aria-label]')).filter(b => b.getAttribute('aria-label') === 'Ekspres-betaling med').forEach(b => b.remove());
         
         const buttons = Array.from(e.querySelectorAll<HTMLElement>('div[aria-label][role="button"]')).filter(b => b.getAttribute('aria-label').includes('betal'));
@@ -908,6 +912,39 @@ getters.register("temu.com", {
         });
     }
 })
+
+getters.register("target.com", {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        return Array.from(e.querySelectorAll<HTMLElement>('button[data-test="placeOrderButton"], button[data-test="payWithAffirmButton"], button[data-test="pay-with-paypal-in-four-button"], button[data-test="pay-with-paypal-button"]'));
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        return Array.from(e.querySelectorAll<HTMLElement>('button[data-test="placeOrderButton"], button[data-test="payWithAffirmButton"], button[data-test="pay-with-paypal-in-four-button"], button[data-test="pay-with-paypal-button"]'));
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('button')).filter(b => b.textContent?.includes('Add to cart'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const items = e.querySelectorAll('div[data-test="cartItem"]');
+
+        return Array.from(items).map(item => {
+            const quantity = parseInt(item.querySelector('select').value);
+            const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>('p[data-test="cartItem-price"]').textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+    }
+});
 
 function getNumberFromText(text: string) {
     return parseInt(text.replace(/\D/g, ''));
