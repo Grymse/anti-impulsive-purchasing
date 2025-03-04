@@ -121,6 +121,8 @@ export const getters: GetterRegister = {
             return;
         }
 
+        const topdomain = domain.split(".").splice(-2).join(".").replace("/","");
+        // TODO: Replace with topdomain
         this._getters.set(domain, getters);
     },
 
@@ -588,10 +590,20 @@ getters.register("www2.hm.com", {
 
 getters.register(shopifyDomains, {
     checkoutButtons:(e: HTMLElement) => {
-        return [];
+        if (location.href.includes('checkout')) return [];
+        const checkoutButtons = Array.from(
+            document.querySelectorAll<HTMLElement>('button'))
+                    .filter(button => button.textContent.toLowerCase().includes('checkout') ||
+                                      button.textContent.toLowerCase().includes('check out')
+        );
+        return checkoutButtons;
     },  
 
     placeOrderButtons:(e: HTMLElement) => {
+        document.querySelector<HTMLElement>('shopify-paypal-button')?.remove();
+        document.querySelector<HTMLElement>('shop-pay-wallet-button')?.remove();
+        document.querySelector('shopify-google-pay-button')?.remove();
+
         const paypalBtn = document.querySelector('.paypal-buttons');
         paypalBtn?.parentElement?.remove();
         
@@ -599,15 +611,14 @@ getters.register(shopifyDomains, {
         const googleButton = e.querySelector<HTMLElement>('#gpay-button-online-api-id');
 
         if(googleButton) {
-            googleButton.style.backgroundImage = 'none';
             let inner: HTMLElement | undefined;
+            googleButton.style.padding = "0";
             if(googleButton.childNodes.length === 0) {
                 inner = document.createElement('div');
                 inner.style.width = "100%";
                 inner.style.height = "100%";
                 inner.style.color = "white";
                 inner.style.fontSize = "1.5rem";
-                inner.style.padding = "";
                 inner.id = "gpay-button-text";
                 googleButton.appendChild(inner);
             } 
@@ -624,12 +635,27 @@ getters.register(shopifyDomains, {
     },
 
     checkoutButtonLabels:(e: HTMLElement) => {
-        const button = e.querySelectorAll<HTMLElement>('button[id="checkout-pay-button"], button[type="submit"], #shop-pay-button, #gpay-button-text');
-        return Array.from(button);
+        const button = e.querySelectorAll<HTMLElement>('button[id="checkout-pay-button"], #shop-pay-button, #gpay-button-text');
+
+        if (location.href.includes('checkout')) {
+            const submitButtons = e.querySelectorAll<HTMLElement>('button[type="submit"]');
+            return Array.from(button).concat(Array.from(submitButtons));
+        }
+
+        const checkoutButtons = Array.from(
+            document.querySelectorAll<HTMLElement>('button'))
+                    .filter(button => button.textContent.toLowerCase().includes('checkout') || button.textContent.toLowerCase().includes('check out')
+        );
+        
+        return Array.from(button).concat(checkoutButtons);
     },
 
     addToCartButtons: (e: HTMLElement) => {
-       return [];
+        if (location.href.includes('checkout')) return [];
+        const buttons = Array.from(document.querySelectorAll<HTMLElement>('button')).filter(button =>
+            button.textContent.toLowerCase().includes('add') || button.textContent.toLowerCase().includes('tilføj')
+        );
+       return buttons;
     },
 
     getCartItems: (e: HTMLElement) => {

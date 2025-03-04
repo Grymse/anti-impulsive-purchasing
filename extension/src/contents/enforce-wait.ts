@@ -149,7 +149,7 @@ export const config: PlasmoCSConfig = {
     "https://ruggable.com/*",
     "https://shop.ruggable.com/*", // subdomain
     "https://www.chubbiesshorts.com/*",
-    "https://checkout.chubbiesshorts.com/*",
+    "https://*.chubbiesshorts.com/*",
     "https://www.puravidabracelets.com/*",
     "https://www.nativecos.com/*",
     "https://www.hauslabs.com/*",
@@ -157,14 +157,14 @@ export const config: PlasmoCSConfig = {
     "https://www.harney.com/*",
     "https://www.redbullshopus.com/*",
     "https://tula.com/*",
-    "https://checkout.tula.com/*",
-    "https://shop.tesla.com/*", // subdomain
+    "https://*.tula.com/*",
+    "https://*.tesla.com/*", // subdomain
     "https://spiritualgangster.com/*",
     "https://www.taylorstitch.com/*",
     "https://www.american-giant.com/*",
     "https://www.drsquatch.com/*",
     "https://mejuri.com/*",
-    "https://checkout-uk.mejuri.com/*", // subdomain
+    "https://*.mejuri.com/*",
     "https://www.peets.com/*",
     "https://www.deathwishcoffee.com/*",
     "https://hellotushy.com/*",
@@ -181,19 +181,19 @@ export const config: PlasmoCSConfig = {
     "https://materialkitchen.com/*",
     "https://shop.hedleyandbennett.com/*",
     "https://www.rumpl.com/*",
-    "https://checkout.mizzenandmain.com/*",
+    "https://*.mizzenandmain.com/*",
     "https://ohpolly.com/*",
-    "https://checkout.tecovas.com/*",
+    "https://*.tecovas.com/*",
     "https://*.stance.com/*",
     "https://spongelle.com/*",
     "https://www.trueclassictees.com/*",
-    "https://checkout.meundies.com/*",
+    "https://*.meundies.com/*",
     "https://studs.com/*",
     "https://jackhenry.co/*",
     "https://www.luxyhair.com/*",
     "https://juicycouture.com/*",
     "https://www.everlast.com/*",
-    "https://checkout.skims.com/*",
+    "https://*.skims.com/*",
     "https://feals.com/*",
     "https://us.foursigmatic.com/*",
     "https://golde.co/*",
@@ -285,11 +285,14 @@ function injectVisuals(e: HTMLElement) {
 
   // Update the button label based on the permit status
   if (!currentPermit || currentPermit.end < Date.now()) {
-    e.innerText = "Start checkout wait timer";  
+    e.innerText = "Start checkout wait timer";
+    if (e.parentElement) e.parentElement.style.backgroundImage = 'none';  
   }
   else if (Date.now() < currentPermit.start) {
     e.innerText = "Wait " + permitToWaitTime(currentPermit) + " before checking out";
+    if (e.parentElement) e.parentElement.style.backgroundImage = 'none';  
   }
+
 }
 
 function updateVisuals() {
