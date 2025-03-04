@@ -1,6 +1,6 @@
 import { PersistentValue } from "./utils";
 
-type StrategyType = "need-this" | "enforce-wait" | "visualize-alternatives"  | "max-purchases" | "corporate-agenda" | "review-third-party" | "see-alternatives" | "alternate-activities";
+type StrategyType = "need-this" | "enforce-wait" | "visualize-alternatives"  | "max-purchases" | "corporate-agenda" | "review-third-party" | "alternate-activities";
 
 type Strategy = {
     name: string;
