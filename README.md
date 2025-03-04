@@ -9,15 +9,7 @@ Welcome to *Less*, a browser extension designed to help reduce impulsive online 
 Developed as part of a thesis on reducing online impulsive buying behaviors, this tool is meant to support both your financial well-being and the environment.
 
 ### Supported webshops
-**American**
-- [Amazon.com](https://www.amazon.com/)
-- [Ebay.com](https://ebay.com/)
-
-**Danish**
-- [Zalando.dk](https://www.zalando.dk/)
-- [Matas.dk](https://www.matas.dk/)
-- [Proshop.dk](https://www.proshop.dk/)
-- [Boost.dk](https://www.boozt.com/)
+Refer to the updated list found on [our webpage.](https://www.lessextension.com/)
 
 ### Analytics
 
