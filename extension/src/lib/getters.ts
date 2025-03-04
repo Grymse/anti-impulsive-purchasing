@@ -738,15 +738,14 @@ getters.register("shein.com", {
     },  
 
     placeOrderButtons:(e: HTMLElement) => {
+        if (!location.href.includes('checkout')) return [];
         const buttons = Array.from(e.querySelectorAll<HTMLElement>('.j-place-order button.sui-button-common__primary, #paypal-vault-button'));
         return buttons.map(createInnerChild);
     },
 
     checkoutButtonLabels:(e: HTMLElement) => {
-        const payButton = Array.from(e.querySelectorAll<HTMLElement>('.j-place-order button.sui-button-common__primary'));
-        const payButtonInner = payButton.map(b => b.querySelector<HTMLElement>('div')).filter(b => !!b);
-
-        console.log(payButtonInner);
+        const payButton = Array.from(e.querySelectorAll<HTMLElement>('.j-place-order button.sui-button-common__primary, #paypal-vault-button'));
+        const payButtonInner = payButton.map(b => b.querySelector<HTMLElement>('span')).filter(b => !!b);
 
         const buttons = e.querySelectorAll<HTMLElement>('button.bsc-mini-cart-footer__button, .bsc-mini-cart__trigger, button.j-cart-check');
         return Array.from(buttons).concat(payButtonInner);
@@ -758,7 +757,26 @@ getters.register("shein.com", {
     },
 
     getCartItems: (e: HTMLElement) => {
-        return [];
+        const items = document.querySelectorAll<HTMLElement>('.checkout-cart__item-effiency');
+
+        return Array.from(items).map(item => {
+            let quantity = item.querySelector('input')?.value;
+            if(!quantity) {
+                const unsplit = item.querySelector('.shopping-bag-item__belt-wrap')?.textContent;
+                if (unsplit) {
+                    const {price} = splitPriceCurrency(unsplit)
+                    quantity = String(price);
+                }
+            }
+            const unsplitPrice = item.querySelector('.item-price-content')?.textContent;
+            const {price, currency} = splitPriceCurrency(unsplitPrice);
+
+            return {
+                quantity: parseInt(quantity),
+                price,
+                currency
+            };
+        })
     }
 })
 
@@ -844,6 +862,57 @@ getters.register("jemogfix.dk", {
     }
 })
 
+
+
+getters.register("temu.com", {
+    // TODO: Remove quick paypal button
+    checkoutButtons:(e: HTMLElement) => {
+        return [];
+    },  
+
+    placeOrderButtons:(e: HTMLElement) => {
+        Array.from(document.body.querySelectorAll('div[aria-label]')).filter(b => b.getAttribute('aria-label') === 'Ekspres-betaling med').forEach(b => b.remove());
+        
+        const buttons = Array.from(e.querySelectorAll<HTMLElement>('div[aria-label][role="button"]')).filter(b => b.getAttribute('aria-label').includes('betal'));
+        const appleButtons = Array.from(document.querySelectorAll<HTMLElement>('div[role="button"]')).filter(b => b.textContent?.includes('med'))
+
+        return buttons.concat(appleButtons).map(createInnerChild);
+    },
+
+    checkoutButtonLabels:(e: HTMLElement) => {
+        const buttons = Array.from(e.querySelectorAll<HTMLElement>('div[aria-label][role="button"]')).filter(b => b.getAttribute('aria-label').includes('betal'));
+        const generalButtons = buttons.map(b => b.querySelectorAll<HTMLElement>('span')[1]);
+
+        const appleButtons = Array.from(document.querySelectorAll<HTMLElement>('div[role="button"]')).filter(b => b.textContent?.includes('med')).map(createInnerChild);
+        return generalButtons.concat(appleButtons);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const spans = e.querySelectorAll('span[role="button"]');
+        return Array.from(spans).filter(s => s.textContent.includes('kurv')).map(s => s.parentElement.parentElement)
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const items = e.querySelectorAll('.splide__slide');
+
+        return Array.from(items).map(item => {    
+            const priceAndQuantity = item.querySelector('span[data-priority-index]');
+            const price = parseFloat(priceAndQuantity.childNodes[0].textContent);
+            const currency = priceAndQuantity.childNodes[1].textContent;
+
+            return {
+                quantity: getNumberFromText(priceAndQuantity.childNodes[2]?.textContent ?? "1"),
+                price,
+                currency
+            }
+        });
+    }
+})
+
+function getNumberFromText(text: string) {
+    return parseInt(text.replace(/\D/g, ''));
+}
+
 function createInnerChild(btn: HTMLElement) {
     const inner = (btn.querySelector<HTMLElement>('#less-inner-button-text')) as HTMLElement | undefined
     btn.style.padding = "0";
@@ -854,12 +923,12 @@ function createInnerChild(btn: HTMLElement) {
     newInner.style.width = "100%";
     newInner.style.height = "100%";
     newInner.style.color = "white";
-    newInner.style.fontSize = "1.5rem";
     newInner.style.zIndex = "1000";
     newInner.style.top = "0";
     newInner.style.left = "0";
     newInner.style.position = "absolute";
+    newInner.style.pointerEvents = "none";
     newInner.id = "less-inner-button-text";
-    btn.appendChild(newInner);
+    btn.prepend(newInner);
     return newInner;
 }
