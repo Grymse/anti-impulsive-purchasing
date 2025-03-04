@@ -36,6 +36,15 @@ type AnalyticsPayloads = {
   "corporate_agenda_collapse_category": { category: string };
   "corporate_agenda_acknowledge": { category: string };
   "corporate_agenda_continue": { acknowledged: boolean };
+  "alternate_activities_select_category": { category: string };
+  "alternate_activities_select_activity": { activity: string };
+  "alternate_activities_back": { from: string };
+  "alternate_activities_continue": { viewed: boolean };
+  "alternate_activities_resource_click": { resource: string; activity: string };
+  "alternate_activities_completed": { fromRandomSuggestion: boolean };
+  "alternate_activities_canceled": { fromRandomSuggestion: boolean };
+  "alternate_activities_aborted_shopping": { fromRandomSuggestion: boolean; searchQuery: string; category: string; activityId: string };
+  "alternate_activities_random_suggestion": { activity: string; category: string };
 };
 
 export async function sendAnalytics<T extends keyof AnalyticsPayloads>(
