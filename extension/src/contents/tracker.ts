@@ -257,6 +257,11 @@ function onPlaceOrderClick(e: MouseEvent) {
   const isBlocked = document.body.getAttribute('data-plasmo-place-order-blocked') === "true";
   if (isBlocked) return;
 
+  const target = e.target as HTMLElement;
+  if((target).id === "less-inner-button-text") {
+    target.remove();
+  }
+
   purchases.value = purchases.value.concat({time: Date.now(), items: cart.value ?? []});
   sendAnalytics('place-order', cart.value ?? []);
 }

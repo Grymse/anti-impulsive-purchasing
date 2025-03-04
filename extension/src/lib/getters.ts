@@ -946,6 +946,51 @@ getters.register("target.com", {
     }
 });
 
+
+getters.register("homedepot.com", {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        if (location.href.includes('supercartEnabled=true')) {
+            e.querySelectorAll('button[data-automation-id="checkoutButton"], div[data-testid="paypal-smart-button"]').forEach(b => b.remove());
+            return [];
+        }
+
+        const paypal = Array.from(e.querySelectorAll<HTMLElement>('div[data-testid="paypal-smart-button"]')).map(createInnerChild);
+        
+        return Array.from(e.querySelectorAll<HTMLElement>('button[data-automation-id="checkoutButton"]')).concat(paypal)
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        const paypal = Array.from(e.querySelectorAll<HTMLElement>('div[data-testid="paypal-smart-button"]')).map(createInnerChild);
+        
+        return Array.from(e.querySelectorAll<HTMLElement>('button[data-automation-id="checkoutButton"]')).concat(paypal)
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = Array.from(e.querySelectorAll('button')).filter(b => b.textContent?.includes('Add to Cart'));
+        return buttons;
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const items = e.querySelectorAll('div[data-automation-id="cart-item"]');
+        return Array.from(items).map(item => {
+            const quantity = parseInt(item.querySelector('input').value);
+            // total price
+            const {price, currency} = splitPriceCurrency(item.querySelector('span[data-automation-id="pricingScenariosTotalPriceAddedText"]').textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+        return [];
+    }
+});
+
 function getNumberFromText(text: string) {
     return parseInt(text.replace(/\D/g, ''));
 }
@@ -964,8 +1009,8 @@ function createInnerChild(btn: HTMLElement) {
     newInner.style.top = "0";
     newInner.style.left = "0";
     newInner.style.position = "absolute";
-    newInner.style.pointerEvents = "none";
+    newInner.style.cursor = "pointer";
     newInner.id = "less-inner-button-text";
-    btn.prepend(newInner);
+    btn.appendChild(newInner);
     return newInner;
 }
