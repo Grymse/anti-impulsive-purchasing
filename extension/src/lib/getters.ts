@@ -903,3 +903,41 @@ getters.register("jysk.dk", {
         return items.filter((_, index) => index % 2 === 0);
     }
 })
+
+getters.register("bilka.dk", {
+    checkoutButtons:(e: HTMLElement) => {
+        return [];
+    },  
+
+    placeOrderButtons:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[data-testid="checkout-submit-payment"]');
+        return Array.from(buttons);
+    },
+
+    checkoutButtonLabels:(e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[data-testid="checkout-submit-payment"]');
+        return Array.from(buttons);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[data-testid="add-to-cart-button"]');
+        return Array.from(buttons);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const cart = e.querySelector<HTMLElement>('div[class="row cart-main__row"]');
+        if (cart === null) return [];
+        const priceElements = Array.from(cart.querySelectorAll<HTMLElement>('span[class="product-price price medium blackText"]')).map(e => e.textContent);
+        const quantityElements = Array.from(cart.querySelectorAll<HTMLElement>('div[class="v-select__selection v-select__selection--comma"]')).map(e => e.textContent);
+        
+        let items = [];
+        for (let i = 0; i < priceElements.length; i++) {
+            items.push({
+                quantity: parseInt(quantityElements[i]),
+                price: parseFloat(priceElements[i]) / parseInt(quantityElements[i]),
+                currency: "kr"
+            });
+        }
+        return items;
+    }
+})
