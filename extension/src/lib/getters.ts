@@ -866,22 +866,40 @@ function createInnerChild(btn: HTMLElement) {
 
 getters.register("jysk.dk", {
     checkoutButtons:(e: HTMLElement) => {
-        return [];
+        const buttons = e.querySelectorAll<HTMLElement>('a[data-test="miniBasketButton"], a[data-test="checkout"]');
+        return Array.from(buttons);
     },  
 
     placeOrderButtons:(e: HTMLElement) => {
-        return [];
+        const buttons = e.querySelectorAll<HTMLElement>('button[id="continueToConfirmation"]');
+        return Array.from(buttons);
     },
 
     checkoutButtonLabels:(e: HTMLElement) => {
-        return [];
+        const buttons = e.querySelectorAll<HTMLElement>('a[data-test="checkout"], button[id="continueToConfirmation"]');
+        return Array.from(buttons);
     },
 
     addToCartButtons: (e: HTMLElement) => {
-        return [];
+        const buttons = e.querySelectorAll<HTMLElement>('button[data-test="addToTheBasketButton"]');
+        return Array.from(buttons);
     },
 
     getCartItems: (e: HTMLElement) => {
-        return [];
+        const cart = e.querySelector<HTMLElement>('div[data-test="onlineCart"]');
+        if (cart === null) return [];
+        const priceElements = Array.from(cart.querySelectorAll<HTMLElement>('div[data-test="checkoutProductOrderLinePrice"]')).map(e => e.textContent);
+        //@ts-expect-error value is valid.
+        const quantityElements = Array.from(cart.querySelectorAll<HTMLElement>('input[class="product-quantity-input"]')).map(e => e.value);
+
+        let items = [];
+        for (let i = 0; i < priceElements.length; i++) {
+            items.push({
+                quantity: parseInt(quantityElements[i]),
+                price: parseFloat(priceElements[i])/parseInt(quantityElements[i]),
+                currency: "kr"
+            });
+        }
+        return items.filter((_, index) => index % 2 === 0);
     }
 })
