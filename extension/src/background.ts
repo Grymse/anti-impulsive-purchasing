@@ -10,11 +10,12 @@ getUserId().then((id) => {
     })
 })
 
-chrome.runtime.onInstalled.addListener(() => {
-    chrome.tabs.create({ url: "https://www.lessextension.com/onboarding" }, () => {
-        console.log("Onboarding tab opened")
+if (process.env.NODE_ENV !== "development") {
+    chrome.runtime.onInstalled.addListener(() => {
+        chrome.tabs.create({ url: "https://www.lessextension.com/onboarding" }, () => {
+            console.log("Onboarding tab opened")
+        })
     })
 }
-)
 
 export {}
