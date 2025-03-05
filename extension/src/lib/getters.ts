@@ -1334,8 +1334,46 @@ getters.register("aliexpress.com", {
         const itemInputs = document.querySelectorAll<HTMLInputElement>('.comet-input-number-input');
 
         return Array.from(itemInputs).map(item => {
+            // Total
             const quantity = parseInt(item.value);
             const {price, currency} = splitPriceCurrency(item.parentElement?.parentElement?.children?.[1]?.textContent);
+
+            return {
+                quantity,
+                price: price * quantity,
+                currency
+            }
+        });
+    }
+});
+
+getters.register("gap.com", {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        const checkoutBtns = Array.from(document.querySelectorAll<HTMLElement>('button[data-testid="checkout-button"]'));
+        return Array.from(document.querySelectorAll<HTMLElement>('div[data-testid="paypal-button"]')).map(d => createInnerChildWithColor(d, "black")).concat(checkoutBtns);
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        const checkoutBtns = Array.from(document.querySelectorAll<HTMLElement>('button[data-testid="checkout-button"]'));
+        return Array.from(document.querySelectorAll<HTMLElement>('div[data-testid="paypal-button"]')).map(d => createInnerChildWithColor(d, "black")).concat(checkoutBtns);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return findFromText(document.querySelectorAll('button'),["Add to Bag"]);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const items = Array.from(document.querySelectorAll('#active-bag li'));
+        
+        return items.map(item => {
+            // total
+            const quantity = parseInt(item.querySelector('div[data-testid="product-quantity"]')?.textContent ?? "1");
+            const unsplitPrice = item.querySelector('div[data-testid="product-price"] span:not(.line-through)').textContent;
+            const {price, currency} = splitPriceCurrency(unsplitPrice);
 
             return {
                 quantity,

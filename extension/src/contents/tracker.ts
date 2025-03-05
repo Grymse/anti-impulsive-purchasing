@@ -263,7 +263,7 @@ function isNewOrder(order: ShoppingItem[]) : boolean {
   if(!tempLatestPlacedOrder) return true;
   if(order.length !== tempLatestPlacedOrder.length) return true;
   
-  return JSON.stringify(order) === JSON.stringify(tempLatestPlacedOrder);
+  return JSON.stringify(order) !== JSON.stringify(tempLatestPlacedOrder);
 }
 
 function onPlaceOrderClick(e: MouseEvent) {
