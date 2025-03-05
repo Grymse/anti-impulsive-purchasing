@@ -259,7 +259,7 @@ function onPlaceOrderClick(e: MouseEvent) {
 
   const target = e.target as HTMLElement;
   if((target).id === "less-inner-button-text") {
-    target.remove();
+    target.style.pointerEvents = "none";
   }
 
   purchases.value = purchases.value.concat({time: Date.now(), items: cart.value ?? []});

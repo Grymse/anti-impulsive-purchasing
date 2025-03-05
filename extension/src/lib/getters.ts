@@ -29,7 +29,39 @@ function splitPriceCurrency(price?: string | null) {
         return { price: 0, currency: 'none'}
     }
     const currency = price.replace(numericPrice ? numericPrice[0] : '', '');
-    return { price: parseFloat(numericPrice[0].replace(',', '.')), currency: currency.trim() };
+    return { price: parsePrice(numericPrice[0]), currency: currency.trim() };
+}
+
+function parsePrice(price: string): number {
+    // Remove any non-numeric characters except for '.' and ','
+    const cleanedPrice = price.replace(/[^\d.,]/g, '');
+
+    // Check if the price contains both '.' and ','
+    if (cleanedPrice.includes('.') && cleanedPrice.includes(',')) {
+        // Assume the last occurrence of either '.' or ',' is the decimal separator
+        const lastDotIndex = cleanedPrice.lastIndexOf('.');
+        const lastCommaIndex = cleanedPrice.lastIndexOf(',');
+
+        if (lastDotIndex > lastCommaIndex) {
+            // '.' is the decimal separator
+            return parseFloat(cleanedPrice.replace(/,/g, ''));
+        } else {
+            // ',' is the decimal separator
+            return parseFloat(cleanedPrice.replace(/\./g, '').replace(',', '.'));
+        }
+    }
+
+    // If the price contains only one of '.' or ',', determine the format
+    if (cleanedPrice.includes('.')) {
+        // Assume American format
+        return parseFloat(cleanedPrice);
+    } else if (cleanedPrice.includes(',')) {
+        // Assume Danish format
+        return parseFloat(cleanedPrice.replace(',', '.'));
+    }
+
+    // If no decimal separator is found, parse as an integer
+    return parseFloat(cleanedPrice);
 }
 
 const shopifyDomains = [
@@ -1043,11 +1075,88 @@ getters.register("bestbuy.com", {
     }
 });
 
+getters.register("costco.com", {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        return Array.from(e.querySelectorAll<HTMLInputElement>('#place-order-button-regular')).map(i => createInnerChildWithColor(i, "black"));
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        return Array.from(e.querySelectorAll<HTMLInputElement>('#place-order-button-regular')).map(i => createInnerChildWithColor(i, "black"));
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(e.querySelectorAll('button')).filter(b => b.textContent?.includes('Add')).concat(
+            Array.from(e.querySelectorAll('#add-to-cart-btn'))
+        )
+    },
+    
+    getCartItems: (e: HTMLElement) => {
+        const items = Array.from(document.querySelectorAll<HTMLElement>('.order-item'));
+        // Total price
+
+        return items.map((item, i) => {
+            const quantity = item.querySelector<HTMLInputElement>(`input#quantity_${i+1}`)?.value;
+            const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>(`div[automation-id=totalPriceOutput_${i+1}]`).textContent);
+
+            return {
+                quantity: parseInt(quantity),
+                price,
+                currency
+            }
+        });
+    }
+});
+
+getters.register(["adidas.dk", "adidas.com"], {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        const paypalButtons = Array.from(document.querySelectorAll('#paypal-button-container')).map(createInnerChild);
+        return Array.from(document.querySelectorAll<HTMLElement>('button[data-auto-id="place-order-button"]')).concat(paypalButtons);
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        const paypalButtons = Array.from(document.querySelectorAll('#paypal-button-container')).map(createInnerChild);
+        
+        return Array.from(document.querySelectorAll<HTMLElement>('button[data-auto-id="place-order-button"] span')).concat(paypalButtons);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(e.querySelectorAll('#add-to-bag button.gl-cta, button[data-auto-id="add-to-bag-addon"]'))
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const items = Array.from(document.querySelectorAll('div[data-auto-id="cart-line-item"]'));
+
+        return items.map(item => {
+            // total
+            const quantity = item.querySelector<HTMLInputElement>('select').value;
+            const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>('div[data-auto-id="gl-price-item"]').textContent);
+
+            return {
+                quantity: parseInt(quantity),
+                price,
+                currency
+            }
+        });
+    }
+});
+
 function getNumberFromText(text: string) {
     return parseInt(text.replace(/\D/g, ''));
 }
 
 function createInnerChild(btn: HTMLElement) {
+    return createInnerChildWithColor(btn, "white");
+}
+
+function createInnerChildWithColor(btn: HTMLElement, textColor: string) {
     const inner = (btn.querySelector<HTMLElement>('#less-inner-button-text')) as HTMLElement | undefined
     btn.style.padding = "0";
     btn.style.position = "relative";
@@ -1056,7 +1165,7 @@ function createInnerChild(btn: HTMLElement) {
     const newInner = document.createElement('div');
     newInner.style.width = "100%";
     newInner.style.height = "100%";
-    newInner.style.color = "white";
+    newInner.style.color = textColor;
     newInner.style.zIndex = "1000";
     newInner.style.top = "0";
     newInner.style.left = "0";
