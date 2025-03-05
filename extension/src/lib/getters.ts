@@ -1117,14 +1117,16 @@ getters.register(["adidas.dk", "adidas.com"], {
     },
 
     placeOrderButtons: (e: HTMLElement) => {
+        Array.from(document.querySelectorAll('button[data-auto-id="google-pay"]')).forEach(b => b.remove());
         const paypalButtons = Array.from(document.querySelectorAll('#paypal-button-container')).map(createInnerChild);
-        return Array.from(document.querySelectorAll<HTMLElement>('button[data-auto-id="place-order-button"]')).concat(paypalButtons);
+        return Array.from(document.querySelectorAll<HTMLElement>('button[data-auto-id="place-order-button"]"]')).concat(paypalButtons);
     },
 
     checkoutButtonLabels: (e: HTMLElement) => {
+        Array.from(document.querySelectorAll('button[data-auto-id="google-pay"]')).forEach(b => b.remove());
         const paypalButtons = Array.from(document.querySelectorAll('#paypal-button-container')).map(createInnerChild);
         
-        return Array.from(document.querySelectorAll<HTMLElement>('button[data-auto-id="place-order-button"] span')).concat(paypalButtons);
+        return Array.from(document.querySelectorAll<HTMLElement>('button[data-auto-id="place-order-button"] span"]')).concat(paypalButtons);
     },
 
     addToCartButtons: (e: HTMLElement) => {
