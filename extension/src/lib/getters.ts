@@ -64,6 +64,24 @@ function parsePrice(price: string): number {
     return parseFloat(cleanedPrice);
 }
 
+function findFromText<T extends HTMLElement>(elements: NodeListOf<T>, search: string[] | string, id: string = "less-injected-id"): T[] {
+    return Array.from(elements).filter(b => {
+        if (b.id === id) return true;
+        const txt = b.textContent;
+        if (!txt) return false;
+        if (Array.isArray(search)) {
+            return search.some(s => txt.includes(s));
+        }
+        return txt.includes(search);
+    }).map(b => {b.id = id; return b});
+}
+
+function parseQty(qty: string | null): number {
+    const numbers = qty?.match(/[\d,.]+/);
+    if (!numbers) return 1;
+    return parseInt(numbers[0]);
+}
+
 const shopifyDomains = [
     "klaedeskabet.dk",
     "fashionnova.com",
@@ -1146,6 +1164,40 @@ getters.register(["adidas.dk", "adidas.com"], {
                 price,
                 currency
             }
+        });
+    }
+});
+
+getters.register(["nike.com"], {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        document.querySelectorAll('div[data-testid="paypal-container"], button[data-automation="paypal-checkout-button"]')?.forEach(b => b.remove());
+
+        return findFromText(document.querySelectorAll('button'), ["Continue to Order Review", "Fortsæt til forhåndsvisning af ordre"]);
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        return findFromText(document.querySelectorAll('button'), ["Continue to Order Review", "Fortsæt til forhåndsvisning af ordre"]);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll<HTMLElement>('button[data-testid="atb-button-mobile"], button[data-testid="atb-button"]'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const items = Array.from(document.querySelectorAll('aside figure[data-attr="cloud-cart-item"]'));
+
+        return items.map(item => {
+            const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>('div[data-attr="checkout-cart-item-price"]').textContent);
+            const quantity = parseQty(Array.from(item.querySelectorAll('figcaption div')).find(t => t.textContent.includes(' @ '))?.textContent ?? "");
+            return {
+                quantity,
+                price,
+                currency
+            };
         });
     }
 });
