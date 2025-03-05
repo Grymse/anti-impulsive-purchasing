@@ -76,6 +76,18 @@ function findFromText<T extends HTMLElement>(elements: NodeListOf<T>, search: st
     }).map(b => {b.id = id; return b});
 }
 
+function elementsInclude<T extends HTMLElement>(elements: NodeListOf<T>, search: string[] | string): HTMLElement[] {
+    return Array.from(elements).filter(b => {
+        const txt = b.textContent;
+        if (!txt) return false;
+        if (Array.isArray(search)) {
+            return search.some(s => txt.includes(s));
+        }
+        return txt.includes(search);
+    });
+}
+
+
 function parseQty(qty: string | null): number {
     const numbers = qty?.match(/[\d,.]+/);
     if (!numbers) return 1;
@@ -1230,6 +1242,70 @@ getters.register("etsy.com", {
                 price,
                 currency
             }});
+    }
+});
+
+getters.register("samsung.com", {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        if(location.href.includes('/us/')) {
+            document.querySelector('#paypal-button-container')?.remove();
+            
+            return Array.from(document.querySelectorAll('.total-checkout-cta-holder button'));
+        }
+        
+
+        return Array.from(document.querySelectorAll('button[data-an-tr="checkout-step-ecommerce"]')).map(createInnerChild);
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        if(location.href.includes('/us/')) {
+            document.querySelector('#paypal-button-container')?.remove();
+            
+            return Array.from(document.querySelectorAll('.total-checkout-cta-holder button'));
+        }
+
+        return Array.from(document.querySelectorAll('button[data-an-tr="checkout-step-ecommerce"]')).map(createInnerChild);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        if(location.href.includes('/us/')) {
+            return elementsInclude(document.querySelectorAll<HTMLElement>('button, a'), ["ADD TO CART", "Add", "Continue"]);
+        }
+        
+        return Array.from(document.querySelectorAll('.add-to-cart-btn, .price-bar-cart-btn, button[data-totalprice], button[data-price], button[ga-ac="addToCart"]'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        // full
+        if(location.href.includes('/us/')) {
+            const items = Array.from(document.querySelectorAll<HTMLElement>('.cart-item'));
+
+            return items.map(item => {
+                const {price, currency} = splitPriceCurrency(item.querySelector('.cart-item-buying-price').textContent);
+                const quantity = parseInt(item.querySelector('select')?.value ?? "1");
+                return {
+                    quantity,
+                    price,
+                    currency
+                }
+            });
+        }
+
+        const items = Array.from(document.querySelectorAll('cx-cart-item-v2'));
+
+        return items.map(item => {
+            const {currency, price } = splitPriceCurrency(item.querySelector('.price__current')?.textContent);
+
+            return {
+                quantity: parseInt(item.querySelector('input')?.value ?? "1"),
+                price,
+                currency
+            }
+        });
     }
 });
 

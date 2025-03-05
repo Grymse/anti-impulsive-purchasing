@@ -248,9 +248,22 @@ function effect(signal: {signal: AbortSignal}) {
 function onInstantBuyClick(items: ShoppingItem[]) {
   const isBlocked = document.body.getAttribute('data-plasmo-place-order-blocked') === "true";
   if (isBlocked) return;
+
+  if (isNewOrder(cart.value ?? [])) return;
   
   purchases.value = purchases.value.concat({time: Date.now(), items});
   sendAnalytics('place-order', items);
+}
+
+let latestPlacedOrder;
+
+function isNewOrder(order: ShoppingItem[]) : boolean {
+  let tempLatestPlacedOrder = latestPlacedOrder;
+  latestPlacedOrder = order;
+  if(!tempLatestPlacedOrder) return true;
+  if(order.length !== tempLatestPlacedOrder.length) return true;
+  
+  return JSON.stringify(order) === JSON.stringify(tempLatestPlacedOrder);
 }
 
 function onPlaceOrderClick(e: MouseEvent) {
@@ -261,6 +274,8 @@ function onPlaceOrderClick(e: MouseEvent) {
   if((target).id === "less-inner-button-text") {
     target.style.pointerEvents = "none";
   }
+
+  if (isNewOrder(cart.value ?? [])) return;
 
   purchases.value = purchases.value.concat({time: Date.now(), items: cart.value ?? []});
   sendAnalytics('place-order', cart.value ?? []);
