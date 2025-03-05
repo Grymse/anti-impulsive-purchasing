@@ -1434,6 +1434,41 @@ getters.register("wish.com", {
     }
 });
 
+getters.register("wayfair.com", {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        // document.querySelector('#paypal-button')
+        return Array.from(document.querySelectorAll<HTMLElement>('div[data-testid="paykit-next-payment-confirmation-CARD"] button, div[data-testid="paykit-next-payment-confirmation-WAYFAIR_FINANCING"] button, div[data-testid="paykit-next-payment-confirmation-AFTERPAY"] button, div[data-testid="paykit-next-payment-confirmation-KLARNA_PAY_IN_X"] button')).
+        concat(toArray(createInnerChild(document.querySelector<HTMLElement>('#paypal-button'))));
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll<HTMLElement>('div[data-testid="paykit-next-payment-confirmation-CARD"] button span span, div[data-testid="paykit-next-payment-confirmation-WAYFAIR_FINANCING"] button span span, div[data-testid="paykit-next-payment-confirmation-AFTERPAY"] button span span, div[data-testid="paykit-next-payment-confirmation-KLARNA_PAY_IN_X"] button span span')).
+            concat(toArray(createInnerChild(document.querySelector<HTMLElement>('#paypal-button'))));
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('button[data-testing-id="atc-button"]'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const items = Array.from(document.querySelectorAll('.OrderSummaryCard li'));
+        return items.map(item => {
+            const {price, currency} = splitPriceCurrency(item.querySelector('.ConfirmationProductCard-price').textContent);
+            const quantity = parseInt(item.querySelector('.ConfirmationProductCard-quantity')?.textContent ?? "1");
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+    }
+});
+
 
 function getNumberFromText(text: string) {
     return parseInt(text.replace(/\D/g, ''));
