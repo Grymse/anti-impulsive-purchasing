@@ -275,7 +275,7 @@ function onPlaceOrderClick(e: MouseEvent) {
     target.style.pointerEvents = "none";
   }
 
-  if (isNewOrder(cart.value ?? [])) return;
+  if (!isNewOrder(cart.value ?? [])) return;
 
   purchases.value = purchases.value.concat({time: Date.now(), items: cart.value ?? []});
   sendAnalytics('place-order', cart.value ?? []);

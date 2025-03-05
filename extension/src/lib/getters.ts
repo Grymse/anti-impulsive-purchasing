@@ -1384,6 +1384,56 @@ getters.register("gap.com", {
     }
 });
 
+function toArray<T extends HTMLElement>(...elements: T[]) : T[] {
+    return elements.filter(e => !!e);
+}
+
+getters.register("wish.com", {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        if(!location.href.includes('cart')) return [];
+
+        return toArray(document.querySelector<HTMLElement>('div[data-testid="checkout-button"]'),
+            createInnerChild(document.querySelector<HTMLElement>('#gpay-button-online-api-id')),
+            createInnerChild(document.querySelector<HTMLElement>('#paypal-button'))).concat(
+                findFromText(document.querySelectorAll<HTMLElement>('div[role="button"]'), "Continue to order summary")
+            )
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        if(!location.href.includes('cart')) return [];
+        
+        return toArray(document.querySelector<HTMLElement>('div[data-testid="checkout-button"]'),
+            createInnerChild(document.querySelector<HTMLElement>('#gpay-button-online-api-id')),
+            createInnerChild(document.querySelector<HTMLElement>('#paypal-button'))).concat(
+                findFromText(document.querySelectorAll<HTMLElement>('div[role="button"]'), "Continue to order summary")
+            )
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return findFromText(document.querySelectorAll<HTMLElement>('button, div[role="button"], div[data-testid="add-to-cart"]'),["Add to cart"]);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const items = document.querySelectorAll('div[data-testid="cart-quantity-dropdown"]');
+        return Array.from(items).map((item, i) => {
+            const quantity = parseInt(item.children[0].textContent);
+            const unsplitPrice = item.parentElement.parentElement.parentElement.querySelector(`div[data-testid="cart-item-actual-price-${i}"]`).textContent
+            const {price, currency} = splitPriceCurrency(unsplitPrice);
+            
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+
+    }
+});
+
 
 function getNumberFromText(text: string) {
     return parseInt(text.replace(/\D/g, ''));
@@ -1394,6 +1444,8 @@ function createInnerChild(btn: HTMLElement) {
 }
 
 function createInnerChildWithColor(btn: HTMLElement, textColor: string) {
+    if (!btn) return btn;
+
     const inner = (btn.querySelector<HTMLElement>('#less-inner-button-text')) as HTMLElement | undefined
     btn.style.padding = "0";
     btn.style.position = "relative";
