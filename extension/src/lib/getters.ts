@@ -64,7 +64,7 @@ function parsePrice(price: string): number {
     return parseFloat(cleanedPrice);
 }
 
-function findFromText<T extends HTMLElement>(elements: NodeListOf<T>, search: string[] | string, id: string = "less-injected-id"): T[] {
+function findPayButtonFromText<T extends HTMLElement>(elements: NodeListOf<T>, search: string[] | string, id: string = "less-injected-id"): T[] {
     return Array.from(elements).filter(b => {
         if (b.id === id) return true;
         const txt = b.textContent;
@@ -76,7 +76,7 @@ function findFromText<T extends HTMLElement>(elements: NodeListOf<T>, search: st
     }).map(b => {b.id = id; return b});
 }
 
-function elementsInclude<T extends HTMLElement>(elements: NodeListOf<T>, search: string[] | string): HTMLElement[] {
+function findFromText<T extends HTMLElement>(elements: NodeListOf<T>, search: string[] | string): HTMLElement[] {
     return Array.from(elements).filter(b => {
         const txt = b.textContent;
         if (!txt) return false;
@@ -1188,11 +1188,11 @@ getters.register(["nike.com"], {
     placeOrderButtons: (e: HTMLElement) => {
         document.querySelectorAll('div[data-testid="paypal-container"], button[data-automation="paypal-checkout-button"]')?.forEach(b => b.remove());
 
-        return findFromText(document.querySelectorAll('button'), ["Continue to Order Review", "Fortsæt til forhåndsvisning af ordre"]);
+        return findPayButtonFromText(document.querySelectorAll('button'), ["Continue to Order Review", "Fortsæt til forhåndsvisning af ordre"]);
     },
 
     checkoutButtonLabels: (e: HTMLElement) => {
-        return findFromText(document.querySelectorAll('button'), ["Continue to Order Review", "Fortsæt til forhåndsvisning af ordre"]);
+        return findPayButtonFromText(document.querySelectorAll('button'), ["Continue to Order Review", "Fortsæt til forhåndsvisning af ordre"]);
     },
 
     addToCartButtons: (e: HTMLElement) => {
@@ -1273,7 +1273,7 @@ getters.register("samsung.com", {
 
     addToCartButtons: (e: HTMLElement) => {
         if(location.href.includes('/us/')) {
-            return elementsInclude(document.querySelectorAll<HTMLElement>('button, a'), ["ADD TO CART", "Add", "Continue"]);
+            return findFromText(document.querySelectorAll<HTMLElement>('button, a'), ["ADD TO CART", "Add", "Continue"]);
         }
         
         return Array.from(document.querySelectorAll('.add-to-cart-btn, .price-bar-cart-btn, button[data-totalprice], button[data-price], button[ga-ac="addToCart"]'));
@@ -1308,6 +1308,44 @@ getters.register("samsung.com", {
         });
     }
 });
+
+getters.register("aliexpress.com", {
+    // Fix buy now buttons
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        const sdk = Array.from(document.querySelectorAll<HTMLElement>('#sdk-checkout-button-slot')).map(createInnerChild);
+        return Array.from(document.querySelectorAll<HTMLElement>('.pl-order-toal-container__btn-box .pl-order-toal-container__btn')).concat(sdk);
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        const sdk = Array.from(document.querySelectorAll<HTMLElement>('#sdk-checkout-button-slot')).map(createInnerChild);
+        return Array.from(document.querySelectorAll<HTMLElement>('.pl-order-toal-container__btn-box .pl-order-toal-container__btn span')).concat(sdk);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return findFromText(document.querySelectorAll('button'),["Add to cart"]);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+       if(!location.href.includes('p/trade/')) return;
+        const itemInputs = document.querySelectorAll<HTMLInputElement>('.comet-input-number-input');
+
+        return Array.from(itemInputs).map(item => {
+            const quantity = parseInt(item.value);
+            const {price, currency} = splitPriceCurrency(item.parentElement?.parentElement?.children?.[1]?.textContent);
+
+            return {
+                quantity,
+                price: price * quantity,
+                currency
+            }
+        });
+    }
+});
+
 
 function getNumberFromText(text: string) {
     return parseInt(text.replace(/\D/g, ''));
