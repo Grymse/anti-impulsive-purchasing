@@ -1202,6 +1202,37 @@ getters.register(["nike.com"], {
     }
 });
 
+getters.register("etsy.com", {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('button[data-selector="cart-submit-button"]'));
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('button[data-selector="cart-submit-button"] span'));
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll<HTMLElement>('div[data-add-to-cart-button] button, button[data-listing-card-add-to-cart]'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const items = Array.from(document.querySelectorAll('li[data-cart-listing]'));
+        // Full
+        return items.map(item => {
+            const quantity = parseInt(item.querySelector('select')?.value ?? "1");
+            const {currency, price} = splitPriceCurrency(item.querySelector('.money').textContent);
+            return {
+                quantity,
+                price,
+                currency
+            }});
+    }
+});
+
 function getNumberFromText(text: string) {
     return parseInt(text.replace(/\D/g, ''));
 }
