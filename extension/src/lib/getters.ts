@@ -1513,6 +1513,44 @@ getters.register("zara.com", {
     }
 });
 
+getters.register("ikea.com", {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        if(!location.href.includes('/shoppingcart')) return [];
+        return Array.from(document.querySelectorAll('button[data-cart-cta="true"]'));
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        if(!location.href.includes('/shoppingcart')) return [];
+        return Array.from(document.querySelectorAll('button[data-cart-cta="true"] span span'));
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll<HTMLButtonElement>('button[aria-label="Add to bag"], button.pip-product-compact__add-to-cart-button, button[aria-label="Læg i indkøbskurv"], button.plp-btn.plp-btn--small.plp-btn--icon-emphasised'))
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if(!location.href.includes('/shoppingcart')) return [];
+
+        const inputs = document.querySelectorAll<HTMLInputElement>('input.cart-ingka-quantity-stepper__input');
+
+        return Array.from(inputs).map(input => {
+            const quantity = parseInt(input.value ?? "1");
+            const unsplitPrice = input.parentElement.parentElement.parentElement.querySelector('.cart-ingka-price span')?.textContent;
+            const {price, currency} = splitPriceCurrency(unsplitPrice);
+
+            return {
+                price,
+                quantity,
+                currency
+            }
+        });
+    }
+});
+
 function getNumberFromText(text: string) {
     return parseInt(text.replace(/\D/g, ''));
 }
