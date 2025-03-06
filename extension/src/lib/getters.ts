@@ -1464,6 +1464,36 @@ getters.register("lenovo.com", {
     }
 });
 
+getters.register("hp.com", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if(!location.href.includes('/stores/servlet')) return [];
+        return findFromText(document.querySelectorAll('a'), "checkout").concat(
+            Array.from(document.querySelectorAll('.paypal-buttons')).map(createInnerChild)
+        )
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return findFromText(document.querySelectorAll('button'), "Add to cart");
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if(!location.href.includes('/stores/servlet')) return [];
+
+        const items = Array.from(document.querySelectorAll('.productrow')).filter(d => d.id);
+
+        return items.map(item => {
+            const {price, currency} = splitPriceCurrency(item.querySelector('.product-price-tab span')?.textContent);
+            const quantity = parseInt(item.querySelector('input').value ?? "1");
+
+            return {
+                quantity,
+                price,
+                currency
+            };
+        });
+    }
+});
+
 function getNumberFromText(text: string) {
     return parseInt(text.replace(/\D/g, ''));
 }
