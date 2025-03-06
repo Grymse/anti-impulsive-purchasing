@@ -1362,7 +1362,9 @@ getters.register("dell.com", {
 
     getCartItems: (e: HTMLElement) => {
         if (!location.href.includes('/cart')) return [];
-        const items = Array.from(document.querySelector('item-stack')?.shadowRoot?.querySelectorAll('item-detail'))?.flatMap(i => Array.from(i.shadowRoot?.querySelectorAll('item-component')).map(i => i?.shadowRoot)).filter(i => !!i);
+        const items = Array.from(
+            document.querySelector('item-stack')?.shadowRoot?.querySelectorAll('item-detail'))?.
+                flatMap(i => Array.from(i.shadowRoot?.querySelectorAll('item-component')).map(i => i?.shadowRoot)).filter(i => !!i);
         
         if (!items) return [];
         return items.map(item => {
@@ -1371,6 +1373,33 @@ getters.register("dell.com", {
             
             return {
                 price, currency, quantity: parseInt(qty ?? "1")
+            }
+        });
+    }
+});
+
+getters.register("kohls.com", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if(!location.href.includes('/checkout')) return [];
+        return Array.from(document.querySelectorAll('button[title="Proceed to Checkout"]'));
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('#addtobagID, #addtobagID2'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if(!location.href.includes('/checkout')) return [];
+        const items = Array.from(document.querySelectorAll('.cart-item-panel .cart-item-panel-item'));
+
+        return items.map(item => {
+            const quantity = parseInt(item.querySelector('.quantity-user-selected-text')?.textContent ?? "1");
+            const {price, currency} = splitPriceCurrency(item.querySelector('.product-price-list-sale-price')?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
             }
         });
     }
