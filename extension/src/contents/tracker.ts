@@ -223,12 +223,7 @@ const INTERVAL_LENGTH = 1000 * 5; // 5 seconds
 function effect(signal: {signal: AbortSignal}) {
   const addToCartButtons = getters.getDomainGetters().addToCartButtons(document.body);
   const placeOrderButtons = getters.getDomainGetters().placeOrderButtons(document.body);
-  const checkoutButtons = getters.getDomainGetters().checkoutButtons(document.body);
   const oneClickBuy = getters.getDomainGetters().getOneClickBuyNow?.(document.body);
-
-  checkoutButtons.forEach((button) => {
-    button.addEventListener("click", onCheckoutClick);
-  }, signal);
 
   addToCartButtons.forEach((button) => {
     button.addEventListener("click", onAddToCartClick);
@@ -289,13 +284,6 @@ function saveCurrentItems() {
     console.log("save items", items);
 
   cart.value = items;
-}
-
-function onCheckoutClick(e: MouseEvent) {
-  const isBlocked = document.body.getAttribute('data-plasmo-checkout-blocked') === "true";
-  if (isBlocked) return;
-
-  sendAnalytics('checkout', undefined);
 }
 
 function onAddToCartClick(e: Event) {

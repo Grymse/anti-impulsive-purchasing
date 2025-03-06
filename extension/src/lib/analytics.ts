@@ -20,7 +20,6 @@ type AnalyticsEvent = {
 type AnalyticsPayloads = {
   // General analytics events
   "add-to-cart": undefined;
-  "checkout": undefined;
   "place-order": ShoppingItem[];
   "page-view": undefined;
   "time-spent": { duration: number };
