@@ -65,6 +65,7 @@ export async function sendAnalytics<T extends keyof AnalyticsPayloads>(
 
   if (process.env.NODE_ENV === "development") {
     console.log(`${data.type} - ${data.url} - ${data.payload}`);
+    return;
   }
 
   // Send the analytics data to the server

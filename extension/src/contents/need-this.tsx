@@ -398,8 +398,8 @@ const onPlaceOrderClick = (e: Event) => {
     document.body.getAttribute("data-plasmo-place-order-blocked") === "true"
   if (!isBlocked) return // If the button is not blocked, we don't need to show the questionary.
 
-  e.preventDefault()
-  e.stopPropagation()
+  e.preventDefault();
+  e.stopPropagation();
 
   createQuestionary({
     onFinish: () => {

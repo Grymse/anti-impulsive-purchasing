@@ -1,0 +1,29 @@
+{
+	"Empty getters.register": {
+	  "prefix": "gtrs",
+	  "body": [
+		"getters.register(\"${1:domain}\", {",
+		"    checkoutButtons: (e: HTMLElement) => {",
+		"        return [];",
+		"    },",
+		"",
+		"    placeOrderButtons: (e: HTMLElement) => {",
+		"        return [];",
+		"    },",
+		"",
+		"    checkoutButtonLabels: (e: HTMLElement) => {",
+		"        return [];",
+		"    },",
+		"",
+		"    addToCartButtons: (e: HTMLElement) => {",
+		"        return [];",
+		"    },",
+		"",
+		"    getCartItems: (e: HTMLElement) => {",
+		"        return [];",
+		"    }",
+		"});"
+	  ],
+	  "description": "Insert an empty getters.register function"
+	}
+  }

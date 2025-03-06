@@ -245,11 +245,13 @@ function onPlaceOrderClick(e: Event)  {
   if (!permit.isValid()) {
     // Prevent the default action and stop event propagation if the permit is not valid
     e.preventDefault();
-    e.stopImmediatePropagation();
     e.stopPropagation();
     alert("Please wait before checking out.");
     return;
   }
+
+  document.body.setAttribute('data-plasmo-place-order-blocked', "false");
+  (e.target as HTMLElement).click?.();
 
   // Clear the permit if it is valid
   permit.markAsUsed();
@@ -267,6 +269,7 @@ function onCheckoutClick(e: Event) {
     e.stopPropagation();
     alert("Please wait before checking out.");
   }
+  document.body.setAttribute('data-plasmo-checkout-blocked', "false");
 }
 
 function permitToWaitTime(permit: Permit) : string {
