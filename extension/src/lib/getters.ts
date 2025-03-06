@@ -1594,6 +1594,46 @@ getters.register("macys.com", {
     }
 });
 
+getters.register("asos.com", {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        if(!location.href.includes('secure.asos.com')) return [];
+
+        return Array.from(document.querySelectorAll('.paypal-buttons')).map(createInnerChild).concat(
+            Array.from(document.querySelectorAll('button.cta.place-order'))
+        )
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        return [];
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('button[data-testid="add-button"]'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if(!location.href.includes('secure.asos.com')) return [];
+
+        const items = Array.from(document.querySelectorAll('li.item.product-item'));
+
+        return items.map(item => {
+            const quantity = parseQty(item.querySelector('.item-quantity').textContent ?? "1");
+            const {price, currency} = splitPriceCurrency(item.querySelector('.item-price')?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+        
+    }
+});
+
 function getNumberFromText(text: string) {
     return parseInt(text.replace(/\D/g, ''));
 }
