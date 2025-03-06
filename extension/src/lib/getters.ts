@@ -1336,6 +1336,7 @@ getters.register("lg.com", {
         const items = Array.from(document.querySelectorAll('.CartItemWrap'));
 
         return items.map(item => {
+            // total
             const quantity = parseInt(item.querySelector('input')?.value ?? "1");
             const {price, currency} = splitPriceCurrency(item.querySelector('div[data-testid="pricesave"] span')?.textContent);
 
@@ -1345,6 +1346,33 @@ getters.register("lg.com", {
                 currency
             }
         })
+    }
+});
+
+getters.register("dell.com", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('/cart')) return [];
+
+        return Array.from(document.querySelectorAll<HTMLElement>('#checkout-btn-cta, #gpay-button-online-api-id, .paypal-buttons')).map(createInnerChild);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll<HTMLElement>('a[data-testid="addToCartButton"], button[create-basketed-click], button.ps-add-to-cart'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('/cart')) return [];
+        const items = Array.from(document.querySelector('item-stack')?.shadowRoot?.querySelectorAll('item-detail'))?.flatMap(i => Array.from(i.shadowRoot?.querySelectorAll('item-component')).map(i => i?.shadowRoot)).filter(i => !!i);
+        
+        if (!items) return [];
+        return items.map(item => {
+            const qty = item.querySelector('item-quantity')?.shadowRoot?.querySelector('input')?.value;
+            const {price, currency } = splitPriceCurrency(item.querySelector('.price_total_display')?.textContent);
+            
+            return {
+                price, currency, quantity: parseInt(qty ?? "1")
+            }
+        });
     }
 });
 
