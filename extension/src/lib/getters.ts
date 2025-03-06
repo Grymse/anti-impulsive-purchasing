@@ -1200,6 +1200,7 @@ getters.register(["nike.com"], {
     },
 
     getCartItems: (e: HTMLElement) => {
+        // total
         const items = Array.from(document.querySelectorAll('aside figure[data-attr="cloud-cart-item"]'));
 
         return items.map(item => {
@@ -1233,7 +1234,7 @@ getters.register("etsy.com", {
 
     getCartItems: (e: HTMLElement) => {
         const items = Array.from(document.querySelectorAll('li[data-cart-listing]'));
-        // Full
+        // total
         return items.map(item => {
             const quantity = parseInt(item.querySelector('select')?.value ?? "1");
             const {currency, price} = splitPriceCurrency(item.querySelector('.money').textContent);
@@ -1280,7 +1281,7 @@ getters.register("samsung.com", {
     },
 
     getCartItems: (e: HTMLElement) => {
-        // full
+        // total
         if(location.href.includes('/us/')) {
             const items = Array.from(document.querySelectorAll<HTMLElement>('.cart-item'));
 
@@ -1423,6 +1424,7 @@ getters.register("wish.com", {
     },
 
     getCartItems: (e: HTMLElement) => {
+        // total
         const items = document.querySelectorAll('div[data-testid="cart-quantity-dropdown"]');
         return Array.from(items).map((item, i) => {
             const quantity = parseInt(item.children[0].textContent);
@@ -1459,6 +1461,7 @@ getters.register("wayfair.com", {
     },
 
     getCartItems: (e: HTMLElement) => {
+        // total
         const items = Array.from(document.querySelectorAll('.OrderSummaryCard li'));
         return items.map(item => {
             const {price, currency} = splitPriceCurrency(item.querySelector('.ConfirmationProductCard-price').textContent);
@@ -1479,11 +1482,14 @@ getters.register("zara.com", {
     },
 
     placeOrderButtons: (e: HTMLElement) => {
-        return [];
+        if (!location.href.includes('order/summary')) return [];
+        return findPayButtonFromText(document.querySelectorAll('button[data-qa-id="shop-continue"]'), ["AUTHORIZE PAYMENT", "GODKEND BETALING"]);
+        
     },
 
     checkoutButtonLabels: (e: HTMLElement) => {
-        return [];
+        if (!location.href.includes('order/summary')) return [];
+        return findPayButtonFromText(document.querySelectorAll('button[data-qa-id="shop-continue"]'), ["AUTHORIZE PAYMENT", "GODKEND BETALING"]);
     },
 
     addToCartButtons: (e: HTMLElement) => {
@@ -1491,7 +1497,19 @@ getters.register("zara.com", {
     },
 
     getCartItems: (e: HTMLElement) => {
-        return [];
+        // total
+        const items = document.querySelectorAll('.shop-cart-item__info')
+
+        return Array.from(items).map(item => {
+            const quantity = parseInt(item.querySelector('.shop-cart-item-quantity')?.textContent ?? "1");
+            const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>('.shop-cart-item-pricing__current')?.textContent);
+
+            return {
+                price,
+                quantity,
+                currency
+            }
+        });
     }
 });
 
