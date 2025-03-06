@@ -1602,3 +1602,42 @@ getters.register(["bilka.dk", "foetex.dk"], {
         return items;
     }
 })
+
+getters.register("saxo.com", {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('input[value="Bekræft køb"]');
+        return Array.from(buttons);
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('input[value="Bekræft køb"]');
+        return Array.from(buttons);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[aria-label="Læg i kurv"], div .product-add-to-cart button');
+        return Array.from(buttons);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const cart = e.querySelector<HTMLElement>('div[class="product-grid"]');
+        if (cart === null) return [];
+        const priceElements = Array.from(cart.querySelectorAll<HTMLElement>('span[class="hidden-sm hidden-xs"]')).map(e => getNumberFromText(e.textContent));
+        //@ts-expect-error: value is a valid field.
+        const quantityElements = Array.from(cart.querySelectorAll<HTMLElement>('input[name="quantity"]')).map(e => e.value);
+
+        let items = [];
+        for (let i = 0; i < priceElements.length; i++) {
+            items.push({
+                quantity: parseInt(quantityElements[i]),
+                price: (priceElements[i]/100) * parseInt(quantityElements[i]),
+                currency: "kr"
+            });
+        }
+        return items;
+    }
+});
