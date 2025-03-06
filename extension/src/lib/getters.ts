@@ -1384,6 +1384,11 @@ getters.register("gap.com", {
     }
 });
 
+/**
+ * Removes undefined elements from inputs
+ * @param elements 
+ * @returns 
+ */
 function toArray<T extends HTMLElement>(...elements: T[]) : T[] {
     return elements.filter(e => !!e);
 }
@@ -1440,9 +1445,8 @@ getters.register("wayfair.com", {
     },
 
     placeOrderButtons: (e: HTMLElement) => {
-        // document.querySelector('#paypal-button')
         return Array.from(document.querySelectorAll<HTMLElement>('div[data-testid="paykit-next-payment-confirmation-CARD"] button, div[data-testid="paykit-next-payment-confirmation-WAYFAIR_FINANCING"] button, div[data-testid="paykit-next-payment-confirmation-AFTERPAY"] button, div[data-testid="paykit-next-payment-confirmation-KLARNA_PAY_IN_X"] button')).
-        concat(toArray(createInnerChild(document.querySelector<HTMLElement>('#paypal-button'))));
+            concat(toArray(createInnerChild(document.querySelector<HTMLElement>('#paypal-button'))));
     },
 
     checkoutButtonLabels: (e: HTMLElement) => {
@@ -1469,6 +1473,27 @@ getters.register("wayfair.com", {
     }
 });
 
+getters.register("zara.com", {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        return [];
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('button[data-qa-action="add-to-cart"], button[data-qa-action="product-grid-open-size-selector"]'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        return [];
+    }
+});
 
 function getNumberFromText(text: string) {
     return parseInt(text.replace(/\D/g, ''));
