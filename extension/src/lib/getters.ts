@@ -1384,6 +1384,11 @@ getters.register("gap.com", {
     }
 });
 
+/**
+ * Removes undefined elements from inputs
+ * @param elements 
+ * @returns 
+ */
 function toArray<T extends HTMLElement>(...elements: T[]) : T[] {
     return elements.filter(e => !!e);
 }
@@ -1434,6 +1439,61 @@ getters.register("wish.com", {
     }
 });
 
+getters.register("wayfair.com", {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll<HTMLElement>('div[data-testid="paykit-next-payment-confirmation-CARD"] button, div[data-testid="paykit-next-payment-confirmation-WAYFAIR_FINANCING"] button, div[data-testid="paykit-next-payment-confirmation-AFTERPAY"] button, div[data-testid="paykit-next-payment-confirmation-KLARNA_PAY_IN_X"] button')).
+            concat(toArray(createInnerChild(document.querySelector<HTMLElement>('#paypal-button'))));
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll<HTMLElement>('div[data-testid="paykit-next-payment-confirmation-CARD"] button span span, div[data-testid="paykit-next-payment-confirmation-WAYFAIR_FINANCING"] button span span, div[data-testid="paykit-next-payment-confirmation-AFTERPAY"] button span span, div[data-testid="paykit-next-payment-confirmation-KLARNA_PAY_IN_X"] button span span')).
+            concat(toArray(createInnerChild(document.querySelector<HTMLElement>('#paypal-button'))));
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('button[data-testing-id="atc-button"]'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const items = Array.from(document.querySelectorAll('.OrderSummaryCard li'));
+        return items.map(item => {
+            const {price, currency} = splitPriceCurrency(item.querySelector('.ConfirmationProductCard-price').textContent);
+            const quantity = parseInt(item.querySelector('.ConfirmationProductCard-quantity')?.textContent ?? "1");
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+    }
+});
+
+getters.register("zara.com", {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        return [];
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('button[data-qa-action="add-to-cart"], button[data-qa-action="product-grid-open-size-selector"]'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        return [];
+    }
+});
 
 function getNumberFromText(text: string) {
     return parseInt(text.replace(/\D/g, ''));
