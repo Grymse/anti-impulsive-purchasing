@@ -1723,3 +1723,49 @@ getters.register("imerco.dk", {
         return items;
     }
 });
+
+getters.register("sport24.dk", {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        if(window.location.href.includes('payment')) {
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="flex flex-row ring-1 font-semibold transition-all ease-in-out duration-200 sportify__Button-modal-rounding min-w-fit disabled:bg-transparent disabled:ring-gray-200 disabled:text-gray-200 disabled:cursor-not-allowed items-center relative bg-primary-600 text-white hover:bg-primary-700 hover:ring-primary-700 ring-primary-600 px-5 py-3 text-base [&>.icon]:w-6 [&>.icon]:h-6 [&>.icon]:hidden w-fit"]');
+        return Array.from(buttons);
+    }
+        return [];
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        if(window.location.href.includes('payment')) {
+            const buttons = e.querySelectorAll<HTMLElement>('button[class="flex flex-row ring-1 font-semibold transition-all ease-in-out duration-200 sportify__Button-modal-rounding min-w-fit disabled:bg-transparent disabled:ring-gray-200 disabled:text-gray-200 disabled:cursor-not-allowed items-center relative bg-primary-600 text-white hover:bg-primary-700 hover:ring-primary-700 ring-primary-600 px-5 py-3 text-base [&>.icon]:w-6 [&>.icon]:h-6 [&>.icon]:hidden w-fit"]');
+            return Array.from(buttons);
+        }
+            return [];
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="flex flex-row ring-1 font-semibold transition-all ease-in-out duration-200 sportify__Button-modal-rounding min-w-fit disabled:bg-transparent disabled:ring-gray-200 disabled:text-gray-200 disabled:cursor-not-allowed items-center relative bg-primary-600 text-white hover:bg-primary-700 hover:ring-primary-700 ring-primary-600 px-6 py-3.5 text-base [&>.icon]:w-6 [&>.icon]:h-6 [&>.icon]:hidden flex-grow justify-center"]');
+        return Array.from(buttons);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if(window.location.href.includes('payment')) {
+        const priceElements = Array.from(e.querySelectorAll<HTMLElement>('p[data-testid="price"]')).map(e => getNumberFromText(e.textContent.replace('.', '')));
+        const quantityElements = Array.from(e.querySelectorAll<HTMLElement>('p[class="font-normal text-gray-500 text-sm last-of-type:pb-2"]')).map(e => getNumberFromText(e.textContent));
+        
+        let items = [];
+        for (let i = 0; i < priceElements.length; i++) {
+            items.push({
+                quantity: quantityElements[i],
+                price: priceElements[i] * quantityElements[i],
+                currency: "kr"
+            });
+        }
+        return items.slice(0, items.length - 1);
+    }
+        return [];
+    }
+
+});
