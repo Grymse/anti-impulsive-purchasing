@@ -83,7 +83,6 @@ function findFromText<T extends HTMLElement>(elements: NodeListOf<T>, search: st
     });
 }
 
-
 function parseQty(qty: string | null): number {
     const numbers = qty?.match(/[\d,.]+/);
     if (!numbers) return 1;
@@ -1302,6 +1301,50 @@ getters.register("asos.com", {
             }
         });
         
+    }
+});
+
+getters.register("chewy.com", {
+    // TODO: Finish
+    placeOrderButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('.js-tracked-product-add-to-cart'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        return [];
+    }
+});
+
+getters.register("lg.com", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if(!location.href.includes('checkout/cart')) return []; 
+
+        return findFromText(document.querySelectorAll<HTMLElement>('button.MuiButtonBase-root'), "Checkout");
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('button[data-testid="cart-button"]'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if(!location.href.includes('checkout/cart')) return [];
+
+        const items = Array.from(document.querySelectorAll('.CartItemWrap'));
+
+        return items.map(item => {
+            const quantity = parseInt(item.querySelector('input')?.value ?? "1");
+            const {price, currency} = splitPriceCurrency(item.querySelector('div[data-testid="pricesave"] span')?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        })
     }
 });
 
