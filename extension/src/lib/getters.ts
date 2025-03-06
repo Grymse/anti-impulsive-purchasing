@@ -1641,3 +1641,42 @@ getters.register("saxo.com", {
         return items;
     }
 });
+
+getters.register("thansen.dk", {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="formsubmitbtn BwButton BwButton--large BwButton--dark BwButton--al-1 BwButton--cs-cta"]');
+        return Array.from(buttons);
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="formsubmitbtn BwButton BwButton--large BwButton--dark BwButton--al-1 BwButton--cs-cta"]');
+        return Array.from(buttons);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="BuyButton__button BwButton BwButton--al-1 BwButton--dark BwButton--small BwButton--cs-cta"], button[class="BuyButton__button BwButton BwButton--al-1 BwButton--dark BwButton--cs-cta BwButton--large"]');
+        return Array.from(buttons);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const cart = e.querySelector<HTMLElement>('div[data-content="cart"]');
+        if (cart === null) return [];
+        const priceElements = Array.from(cart.querySelectorAll<HTMLElement>('span[class="cartpricesum"]')).map(e => e.textContent);
+        //@ts-expect-error: value is a valid field.
+        const quantityElements = Array.from(cart.querySelectorAll<HTMLElement>('input[class="cartamount no-edit"]')).map(e => e.value);
+        
+        let items = [];
+        for (let i = 0; i < priceElements.length; i++) {
+            items.push({
+                quantity: parseInt(quantityElements[i]),
+                price: parseInt(priceElements[i].replace(/\D/g, ''))/100,
+                currency: "kr"
+            });
+        }
+        return items;
+    }
+});
