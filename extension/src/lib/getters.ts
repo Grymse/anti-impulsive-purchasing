@@ -1581,3 +1581,35 @@ getters.register("power.dk", {
         return [];
     }
 });
+
+getters.register("plantorama.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        const orderForm = e.querySelector<HTMLElement>('form[data-vv-scope="paymentStep"]');
+        if (orderForm === null) return [];
+        const buttons = orderForm.querySelectorAll<HTMLElement>('button');
+        return Array.from(buttons);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="button-with-icon product-card__add-to-cart-button"], button[class="button-with-icon product-information__call-to-action-button"]');
+        return Array.from(buttons);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const cart = e.querySelector<HTMLElement>('div[class="checkout-section__description checkout-section__description--active"]');
+        if (cart === null) return [];
+
+        const priceElements = Array.from(cart.querySelectorAll<HTMLElement>('div[class="aside-right-modal__click-collect-normal-price"]')).map(e => getNumberFromText(e.textContent));
+        const quantities = Array.from(cart.querySelectorAll<HTMLElement>('span[class="aside-right-modal__click-collect-unit"]')).map(e => getNumberFromText(e.textContent));
+
+        let items = [];
+        for (let i = 0; i < priceElements.length; i++) {
+            items.push({
+                quantity: quantities[i],
+                price: priceElements[i],
+                currency: "kr"
+            });
+        }
+        return items;
+    }
+});
