@@ -1,3 +1,4 @@
+import { get } from "http";
 import { it } from "node:test";
 
 export type ElementGetters = {
@@ -1677,6 +1678,48 @@ getters.register("thansen.dk", {
                 currency: "kr"
             });
         }
+        return items;
+    }
+});
+
+getters.register("imerco.dk", {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        if (location.href.includes('step=levering')) {
+            const buttons = e.querySelectorAll<HTMLElement>('button[data-testid="go-to-checkout"]');
+            return Array.from(buttons);
+        }
+        return [];
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        if (location.href.includes('step=levering')) {
+            const buttons = e.querySelectorAll<HTMLElement>('button[data-testid="go-to-checkout"]');
+            return Array.from(buttons);
+        }
+        return [];
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="ecogc800 next-pkfaeh ellotkw1"], button[class="ecogc800 next-11vcflj ellotkw1"], button[class="next-1hppgum ellotkw1"]');
+        return Array.from(buttons); 
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        const info = Array.from(e.querySelectorAll<HTMLElement>('div[class="next-utw6et ed71law2"]'));
+        if (info === null) return [];
+        const items = info.map(e => e.textContent.split('x')).map(e => {
+            const quantity = getNumberFromText(e[0]);
+            const price = (getNumberFromText(e[1])/100) * quantity;
+            return {
+                quantity,
+                price,
+                currency : "kr"
+            }   
+        });
         return items;
     }
 });
