@@ -1516,3 +1516,27 @@ getters.register("sport24.dk", {
     }
 
 });
+
+getters.register("bog-ide.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="e13xd5sc0 css-1c3vif9-StyledButton-CheckoutSubmitButton eh0pg5q0"]');
+        return Array.from(buttons);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="e1t1q4g40 css-8js23k-StyledButton-BasketButton eh0pg5q0"]');
+        return Array.from(buttons);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        //Hacky because of the way the site is built
+        const price = Array.from(e.querySelectorAll<HTMLElement>('div[class="css-1pjrbim-Price e75bkt5"]'));
+        return [
+            {
+                quantity: 1,
+                price: getNumberFromText(price[0].textContent)/100,
+                currency: "kr"
+            }
+        ];
+    }
+});
