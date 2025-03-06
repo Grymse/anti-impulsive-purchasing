@@ -54,7 +54,7 @@ export type Settings = {
 export const settings = new PersistentValue<Settings>("settings",
     {
         active: true,
-        activeStrategies: ["need-this"]
+        activeStrategies: ["enforce-wait"]
     }
 );
 
