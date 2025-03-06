@@ -533,33 +533,7 @@ function onPlaceOrderClick(e: Event) {
   permit.markAsUsed()
 }
 
-function onCheckoutClick(e: Event) {
-  permit.createIfNone()
-
-  if (!permit.isValid()) {
-    // Prevent the default action and stop event propagation if the permit is not valid
-    e.preventDefault()
-    e.stopPropagation()
-
-    showWaitModal({
-      onComplete: () => {
-        document.body.setAttribute("data-plasmo-checkout-blocked", "false")
-        const button = e.target as HTMLElement
-        button.click?.()
-      }
-    })
-    return
-  }
-
-  document.body.setAttribute("data-plasmo-checkout-blocked", "false")
-}
-
 function effect(signal: { signal: AbortSignal }) {
-  // Add event listeners to the checkout buttons
-  getters.checkoutButtons(currentTarget).forEach((button) => {
-    button.addEventListener("click", onCheckoutClick)
-  }, signal)
-
   // Add event listeners to the place order buttons
   getters.placeOrderButtons(currentTarget).forEach((button) => {
     button.addEventListener("click", onPlaceOrderClick)
@@ -571,10 +545,6 @@ function effect(signal: { signal: AbortSignal }) {
 
   document.body.setAttribute(
     "data-plasmo-place-order-blocked",
-    permit.isValid() ? "false" : "true"
-  )
-  document.body.setAttribute(
-    "data-plasmo-checkout-blocked",
     permit.isValid() ? "false" : "true"
   )
 }
