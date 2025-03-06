@@ -1,3 +1,5 @@
+import { CarTaxiFront } from "lucide-react";
+
 export type ElementGetters = {
     placeOrderButtons: (e: HTMLElement) => HTMLElement[];
     addToCartButtons: (e: HTMLElement) => HTMLElement[];
@@ -1538,5 +1540,44 @@ getters.register("bog-ide.dk", {
                 currency: "kr"
             }
         ];
+    }
+});
+
+getters.register("power.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        const buttons = e.querySelectorAll<HTMLElement>('pwr-lib-button[data-testid="confirm-button"]');
+        return Array.from(buttons);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        const buttons = Array.from(e.querySelectorAll<HTMLElement>('button[class="button-content can-add-to-cart"]'));
+        const additionalButtons = Array.from(e.querySelectorAll<HTMLElement>('button')).filter(button => {
+            const div = button.querySelector('div');
+            return div && div.textContent.includes('Tilføj til kurv');
+        });
+        buttons.push(...additionalButtons);
+        return Array.from(buttons);
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        
+        if(window.location.href.includes('checkout')) {
+        const cart = e.querySelector<HTMLElement>('div[class="checkout-summary-item products"]');
+        if (cart === null) return [];
+
+        const priceElements = Array.from(cart.querySelectorAll<HTMLElement>('div[class="w-100-p text-right strong"]')).map(e => e.textContent);
+        const quantities = Array.from(e.querySelectorAll<HTMLElement>('span[class="quantities-text ng-binding"]')).map(e => getNumberFromText(e.textContent));
+    
+        let items = [];
+        for (let i = 0; i < priceElements.length; i++) {
+            items.push({
+                quantity: quantities[i],
+                price: parseFloat(priceElements[i].replace('.', '').replace(',', '.')),
+                currency: "kr"
+            });
+        }   
+        return items;
+        }
+        return [];
     }
 });
