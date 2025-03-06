@@ -1405,6 +1405,35 @@ getters.register("kohls.com", {
     }
 });
 
+getters.register("walgreens.com", {
+    placeOrderButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll<HTMLElement>('button#wag-cart-proceed-to-checkout')).concat(
+            Array.from(document.querySelectorAll<HTMLElement>('#visa, #paypal-button-container')).map(createInnerChild)
+        );
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll<HTMLElement>('button[name="pickup-ship-btn"], a[create-basketed-click], button.upsellATC'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if(!location.href.includes('/cart')) return [];
+
+        const items = Array.from(document.querySelectorAll('.wag-cart-prd-box'));
+
+        return items.map(item => {
+            const quantity = parseInt(item.querySelector('input')?.value ?? "1");
+            const {price, currency} = splitPriceCurrency(item.querySelector('p.wag-cart-prd-gift-price span')?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+    }
+});
+
 function getNumberFromText(text: string) {
     return parseInt(text.replace(/\D/g, ''));
 }
