@@ -1538,6 +1538,7 @@ getters.register("ikea.com", {
         const inputs = document.querySelectorAll<HTMLInputElement>('input.cart-ingka-quantity-stepper__input');
 
         return Array.from(inputs).map(input => {
+            // total
             const quantity = parseInt(input.value ?? "1");
             const unsplitPrice = input.parentElement.parentElement.parentElement.querySelector('.cart-ingka-price span')?.textContent;
             const {price, currency} = splitPriceCurrency(unsplitPrice);
@@ -1546,6 +1547,48 @@ getters.register("ikea.com", {
                 price,
                 quantity,
                 currency
+            }
+        });
+    }
+});
+
+getters.register("macys.com", {
+    checkoutButtons: (e: HTMLElement) => {
+        return [];
+    },
+
+    placeOrderButtons: (e: HTMLElement) => {
+        if (location.href.includes('/bag')) return Array.from(document.querySelectorAll('button[aria-label="Paypal"], button[aria-label="Klarna"]'));
+        if (!location.href.includes('/my-checkout')) return [];
+
+        return Array.from(document.querySelectorAll('#rc-place-order-btn, #rc-signedin-paypal-continue, #rc-klarna-place-order-btn'));
+    },
+
+    checkoutButtonLabels: (e: HTMLElement) => {
+        if (location.href.includes('/bag')) return Array.from(document.querySelectorAll('button[aria-label="Paypal"], button[aria-label="Klarna"]'));
+        if (!location.href.includes('/my-checkout')) return [];
+
+        return Array.from(document.querySelectorAll('#rc-place-order-btn, #rc-signedin-paypal-continue, #rc-klarna-place-order-btn'));
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        document.querySelectorAll('button[aria-label="Buy Now"]').forEach(b => b.remove());
+        return findFromText(document.querySelectorAll('button'), "Add To Bag");
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('/bag')) return [];
+
+        const itemPrices = Array.from(document.querySelectorAll('.bag-price-NO_LABEL, .bag-price-SALE'));
+        return itemPrices.map(unsplitElem => {
+            // total
+            const {price, currency} = splitPriceCurrency(unsplitElem.textContent);
+            const quantity = parseInt(unsplitElem.closest('.qty-price-wrapper')?.querySelector('input')?.value ?? "1");
+
+            return {
+                price: price * quantity,
+                currency,
+                quantity
             }
         });
     }
