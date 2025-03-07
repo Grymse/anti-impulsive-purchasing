@@ -7,6 +7,7 @@ import { sendAnalytics, sendQuestionaryResponse } from "./Analytics";
 import { ReactNode, useEffect } from "react";
 import BackgroundWave from "./BackgroundWave";
 import { WebsiteList } from "./data/websiteList";
+import MainLogo from "./MainLogo";
 
 export default function App() {
   const pathname = window.location.pathname;
@@ -69,14 +70,7 @@ function GoodbyePage() {
     <div className="max-w-2xl space-y-2">
       <div className="flex flex-col items-center justify-center mb-8">
         <div className="mb-12 mt-16 relative">
-          <div className="absolute -inset-4 rounded-full bg-gradient-to-r from-purple-500/30 to-blue-500/30 blur-lg animate-pulse"></div>
-          <img
-            src="/icon.png"
-            alt="Extension Logo (On)"
-            width={148}
-            height={148}
-            className="relative w-auto h-auto max-w-[200px] animation-breathe"
-          />
+          <MainLogo />
         </div>
         
         <div className="text-center mb-8">
@@ -278,14 +272,7 @@ function OnboardingPage() {
     <div className="max-w-2xl space-y-2">
       <div className="flex flex-col items-center justify-center mb-8">
         <div className="mb-8 mt-12 relative">
-          <div className="absolute -inset-4 rounded-full bg-gradient-to-r from-purple-500/30 to-blue-500/30 blur-lg"></div>
-          <img
-            src="/icon.png"
-            alt="Extension Logo (On)"
-            width={148}
-            height={148}
-            className="relative w-auto h-auto max-w-[200px] animation-breathe"
-          />
+          <MainLogo />
         </div>
 
         <div className="text-center">
@@ -408,34 +395,35 @@ function IndexPage() {
   return (
     <div className="max-w-2xl space-y-2">
       <div className="flex flex-col items-center justify-center mb-8">
-        <blockquote className="text-primary text-xl italic my-16">
+        <blockquote className="text-primary text-xl font-light italic my-16">
           “One who is patient glows with an inner radiance.” - Allan Lokos
         </blockquote>
-        {/* Logo Section */}
-        <div className="mb-12 text-center">
-          <img
-            src="/icon.png"
-            alt="Extension Logo (On)"
-            width={128}
-            height={128}
-            className="w-full h-full max-w-[200px] animation-breathe"
-          />
+
+        <div className="mb-12 mt-4 relative">
+          <MainLogo />
         </div>
-        {/* Inspirational message */}
-        <div className="w-full mb-6">
-          <Text className="text-center text-sm text-muted-foreground mt-2">
+        
+        <div className="text-center mb-8">
+          <Header 
+            variant="h1" 
+            className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400"
+          >
+            Welcome to Less
+          </Header>
+          <Text className="text-xl mt-2 text-white/80">
             Take a breath and think before you buy
           </Text>
         </div>
+        
         {/* Toggle Button */}
         <Button
-          className={"w-1/2 mb-4"}
+          className="w-full mt-8 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 transition-all"
           onClick={() => {
             window.location.href =
               "https://chromewebstore.google.com/detail/less/kcgblchgejkpnemehaojecgbamdiacml";
           }}
         >
-          Visit the Extension Page
+          Try it here!
         </Button>
       </div>
       {/* First Text Block */}
