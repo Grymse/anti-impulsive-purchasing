@@ -911,7 +911,7 @@ const getRandomActivity = (): Activity => {
 
 // Key for storing the last suggestion timestamp in browser storage
 const LAST_SUGGESTION_KEY = "alternate_activities_last_suggestion_time"
-const SUGGESTION_INTERVAL = 1000 * 60 * 3 // 3 minutes
+const SUGGESTION_INTERVAL = 1000 * 10 // 3 minutes
 
 // Function to check if it's time to show a suggestion based on stored timestamp
 const shouldShowSuggestion = async (): Promise<boolean> => {
