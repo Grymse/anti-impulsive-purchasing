@@ -10,7 +10,7 @@ import { WebsiteList } from "../components/WebsiteList"
 export default function IndexPage() {
   return (
     <div className="max-w-2xl space-y-2">
-      <div className="flex flex-col items-center justify-center mb-8">
+      <div className="flex flex-col items-center justify-center mb-16">
         <blockquote className="text-primary text-xl font-light italic my-16">
           “One who is patient glows with an inner radiance.” - Allan Lokos
         </blockquote>
@@ -43,10 +43,6 @@ export default function IndexPage() {
         </Button>
       </div>
       {/* First Text Block */}
-
-      <Header variant="h1">Supported Shopping Sites</Header>
-      <WebsiteList />
-
       <Header variant="h1">Research Description</Header>
       <Text>
         Welcome to Less, a browser extension designed to help reduce impulsive
@@ -58,6 +54,9 @@ export default function IndexPage() {
         reducing online impulsive buying behaviors, this tool is meant to
         support both your financial well-being and the environment.
       </Text>
+
+      <Header variant="h2">Supported Shopping Sites</Header>
+      <WebsiteList />
 
       {/* Second Text Block */}
 

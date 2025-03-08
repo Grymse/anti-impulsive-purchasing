@@ -259,27 +259,25 @@ export const WebsiteList = () => {
         value={search}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
       />
-      <Card className="mt-10">
-        <CardContent>
-          <div className="h-96 max-h-96 overflow-y-scroll">
-          {websiteCategories.map((category) => (
+      <Card className="mt-10 overflow-hidden">
+        <CardContent className="max-h-96 overflow-y-scroll">
+            {websiteCategories.map((category) => (
             <div key={category.category}>
               <Header variant="h2" className='w-full text-center mb-4'>{category.category}</Header>
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
-                {category.websites.filter(filterWebsite).map((website) => (
-                    <a key={website.url} href={website.url} className="flex flex-col w-full items-center p-4 border rounded shadow-sm hover:bg-accent">
-                    <img
-                      src={`https://www.google.com/s2/favicons?sz=64&domain=${website.url}`}
-                      alt={`${website.name} favicon`}
-                      className="w-8 h-8 mb-2"
-                    />
-                    <p className="text-sm text-center text-wrap overflow-hidden w-full max-w-full">{website.name}</p>
-                    </a>
-                ))}
-                </div>
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
+              {category.websites.filter(filterWebsite).map((website) => (
+                <a key={website.url} href={website.url} className="flex flex-col w-full items-center p-4 border rounded shadow-sm hover:bg-accent">
+                <img
+                  src={`https://www.google.com/s2/favicons?sz=64&domain=${website.url}`}
+                  alt={`${website.name} favicon`}
+                  className="w-8 h-8 mb-2"
+                />
+                <p className="text-sm text-center text-wrap overflow-hidden w-full max-w-full">{website.name}</p>
+                </a>
+              ))}
+              </div>
             </div>
-          ))}
-          </div>
+            ))}
         </CardContent>
       </Card>
     </div>
