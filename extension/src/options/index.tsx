@@ -31,7 +31,7 @@ function IndexPage({ isActive, toggleActive }: { isActive: boolean, toggleActive
     sendAnalytics("open-options", undefined);
   },[]);
   return (
-    <div className="max-w-2xl space-y-2">
+    <div className="max-w-2xl space-y-2 text-base">
       <div className="flex flex-col items-center justify-center mb-8">
         <blockquote className="text-primary text-xl font-light italic my-16">
           “One who is patient glows with an inner radiance.” - Allan Lokos

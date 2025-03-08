@@ -111,7 +111,6 @@ export default function BackgroundWave({isActive}: Props) {
         left: 0,
         width: '100%',
         height: '100%',
-        zIndex: -1,
         pointerEvents: 'none',
         background: 'transparent' // Transparent background to preserve original bg color
       }}
