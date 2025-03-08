@@ -87,11 +87,13 @@ function IndexPage({ isActive, toggleActive }: { isActive: boolean, toggleActive
         leaving all your other browsing out of analytics. For research purposes,
         we collect completely anonymous data to protect your privacy.
         Specifically:
+        </Text>
         <Ul>
           <Li>No identifying information is ever tied to the data.</Li>
           <Li>All data is aggregated before any use. </Li>
           <Li>Data is not sold or shared with third parties. </Li>
         </Ul>
+        <Text>
         For full transparency, the extension’s open-source code is available
         here on our{" "}
         <Link href="https://github.com/Grymse/anti-impulsive-purchasing">
@@ -185,15 +187,15 @@ function IndexPage({ isActive, toggleActive }: { isActive: boolean, toggleActive
       <Text>
         For any questions or concerns regarding this extension, your
         participation, or the data collected, please contact:
-        <Ul>
-          <Li>
-            Nicolai Grymer: <Link href="mailto:ngry@itu.dk">ngry@itu.dk</Link>
-          </Li>
-          <Li>
-            Frederik Rothe: <Link href="mailto:frot@itu.dk">frot@itu.dk</Link>
-          </Li>
-        </Ul>
       </Text>
+      <Ul>
+        <Li>
+          Nicolai Grymer: <Link href="mailto:ngry@itu.dk">ngry@itu.dk</Link>
+        </Li>
+        <Li>
+          Frederik Rothe: <Link href="mailto:frot@itu.dk">frot@itu.dk</Link>
+        </Li>
+      </Ul>
 
       {/* Consent */}
 
