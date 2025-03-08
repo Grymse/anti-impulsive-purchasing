@@ -752,7 +752,7 @@ getters.register("jemogfix.dk", {
 
 getters.register("temu.com", {
     
-    // TODO: Fix placeOrderButton on non-label buttons;
+    // TODO: Fix aplaceOrderButton on non-label buttons;
     placeOrderButtons:(e: HTMLElement) => {
         // Remove quick paypal button
         Array.from(document.body.querySelectorAll('div[aria-label]')).filter(b => b.getAttribute('aria-label') === 'Ekspres-betaling med').forEach(b => b.remove());
@@ -769,6 +769,7 @@ getters.register("temu.com", {
     },
 
     getCartItems: (e: HTMLElement) => {
+        if(!location.href.includes('bgt_order_checkout')) return [];
         const items = e.querySelectorAll('.splide__slide');
 
         return Array.from(items).map(item => {    
