@@ -1508,11 +1508,11 @@ getters.register("lenovo.com", {
     placeOrderButtons: (e: HTMLElement) => {
         if(!location.href.includes('/cart')) return [];
         
-        return findFromText(document.querySelectorAll('button'), "Proceed to Checkout").map(createInnerChild);
+        return findFromText(document.querySelectorAll('button'), ["Proceed to Checkout", "Til Kassen"]).map(createInnerChild);
     },
 
     addToCartButtons: (e: HTMLElement) => {
-        return findFromText(document.querySelectorAll('button'), "Add To Cart");
+        return findFromText(document.querySelectorAll<HTMLElement>('button, div[role="button"]'), ["Add To Cart", "Add to Cart", "Add to cart", "Læg i indkøbskurven", "Tilføj til kurv"]);
     },
 
     getCartItems: (e: HTMLElement) => {
@@ -1558,6 +1558,33 @@ getters.register("hp.com", {
                 price,
                 currency
             };
+        });
+    }
+});
+
+getters.register("nordstrom.com", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('shopping-bag')) return [];
+        return Array.from(document.querySelectorAll('.paypal-buttons, #gpay-button-online-api-id')).map(createInnerChild).concat(Array.from(document.querySelectorAll('a[href="/checkout"]')));
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return findFromText(document.querySelectorAll('button'),"Add to Bag").concat(Array.from(document.querySelectorAll('#sbn-add-to-bag-button')));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('shopping-bag')) return [];
+        
+        const items = document.querySelectorAll('#shopping-bag-item');
+        return Array.from(items).map(item => {
+            const quantity = parseInt(item.querySelector('select')?.value ?? "1");
+            const {price, currency} = splitPriceCurrency(item.querySelector('#item-pricing span')?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
         });
     }
 });
