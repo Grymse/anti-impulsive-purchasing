@@ -530,6 +530,9 @@ function onPlaceOrderClick(e: Event) {
   }
 
   document.body.setAttribute("data-plasmo-place-order-blocked", "false")
+  const button = e.target as HTMLElement
+  button.click?.()
+  
   permit.markAsUsed()
 }
 
@@ -543,14 +546,14 @@ function effect(signal: { signal: AbortSignal }) {
     p.button?.addEventListener("click", onPlaceOrderClick)
   }, signal)
 
-  document.body.setAttribute(
-    "data-plasmo-place-order-blocked",
-    permit.isValid() ? "false" : "true"
-  )
 }
 
 settings.onInit((settings) => {
   if (!settings.active || !settings.activeStrategies.includes("enforce-wait"))
     return
   observer.addEffect(effect)
+  document.body.setAttribute(
+    "data-plasmo-place-order-blocked",
+    permit.isValid() ? "false" : "true"
+  )
 })
