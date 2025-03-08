@@ -229,6 +229,13 @@ export const websiteCategories: WebsiteCategory[] = [
   },
 ];
 
+function roundDownToClosestTen(num: number) {
+  return Math.floor(num / 10) * 10
+}
+
+const amountOfWebsites = roundDownToClosestTen(websiteCategories.reduce((acc, category) => acc + category.websites.length, 0));
+
+
 // Component to render the website search and list
 export const WebsiteList = () => {
   const [search, setSearch] = useState<string>("");
@@ -242,7 +249,7 @@ export const WebsiteList = () => {
   return (
     <div className="space-y-4">
       <Text className="mb-4">
-        The extension currently supports over 200 shopping sites. Use the
+        The extension currently supports over {amountOfWebsites} shopping sites. Use the
         search box below to check if your favorite site is supported:
       </Text>
       <Input

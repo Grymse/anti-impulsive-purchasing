@@ -9,6 +9,11 @@ import MainLogo from '../components/ui/MainLogo';
 import { Badge } from "~components/ui/badge"
 import { sendAnalytics } from "~lib/analytics"
 import { send } from "process"
+import BackgroundWave from "~options/BackgroundWave"
+import { cn } from "~lib/utils"
+import { Card, CardFooter, CardHeader } from "~components/ui/card"
+import Header from "~options/Header"
+import Text from "~options/Text"
 
 function getActiveTabUrl() {
   return new Promise<string>((resolve) => {
@@ -57,15 +62,13 @@ function IndexPopup() {
 
   const {content: currentDomain} = useAsync(getActiveTabUrl, []);
 
-
-  function requestWebsite() {
-    sendAnalytics("request-add-website", currentDomain);
-  }
-
   const domainName = capitalizeFirstLetter(currentDomain?.split(".").at(-2));
   const worksOnDomain = getters.hasDomain(currentDomain ?? "");
   
-  return <main className={`${preferDarkmode && 'dark'} p-8 py-6 bg-background w-64 flex flex-col gap-4 items-center`}>
+  return <main className={`${preferDarkmode && 'dark'} p-8 py-6 w-64 flex flex-col gap-4 items-center`}>
+    <div className="-z-10 bg-background absolute top-0 w-full h-full">
+      <BackgroundWave isActive={isActive} />
+    </div>
     <MainLogo size={128} active={isActive} />
     <p className="text-foreground text-sm text-center">By activating you are accepting our <a className="text-primary cursor-pointer underline" onClick={onOpenPrivacyPolicy}>Privacy Policy</a></p>
     <div className="flex w-full">
@@ -74,15 +77,44 @@ function IndexPopup() {
         onClick={toggleActive}
       >Turn {isActive ? 'off' : 'on'}</Button>
     </div>
+    <div className="absolute bottom-0 w-full">
     {isActive ? worksOnDomain ? 
       <StatusLabel variant="secondary">Active on {domainName}</StatusLabel> :
-      <StatusLabel variant="destructive">Does not work on {domainName}</StatusLabel> : ''}
+      <RequestWebsiteModal domainName={domainName}><StatusLabel variant="destructive">Does not work on {domainName}</StatusLabel></RequestWebsiteModal> : ''}
+    </div>
   </main>
 }
 
 
-function StatusLabel({children, variant}: {children: React.ReactNode, variant: "secondary" | "destructive"}) {
-  return <Badge variant={variant} className="absolute bottom-0 h-8 flex justify-center w-full rounded-none">{children}</Badge>
+function StatusLabel({children, variant, className}: {children: React.ReactNode, variant: "secondary" | "destructive", className?: string}) {
+  return <Badge variant={variant} className={cn('h-8 flex justify-center w-full rounded-none', className)}>{children}</Badge>
+}
+
+function RequestWebsiteModal({domainName, children}: {domainName: string, children: React.ReactNode}) {
+  const [show, setShow] = useState(false);
+  const [hasBeenRequested, setHasBeenRequested] = useState(false);
+  function requestWebsite() {
+    sendAnalytics("request-add-website", domainName);
+    setHasBeenRequested(true);
+    setShow(false);
+  }
+
+  return <>
+    {show && <div className="z-10 top-0 left-0 w-full h-full bg-background bg-opacity-50 flex items-center justify-center">
+      <Card>
+        <CardHeader>
+          <Text className="text-wrap text-ellipsis">Request {domainName.slice(0, 25)}{25 < domainName.length ? "..." : ""}</Text>
+        </CardHeader>
+        <CardFooter className="justify-between">
+          <Button variant="outline" onClick={() => setShow(false)}>Cancel</Button>
+          <Button onClick={requestWebsite}>Request</Button>
+        </CardFooter>
+      </Card>
+    </div>}
+    <div onClick={() => setShow(true)} className="cursor-pointer w-full">
+      {hasBeenRequested ? <StatusLabel variant="secondary">{domainName} been requested!</StatusLabel> : children}
+    </div>
+  </>
 }
 
 
