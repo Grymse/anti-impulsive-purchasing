@@ -11,7 +11,8 @@ import { Plus } from "lucide-react";
 
 const reasons = [
     "Not Useful",
-    "Found a Better Extension",
+    "Not Working",
+    "Too Annoying",
     "Privacy Concerns",
     "Too Many Bugs",
     "Other",
@@ -66,9 +67,9 @@ export default function GoodbyePage() {
     return (
       <div className="max-w-2xl space-y-2">
         <div className="flex flex-col items-center justify-center mb-8 space-y-8">
-          <div className="mt-16 relative">
+          {/* <div className="mt-16 relative">
             <MainLogo />
-          </div>
+          </div> */}
           
           <div className="text-center">
             <Header
@@ -92,7 +93,7 @@ export default function GoodbyePage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {reasons.map((reason) => (
                       <Button
-                      variant="outline"
+                      variant="secondary"
                       onClick={() => handleButtonClick(reason)}
                       disabled={buttonsDisabled}
                       >
