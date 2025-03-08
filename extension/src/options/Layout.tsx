@@ -7,7 +7,7 @@ export default function Layout({ children, isActive }: { children: ReactNode, is
   ).matches
 
   return (
-    <div className={preferDarkmode ? "" : ""}>
+    <div className={preferDarkmode ? "dark" : ""}>
       <div
         style={{
           position: "fixed",
