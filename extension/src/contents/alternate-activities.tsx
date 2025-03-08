@@ -22,6 +22,7 @@ import { sendAnalytics } from "~lib/analytics"
 import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
 import { settings } from "~lib/settings"
+import { useScaling } from "~hooks/useScaling"
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -672,8 +673,14 @@ function AlternativeActivitiesModal({
     )
   }
 
+  const {scale} = useScaling();
+  
+
   return (
     <div
+      style={{
+        transform: `scale(${scale})`
+      }}
       className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
       onClick={() => onCancel()}>
       <Card

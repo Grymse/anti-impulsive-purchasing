@@ -183,7 +183,6 @@ export const getters: GetterRegister = {
             return;
         }
 
-        // TODO: Replace with topdomain
         this._getters.set(getTopDomain(domain), getters);
     },
 
@@ -440,23 +439,19 @@ getters.register("proshop.dk", {
     },
 
     getCartItems: (e: HTMLElement) => {
-        const quantities = e.querySelectorAll<HTMLElement>('input[name="quantity"]');
-        const priceFraction = e.querySelectorAll<HTMLElement>('b[data-bind="autoNumeric: linePriceWithVat"]');
-        const priceWhole = e.querySelectorAll<HTMLElement>('strong[data-bind="autoNumeric: BasketContent().totalWithVat"]');
-        if (!priceWhole || !priceWhole[0]) return [];
-        const priceSymbol = splitPriceCurrency(priceWhole[0].textContent).currency;
+        if(!location.href.includes('/Basket')) return [];
 
-        let items = [];
-        for (let i = 0; i < priceFraction.length; i++) {
-            items.push({
-                //@ts-expect-error: value is a valid field.
-                quantity: parseInt(quantities[i].value),
-                price: parseFloat(priceFraction[i].innerText),
-                currency: priceSymbol
-            });
-        }
-    
-        return items;
+        const items = Array.from(document.querySelectorAll('#basketLines li'))
+
+        return items.map(item => {
+            const quantity = item.querySelector<HTMLInputElement>('input[type="number"]')?.value;
+            const price = splitPriceCurrency(item.querySelector<HTMLElement>('.basketLinePriceWithVat b')?.textContent);
+            return {
+                quantity: parseInt(quantity),
+                price: price.price,
+                currency: price.currency
+            }
+        });
     }
 })
 

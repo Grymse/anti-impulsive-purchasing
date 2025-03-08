@@ -1,6 +1,5 @@
 import { sendAnalytics, sendQuestionaryResponse } from "../lib/analytics";
 import Header from "@/components/Header";
-import MainLogo from "@/components/MainLogo";
 import Text from "@/components/Text";
 import { useEffect, useRef } from "react";
 import { Button } from '@/components/ui/button';
