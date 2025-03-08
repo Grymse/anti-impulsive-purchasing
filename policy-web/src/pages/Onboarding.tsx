@@ -31,7 +31,7 @@ export function OnboardingPage() {
             </Text>
           </div>
   
-          <Card className="w-full bg-card/50">
+          <Card className="w-full bg-green-500/5 border-green-500/20">
             <CardHeader>
               <Header variant="h3" className="text-center">
               You are now on your way to:
