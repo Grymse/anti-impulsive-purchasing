@@ -1305,17 +1305,85 @@ getters.register("asos.com", {
 });
 
 getters.register("chewy.com", {
-    // TODO: Finish
     placeOrderButtons: (e: HTMLElement) => {
-        return [];
+        if (!location.href.includes('/checkout')) return [];
+
+        return Array.from(document.querySelectorAll('.gpay-button, .paypal-buttons')).map(createInnerChild).concat(
+            Array.from(document.querySelectorAll('button[data-testid="place-order-button"]')));
     },
 
     addToCartButtons: (e: HTMLElement) => {
-        return Array.from(document.querySelectorAll('.js-tracked-product-add-to-cart'));
+        return Array.from(document.querySelectorAll<HTMLElement>('.js-tracked-product-add-to-cart, button[data-testid="add-to-cart"]'));
     },
 
     getCartItems: (e: HTMLElement) => {
-        return [];
+        if (!location.href.includes('/checkout')) return [];
+
+        const items = Array.from(document.querySelectorAll('.kib-product-card__content'));
+
+        return items.map(item => {
+            // total
+            const quantity = parseInt(item.querySelector('select')?.value ?? "1");
+            const {price, currency} = splitPriceCurrency(item.querySelector('.kib-product-price').textContent);
+
+            return {
+                quantity,
+                price: price * quantity,
+                currency
+            }
+        });
+    }
+});
+
+getters.register("lowes.com", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('/cart') && !location.href.includes('/checkout')) {
+            document.querySelector('#paypal-button')?.remove();
+            return [];
+        }
+
+        return Array.from(document.querySelectorAll<HTMLElement>('#paypal-button, #gpay-button')).map(createInnerChild).concat(
+                Array.from(document.querySelectorAll<HTMLElement>('button[data-automation-id="submit-checkout"]')),
+                Array.from(document.querySelectorAll('apple-pay-button')).map(p => createInnerChild((p?.parentElement)))   
+        );
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll<HTMLElement>('button[data-testid="atc-button"], #atcButton, .add-all-to-cart, #atc button, a[data-automation-id="rec-AddToCart"]'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if(location.href.includes('/checkout')) {
+            const itemImages = document.querySelectorAll('div[data-selector="ar-sc-orderSummary"] img');
+
+            return Array.from(itemImages).map((itemImage, index) => {
+                const item = itemImage.parentElement.parentElement;
+
+                const quantity = parseQty(item.querySelector(`span[data-selector="art-sc-pickupItemQty${index}"]`)?.textContent);
+                const {price, currency} = splitPriceCurrency(item.querySelector(`div[data-selector="art-sc-pickupItemPrice${index}"]`)?.textContent);
+
+                return {
+                    quantity,
+                    price,
+                    currency
+                }
+            })
+        } else if (!location.href.includes('/cart')) {
+            return [];
+        }
+
+        const items = Array.from(document.querySelectorAll('div[data-test="cc-product-details"]')).map(p => p.parentElement);
+
+        return items.map(item => {
+            const quantity = parseQty(item.querySelector('input').value);
+            const {price, currency} = splitPriceCurrency(item.querySelector('div[data-selector="art-sc-itemPrice"]').textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
     }
 });
 
