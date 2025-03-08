@@ -19,6 +19,7 @@ import { sendAnalytics } from "~lib/analytics"
 import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
 import { settings } from "~lib/settings"
+import { useScaling } from "~hooks/useScaling"
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -338,18 +339,19 @@ export default function needThis() {
     onFinish.current?.()
   }
 
-  if (!show) return null
+  const {scale} = useScaling();
 
-  const isShopify = document
-    .querySelector("link")
-    .href.includes("https://cdn.shopify.com")
+  if (!show) return null
 
   return (
     <div
       id="popover-questionary"
-      className={`fixed text-base ${isShopify ? "transform scale-150" : ""} bg-black/75 z-50 w-screen h-screen flex items-center justify-center`}
+      style={{
+        transform: `scale(${scale})`,
+      }}
+      className={`fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center`}
       onClick={cancel}>
-      <Card className="max-w-xl bg-white" onClick={(e) => e.stopPropagation()}>
+      <Card className="max-w-xl text-base bg-white" onClick={(e) => e.stopPropagation()}>
         <CardHeader>
           <CardTitle>Reflection Questions</CardTitle>
           <CardDescription>

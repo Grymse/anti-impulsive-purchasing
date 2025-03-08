@@ -1,44 +1,22 @@
-import "../style.css"
-
-import { useConsent } from "~hooks/useConsent"
-import { Button } from "~components/ui/button"
-import Header from "./Header"
-import Text from './Text';
-import { Li, Ul } from "./Lists"
-import { Link } from './Text';
-import SettingsPage from "./Settings"
-import { useEffect, type ReactNode } from "react"
-import { sendAnalytics } from "~lib/analytics"
-import MainLogo from "~components/ui/MainLogo"
-import { WebsiteList } from "./WebsiteList"
-import Layout from "./Layout"
-
-function OptionsPage() {
-  const secretSettings = window.location.search.includes("secret");
-
-  let { isActive, toggleActive } = useConsent();
-
-  if (secretSettings) return <SettingsPage />
-  return <Layout isActive={isActive}>
-    <IndexPage isActive={isActive} toggleActive={toggleActive} />
-  </Layout>
-}
+import { Button } from "../components/ui/button"
+import Header from "../components/Header"
+import Text from '../components/Text';
+import { Li, Ul } from "../components/Lists"
+import { Link } from '../components/Text';
+import MainLogo from "../components/MainLogo"
+import { WebsiteList } from "../components/WebsiteList"
 
 
-function IndexPage({ isActive, toggleActive }: { isActive: boolean, toggleActive: () => void }) {
-
-  useEffect(() => {
-    sendAnalytics("open-options", undefined);
-  },[]);
+export default function IndexPage() {
   return (
-    <div className="max-w-2xl space-y-2 text-base">
-      <div className="flex flex-col items-center justify-center mb-8">
+    <div className="max-w-2xl space-y-2">
+      <div className="flex flex-col items-center justify-center mb-16">
         <blockquote className="text-primary text-xl font-light italic my-16">
           “One who is patient glows with an inner radiance.” - Allan Lokos
         </blockquote>
 
         <div className="mb-12 mt-4 relative">
-          <MainLogo size={176} active={isActive} />
+          <MainLogo />
         </div>
         
         <div className="text-center mb-8">
@@ -55,15 +33,16 @@ function IndexPage({ isActive, toggleActive }: { isActive: boolean, toggleActive
         
         {/* Toggle Button */}
         <Button
-          className="w-full mt-8 mb-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 transition-all"
-          onClick={() => toggleActive()}
+          className="w-full mt-8 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 transition-all"
+          onClick={() => {
+            window.location.href =
+              "https://chromewebstore.google.com/detail/less/kcgblchgejkpnemehaojecgbamdiacml";
+          }}
         >
-          Turn {isActive ? "off" : "on"}
+          Try it here!
         </Button>
-        <Text className="text-muted-foreground">By turning on the extension, you agree to the terms & conditions below.</Text>
       </div>
       {/* First Text Block */}
-
       <Header variant="h1">Research Description</Header>
       <Text>
         Welcome to Less, a browser extension designed to help reduce impulsive
@@ -225,5 +204,3 @@ function IndexPage({ isActive, toggleActive }: { isActive: boolean, toggleActive
     </div>
   );
 }
-
-export default OptionsPage
