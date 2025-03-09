@@ -26,7 +26,7 @@
 		"        // TODO: FIX",
 		"        if (!location.href.includes('EXAMPLE')) return [];",
 		"",
-		"        // Array.from(document.querySelectorAll('.paypal-buttons, #gpay-button-online-api-id'))",
+		"        // Array.from(document.querySelectorAll('.paypal-buttons, #gpay-button-online-api-id')).map(createInnerChild);",
 		"        return Array.from(document.querySelectorAll('.EXAMPLE'));",
 		"    },",
 		"",

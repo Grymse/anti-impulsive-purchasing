@@ -234,7 +234,8 @@ export const config: PlasmoCSConfig = {
     "https://*.graza.co/*",
     "https://*.flybyjing.com/*",
     "https://getmaude.com/*",
-    "https://ugmonk.com/*"
+    "https://ugmonk.com/*",
+    "https://shop.app/*",
   ],
   all_frames: true
 }
@@ -678,12 +679,12 @@ function AlternativeActivitiesModal({
 
   return (
     <div
-      style={{
-        transform: `scale(${scale})`
-      }}
-      className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
-      onClick={() => onCancel()}>
+    className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
+    onClick={() => onCancel()}>
       <Card
+        style={{
+          transform: `scale(${scale})`
+        }}
         className="max-w-lg bg-white shadow-xl"
         onClick={(e) => e.stopPropagation()}>
         <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-t-xl">

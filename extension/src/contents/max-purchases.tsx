@@ -233,7 +233,8 @@ export const config: PlasmoCSConfig = {
     "https://*.graza.co/*",
     "https://*.flybyjing.com/*",
     "https://getmaude.com/*",
-    "https://ugmonk.com/*"
+    "https://ugmonk.com/*",
+    "https://shop.app/*"
   ],
   all_frames: true
 }
@@ -300,13 +301,15 @@ export default function maxPurchases() {
   
   return (
     <div
-      style={{
-        transform: `scale(${scale})`
-      }}
-      id="popover-questionary"
-      className={`fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center`}
-      onClick={cancel}>
-      <Card className="max-w-xl bg-white" onClick={(e) => e.stopPropagation()}>
+    id="popover-questionary"
+    className={`fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center`}
+    onClick={cancel}>
+      <Card
+        style={{
+          transform: `scale(${scale})`
+        }}
+        className="max-w-xl bg-white"
+        onClick={(e) => e.stopPropagation()}>
         <CardHeader className="relative">
           <Button variant="secondary" className="w-10 absolute right-6" onClick={() => setShowEdit(!showEdit)}>
             <Pencil />
