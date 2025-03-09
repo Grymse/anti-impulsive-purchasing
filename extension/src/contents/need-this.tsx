@@ -346,12 +346,11 @@ export default function needThis() {
   return (
     <div
       id="popover-questionary"
-      style={{
-        transform: `scale(${scale})`,
-      }}
       className={`fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center`}
       onClick={cancel}>
-      <Card className="max-w-xl text-base bg-white" onClick={(e) => e.stopPropagation()}>
+      <Card style={{
+        transform: `scale(${scale})`,
+      }} className="w-xl text-base bg-white" onClick={(e) => e.stopPropagation()}>
         <CardHeader>
           <CardTitle>Reflection Questions</CardTitle>
           <CardDescription>

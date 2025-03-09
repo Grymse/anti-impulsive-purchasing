@@ -590,12 +590,14 @@ function AlternativeInvestment({
   
   return (
     <div
-      style={{
-        transform: `scale(${scale})`
-      }}
-      className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
-      onClick={onCancel}>
-      <Card className="max-w-xl bg-white" onClick={(e) => e.stopPropagation()}>
+    className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
+    onClick={onCancel}>
+      <Card
+        style={{
+          transform: `scale(${scale})`
+        }}
+        className="max-w-xl bg-white"
+        onClick={(e) => e.stopPropagation()}>
         <CardHeader>
           <CardTitle>Consider the Alternatives</CardTitle>
           <CardDescription>

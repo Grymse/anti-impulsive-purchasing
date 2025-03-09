@@ -451,12 +451,12 @@ function CorporateGreedAwareness({
 
   return (
     <div
-      style={{
-        transform: `scale(${scale})`
-      }}
-      className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
-      onClick={onCancel}>
+    className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
+    onClick={onCancel}>
       <Card
+        style={{
+          transform: `scale(${scale})`
+        }}
         className="max-w-xl bg-white rounded-lg overflow-hidden"
         onClick={(e) => e.stopPropagation()}>
         <CardHeader className="bg-red-600 text-white rounded-t-lg">

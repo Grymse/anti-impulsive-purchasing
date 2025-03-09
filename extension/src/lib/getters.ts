@@ -159,10 +159,11 @@ const shopifyDomains = [
     "flybyjing.com",
     "getmaude.com",
     "ugmonk.com",
-]
-
+];
 
 function getTopDomain(domain: string) {
+    if (domain.includes(".co.uk"))
+        return domain.split(".").splice(-3).join(".").replace("/","");
     return domain.split(".").splice(-2).join(".").replace("/","");
 }
 
@@ -223,7 +224,7 @@ export const getters: GetterRegister = {
     }
 }
 
-getters.register('amazon.com', {
+getters.register(['amazon.com', 'amazon.se', 'amazon.co.uk', 'amazon.de'], {
     
     placeOrderButtons: (e: HTMLElement) => {
       const buttons = e.querySelectorAll<HTMLElement>('input[name="placeYourOrder1"]');
@@ -231,58 +232,50 @@ getters.register('amazon.com', {
     },
 
     addToCartButtons: (e: HTMLElement) => {
-      const buttons = e.querySelectorAll<HTMLElement>('#add-to-cart-button, [name="submit.addToCart"], .add-to-cart .a-button-input, input[data-asin], div[data-csa-c-action="addToCart"] button, input[name="submit.gc-add-to-cart"], div.ucw-cards-product-atc button, div[data-testid="point-area"] div div div div div div div div div div div div div div button');
+      const buttons = e.querySelectorAll<HTMLElement>('#add-to-cart-button, input#buy-now-button, [name="submit.addToCart"], .add-to-cart .a-button-input, input[data-asin], div[data-csa-c-action="addToCart"] button, input[name="submit.gc-add-to-cart"], div.ucw-cards-product-atc button, div[data-testid="point-area"] div div div div div div div div div div div div div div button');
       return Array.from(buttons);
     },
 
     getCartItems: (e: HTMLElement) => {
-        const cart = e.querySelector<HTMLElement>('.sc-list-body');
-        const cartItems1 = e.querySelectorAll<HTMLElement>('.a-fixed-left-grid-col.item-details-right-column.a-col-right');
-        const cartItems2 = e.querySelectorAll<HTMLElement>('.lineitem-container');
+        if(location.href.includes('cart')) {
+            const items = Array.from(document.querySelectorAll('div[data-csa-c-item-id]'));
 
-        if (cartItems1.length !== 0) {
-            return Array.from(cartItems1).map((item => {
-                const unsplitPrice = item.querySelector<HTMLElement>('.a-color-price').textContent;
-                const quantity = item.querySelector<HTMLSelectElement>('select').value
+            return items.map(item => {
+                const quantity = parseInt(item.querySelector('div[name="sc-quantity"] span[data-a-selector="value"]')?.textContent ?? "1");
+                const unsplitPrice = item.querySelector<HTMLElement>('.sc-item-price-block .a-price .a-offscreen')?.textContent;
                 const {price, currency} = splitPriceCurrency(unsplitPrice);
 
                 return {
-                    quantity: parseInt(quantity),
-                    price,
-                    currency
-                }
-            }));
-        }
-
-        if (cartItems2.length !== 0) {
-            return Array.from(cartItems2).map((item) => {
-                const quantity = item.querySelector<HTMLElement>('.quantity-display').innerText.trim();
-                const unsplitPrice = item.querySelector<HTMLElement>('.lineitem-price-text').innerText;
-                const {price, currency} = splitPriceCurrency(unsplitPrice);
-
-                return {
-                    quantity: parseInt(quantity),
-                    price,
+                    quantity,
+                    price: price * quantity,
                     currency
                 }
             });
         }
 
-        if (!cart) return [];
-        const itemsElements = cart.querySelectorAll<HTMLElement>('div[data-csa-c-type="item"]');
-        return Array.from(itemsElements).map((item) => {
-            const obj = JSON.parse(item.getAttribute('data-subtotal'));
-            const totalPrice = parseInt(obj["subtotal"]?.["value"]);
-            const quantity = parseInt(obj["quantity"]);
+        const items = Array.from(document.querySelectorAll('#ewc-content div[data-csa-c-item-id]'));
+
+        return items.map(item => {
+            const quantity = parseInt(item.querySelector<HTMLInputElement>('span[data-a-selector="value"]')?.textContent);
+            const unsplitPrice = item.querySelector<HTMLElement>('.ewc-unit-price span')?.textContent;
+            const {price, currency} = splitPriceCurrency(unsplitPrice);
+
             return {
                 quantity,
-                price: totalPrice / quantity,
-                currency: obj["subtotal"]?.["code"],
-            };
+                price: price * quantity,
+                currency
+            }
         });
+
     },
 
     getOneClickBuyNow: (e: HTMLElement) => {
+        
+        /* return Array.from(document?.querySelectorAll<HTMLElement>('button[data-testid="buyNow1click"]')).map(b => {
+            const {price, currency} = splitPriceCurrency(b.closest('div[data-testid]').querySelector('span').textContent);
+            return {button: b, item: {price, currency, quantity: 1}};
+        }); */
+        return [];
         const products = e.querySelectorAll<HTMLElement>('.s-product-image-container');
 
         if (products.length > 0) {
@@ -743,24 +736,18 @@ getters.register("jemogfix.dk", {
     }
 })
 
-
-
 getters.register("temu.com", {
-    
-    // TODO: Fix aplaceOrderButton on non-label buttons;
     placeOrderButtons:(e: HTMLElement) => {
-        // Remove quick paypal button
-        Array.from(document.body.querySelectorAll('div[aria-label]')).filter(b => b.getAttribute('aria-label') === 'Ekspres-betaling med').forEach(b => b.remove());
-        
-        const buttons = Array.from(e.querySelectorAll<HTMLElement>('div[aria-label][role="button"]')).filter(b => b.getAttribute('aria-label').includes('betal'));
-        const appleButtons = Array.from(document.querySelectorAll<HTMLElement>('div[role="button"]')).filter(b => b.textContent?.includes('med'))
+        if(!location.href.includes('bgt_order_checkout')) return [];
 
-        return buttons.concat(appleButtons).map(createInnerChild);
+        const search = ["Køb med", "Bestil og betal", "Order and Pay", "Buy with"];
+        return Array.from(findFromText(document.querySelectorAll<HTMLElement>('div[role="button"]'),search)).map(createInnerChild)
     },
 
     addToCartButtons: (e: HTMLElement) => {
-        const spans = e.querySelectorAll('span[role="button"]');
-        return Array.from(spans).filter(s => s.textContent.includes('kurv')).map(s => s.parentElement.parentElement)
+        const search = ['Tilføj til kurv', 'Add to cart'];
+        return Array.from(findFromText(document.querySelectorAll<HTMLElement>('span[role="button"]'),search))
+            .map(s => s.parentElement.parentElement)
     },
 
     getCartItems: (e: HTMLElement) => {
@@ -769,7 +756,7 @@ getters.register("temu.com", {
 
         return Array.from(items).map(item => {    
             const priceAndQuantity = item.querySelector('span[data-priority-index]');
-            const price = parseFloat(priceAndQuantity.childNodes[0].textContent);
+            const price = parsePrice(priceAndQuantity.childNodes[0].textContent);
             const currency = priceAndQuantity.childNodes[1].textContent;
 
             return {
@@ -1575,6 +1562,98 @@ getters.register("nordstrom.com", {
         return Array.from(items).map(item => {
             const quantity = parseInt(item.querySelector('select')?.value ?? "1");
             const {price, currency} = splitPriceCurrency(item.querySelector('#item-pricing span')?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+    }
+});
+
+getters.register("computersalg.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('checkout-step')) return [];
+
+        return findFromText(document.querySelectorAll('button'), ['Start betaling']).concat(
+            Array.from(document.querySelectorAll('div.klarnamasterstartbtn, .checkout-payment-provider-formdata-class form'))
+        ).map(createInnerChild);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll<HTMLElement>('button[data-js-product-details-add-to-basket]'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('checkout/basket')) return [];
+
+        const items = document.querySelectorAll('article[data-js-basket-item]');
+
+        return Array.from(items).map(item => {
+            // total
+            const quantity = parseInt(item.querySelector('input')?.value ?? "1");
+            const unsplitPrice = Array.from(item.querySelectorAll('div.m-basket-item__price-wrap span:not([style])')).map(t => t?.textContent).join(" ");
+            const {price, currency} = splitPriceCurrency(unsplitPrice);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+    }
+});
+
+getters.register("ditur.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout')) return [];
+
+        return Array.from(document.querySelectorAll('button[x-bind="buttonPlaceOrder()"]')).map(createInnerChild);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll<HTMLElement>('#product-addtocart-button, button[title="Add to Cart"]'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout')) return [];
+
+        const items = document.querySelectorAll('#quote-summary .grid .border-cart-secondary')
+
+        return Array.from(items).map(item => {
+            const quantity = parseQty(item.querySelector('.items-baseline .text-xs')?.textContent ?? "1");
+            const {price, currency} = splitPriceCurrency(item.querySelector('.product-price span')?.textContent);
+
+            return {
+                quantity,
+                price: price * quantity,
+                currency
+            }
+        });
+    }
+});
+
+
+getters.register("quint.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout')) return [];
+        
+        return toArray(document.querySelector<HTMLElement>('form[name=paymentForm] button.button_primary')).map(createInnerChild);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('.add-to-basket-button'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout')) return [];
+
+        const items = document.querySelectorAll('.checkout__sidebar__order-line')
+
+        return Array.from(items).map(item => {
+            const quantity = parseQty(item.querySelector('.checkout__sidebar__order-line__price')?.children?.[0]?.textContent ?? "1");
+            const {price, currency} = splitPriceCurrency(Array.from(item.querySelector('.checkout__sidebar__order-line__price')?.children)?.at(-1)?.textContent);
 
             return {
                 quantity,
