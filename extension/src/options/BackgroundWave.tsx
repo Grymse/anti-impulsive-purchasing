@@ -1,11 +1,12 @@
 import { useEffect, useRef } from 'react';
 
-export default function BackgroundWave() {
+type Props = {isActive: boolean};
+export default function BackgroundWave({isActive}: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !isActive) return;
     
     // Set canvas to full window size
     const resizeCanvas = () => {
@@ -22,6 +23,7 @@ export default function BackgroundWave() {
     // Animation parameters
     let offset = 0;
     let colorOffset = 0;
+    let animationId = 0;
     
     // RGB color cycling function with higher brightness for dark background
     const getRainbowColor = (phase: number, opacity = 0.6) => {
@@ -47,7 +49,7 @@ export default function BackgroundWave() {
       offset += 0.02;
       colorOffset += 0.01;
       
-      requestAnimationFrame(animate);
+      animationId = requestAnimationFrame(animate);
     }
     
     function drawSineWave(
@@ -90,14 +92,15 @@ export default function BackgroundWave() {
     }
     
     // Start the animation
-    const animationId = requestAnimationFrame(animate);
+    animationId = requestAnimationFrame(animate);
     
     // Clean up on unmount
     return () => {
       window.removeEventListener('resize', resizeCanvas);
+      ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
       cancelAnimationFrame(animationId);
     };
-  }, []);
+  }, [isActive]);
   
   return (
     <canvas 
@@ -108,7 +111,6 @@ export default function BackgroundWave() {
         left: 0,
         width: '100%',
         height: '100%',
-        zIndex: -1,
         pointerEvents: 'none',
         background: 'transparent' // Transparent background to preserve original bg color
       }}

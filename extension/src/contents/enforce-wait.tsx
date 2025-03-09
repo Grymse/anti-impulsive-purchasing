@@ -23,13 +23,13 @@ import { sendAnalytics } from "~lib/analytics"
 import {
   formatTime,
   PERMIT_LENGTH,
-  PERMIT_ON_PAY_GRACE,
   PERMIT_WAIT_TIME
 } from "~lib/constants"
 import { getters as getterRegistry } from "~lib/getters"
 import { observer } from "~lib/observer"
 import permit, { type Permit } from "~lib/permit"
 import { settings } from "~lib/settings"
+import { useScaling } from "~hooks/useScaling"
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -279,9 +279,8 @@ function WaitTimer({ onCancel, onComplete }: WaitTimerProps) {
     minutes: number
     seconds: number
   } | null>(currentPermit ? permitToWaitTime(currentPermit) : null)
-  const [intervalId, setIntervalId] = useState<number | null>(null)
-  const [showInfo, setShowInfo] = useState(false)
   const domain = document.location.hostname
+  const {scale} = useScaling();
 
   // Using permit constants from constants.ts
 
@@ -315,8 +314,6 @@ function WaitTimer({ onCancel, onComplete }: WaitTimerProps) {
       }
     }, 1000)
 
-    setIntervalId(id)
-
     return () => {
       if (id) clearInterval(id)
     }
@@ -332,8 +329,14 @@ function WaitTimer({ onCancel, onComplete }: WaitTimerProps) {
     })
   }
 
+
+  
+
   return (
     <div
+    style={{
+      transform: `scale(${scale})`
+    }}
       className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
       onClick={onCancel}>
       <Card className="max-w-xl bg-white" onClick={(e) => e.stopPropagation()}>
@@ -549,6 +552,7 @@ function effect(signal: { signal: AbortSignal }) {
 }
 
 settings.onInit((settings) => {
+  
   if (!settings.active || !settings.activeStrategies.includes("enforce-wait"))
     return
   observer.addEffect(effect)

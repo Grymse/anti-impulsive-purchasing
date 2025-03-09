@@ -1,6 +1,6 @@
 import cssText from "data-text:~style.css"
 import type { PlasmoCSConfig } from "plasmo"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, type MouseEventHandler } from "react"
 
 import "../style.css"
 
@@ -8,25 +8,24 @@ import { Button } from "~components/ui/button"
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle
 } from "~components/ui/card"
+import { Label } from "~components/ui/label"
+import { Progress } from "~components/ui/progress"
+import { Textarea } from "~components/ui/textarea"
 import { sendAnalytics } from "~lib/analytics"
-import { getters, type ShoppingItem } from "~lib/getters"
+import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
 import { settings } from "~lib/settings"
-import StepProgress from "~components/ui/step-progress"
-import { PersistentValue } from "~lib/utils"
-import { Minus, Pencil, Plus } from "lucide-react"
-import { cart, purchases } from "~lib/purchases"
+import { useScaling } from "~hooks/useScaling"
 
 export const getStyle = () => {
   const style = document.createElement("style")
   style.textContent = cssText
   return style
 }
-
-const maxItemsValue = new PersistentValue("max-items", 3);
 
 export const config: PlasmoCSConfig = {
   matches: [
@@ -237,112 +236,157 @@ export const config: PlasmoCSConfig = {
   all_frames: true
 }
 
-type F = () => void
-let createMaxPurchases: ({ onFinish, amountOfItems }: { onFinish: F, amountOfItems: number }) => void
+type Question = {
+  label: string
+  title: string
+  minWords: number
+  content: string
+}
 
-export default function maxPurchases() {
+const questions: Array<Question> = [
+  {
+    label: "Need",
+    title: "Why do you really need this?",
+    minWords: 5,
+    content: ""
+  },
+  {
+    label: "Like",
+    title: "What do you like about these products?",
+    minWords: 5,
+    content: ""
+  },
+  {
+    label: "Dislike",
+    title: "Why would it be a good idea not to buy this?",
+    minWords: 5,
+    content: ""
+  },
+  {
+    label: "Alternative",
+    title: "What alternatives could you invest your time and money in?",
+    minWords: 5,
+    content: ""
+  }
+]
+
+type F = () => void
+let createQuestionary: ({ onFinish }: { onFinish: F }) => void
+
+export default function needThis() {
   const [show, setShow] = useState(false)
-  const [showEdit, setShowEdit] = useState(false)
-  const [maxItems, setMaxItems] = useState(maxItemsValue.value);
-  const [itemsInCart, setItemsInCart] = useState(0)
   const onFinish = useRef<null | F>(null)
+  const [text, setText] = useState("")
+  const [page, setPage] = useState(questions[0].label)
+  const [error, setError] = useState<string | null>(null)
+  const labels = questions.map((question) => question.label)
+  const currentQuestion = questions.find((question) => question.label === page)
+
+  const textfieldSufficient =
+    text.split(" ").filter((word) => word.length > 0).length >=
+    currentQuestion.minWords
+  const isLast = labels.indexOf(page) === labels.length - 1
+  const isFirst = labels.indexOf(page) === 0
 
   // Here we assign the function that can be called outside the component.
   // This is a way to communicate between the content script and the popup-questionary.
-  createMaxPurchases = ({ onFinish: f, amountOfItems }) => {
+  createQuestionary = ({ onFinish: f }) => {
     setShow(true)
     onFinish.current = f
-    setItemsInCart(amountOfItems)
   }
 
   useEffect(() => {
-    const f = (value: number) => {
-      setMaxItems(value)
+    currentQuestion.content = text
+    if (textfieldSufficient) setError(null)
+  }, [text])
+
+  useEffect(() => {
+    setText(currentQuestion.content)
+  }, [page])
+
+  const onNext: MouseEventHandler = () => {
+    if (!textfieldSufficient) {
+      setError(`Please enter atleast ${currentQuestion.minWords} words`)
+      return
     }
-    maxItemsValue.onChange(f);
-    maxItemsValue.onInit(f);
 
-    return () => {
-      maxItemsValue.removeOnChange(f);
+    sendAnalytics("answer", { question: currentQuestion.title, answer: text })
+
+    if (isLast) {
+      submit()
+      return
     }
-  }, []);
 
+    setPage(labels[labels.indexOf(page) + 1])
+  }
 
-  if (!show) return null
+  const onPrevious: MouseEventHandler = () => {
+    if (isFirst) {
+      cancel()
+      return
+    }
+
+    setPage(labels[labels.indexOf(page) - 1])
+  }
 
   const cancel = () => {
     sendAnalytics("cancel", undefined)
     setShow(false)
   }
 
-  const commitToPurchase = () => {
-    onFinish.current?.()
+  const submit = () => {
     setShow(false)
+    onFinish.current?.()
   }
 
-  const increaseMaxItems = () => {
-    maxItemsValue.value = maxItemsValue.value + 1
-  }
-
-  const decreaseMaxItems = () => {
-    if (maxItemsValue.value <= 1) return;
-    maxItemsValue.value = maxItemsValue.value - 1
-  }
-
-  const isShopify = document
-    .querySelector("link")
-    .href.includes("https://cdn.shopify.com")
-
-  const current = currentlyPurchasedItems();
-
-  const hasSufficient = (current + itemsInCart) <= maxItems
-  const hasRunOut = current >= maxItems
-
+  const {scale} = useScaling();
+  
+  if (!show) return null
+  
   return (
     <div
+    style={{
+      transform: `scale(${scale})`
+    }}
       id="popover-questionary"
-      className={`fixed text-base ${isShopify ? "transform scale-150" : ""} bg-black/75 z-50 w-screen h-screen flex items-center justify-center`}
+      className={`fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center`}
       onClick={cancel}>
       <Card className="max-w-xl bg-white" onClick={(e) => e.stopPropagation()}>
-        <CardHeader className="relative">
-          <Button variant="secondary" className="w-10 absolute right-6" onClick={() => setShowEdit(!showEdit)}>
-            <Pencil />
-          </Button>
-          <CardTitle>Limited purchases</CardTitle>
+        <CardHeader>
+          <CardTitle>Reflection Questions</CardTitle>
+          <CardDescription>
+            Before committing to the purchase, please reflect on the following
+            questions.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col mt-4 gap-8">
-            <div className="flex flex-col gap-4">
-            <p>
-              You have purchased <span className={`${hasRunOut ? 'text-destructive' : 'text-primary'} font-bold text-xl`}>{current}</span> out of <span className={`${hasRunOut ? 'text-destructive' : 'text-primary'} font-bold text-xl`}>{maxItems}</span> items this month.
-            </p>
-            <div className="flex gap-2 items-center">
-              {showEdit &&
-                <Button variant="secondary" className="w-10" onClick={decreaseMaxItems}>
-                  <Minus />
-                </Button>
-              }
-            <StepProgress length={maxItems} current={current} />
-              {showEdit &&
-                <Button variant="secondary" className="w-10" onClick={increaseMaxItems}>
-                  <Plus />
-                </Button>
-              }
+          <Progress labels={labels} current={page} />
+          <div className="flex flex-col gap-6 mt-4">
+            <div className="grid gap-2">
+              <Label htmlFor={currentQuestion.label}>
+                {currentQuestion.title}
+              </Label>
+              <div className="relative">
+                <Textarea
+                  id={currentQuestion.label}
+                  className="resize-none h-48"
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                />
+                <p
+                  className={`text-xs absolute bottom-1 right-4 ${textfieldSufficient ? "hidden" : "text-destructive"}`}>
+                  Mininimum {currentQuestion.minWords} words
+                </p>
+              </div>
+              {error && <p className="text-destructive text-sm">{error}</p>}
             </div>
-            </div>
-            {hasSufficient ? (
-              <p>You are about to use <span className="text-primary font-bold">{itemsInCart}</span> of your remaining <span className="text-primary font-bold">{maxItems - current}</span> items this month</p>
-            ) : (
-              <p>You do not have enough purchases left, to buy <span className="text-destructive font-bold">{itemsInCart}</span> items</p>
-            )}
-
             <div className="flex justify-between gap-4">
-              <Button variant="outline" className="w-full" onClick={cancel}>
-                Cancel
+              <Button variant="outline" className="w-full" onClick={onPrevious}>
+                {isFirst ? "Cancel" : "Previous"}
               </Button>
-              {hasSufficient && <Button type="submit" className="w-full" onClick={commitToPurchase}>
-                Continue to purchase
-              </Button>}
+              <Button type="submit" className="w-full" onClick={onNext}>
+                {isLast ? "Continue to purchase" : "Next"}
+              </Button>
             </div>
           </div>
         </CardContent>
@@ -351,12 +395,7 @@ export default function maxPurchases() {
   )
 }
 
-function currentlyPurchasedItems() {
-  const currentPurchases = purchases.value; // Do some time-based filtering
-  return currentPurchases.reduce((acc, purchase) => acc + purchase.items.reduce((acc,item) => acc + item.quantity, 0), 0);
-}
-
-const onPlaceOrderClick = (e: Event, item: ShoppingItem = undefined) => {
+const onPlaceOrderClick = (e: Event) => {
   const isBlocked =
     document.body.getAttribute("data-plasmo-place-order-blocked") === "true"
   if (!isBlocked) return // If the button is not blocked, we don't need to show the questionary.
@@ -364,30 +403,18 @@ const onPlaceOrderClick = (e: Event, item: ShoppingItem = undefined) => {
   e.preventDefault()
   e.stopPropagation()
 
-  const onFinish = () => {
-    document.body.setAttribute("data-plasmo-place-order-blocked", "false")
+  createQuestionary({
+    onFinish: () => {
+      document.body.setAttribute("data-plasmo-place-order-blocked", "false")
 
-    const button = e.target as HTMLButtonElement
-    button.click()
-  };
-
-  if (item) {
-    createMaxPurchases({
-      amountOfItems: item.quantity,
-      onFinish 
-    })
-  }
-  
-  cart.getFromStorage().then((cart) => {
-    createMaxPurchases({
-      amountOfItems: cart?.reduce((acc, item) => acc + item.quantity, 0) ?? 1,
-      onFinish 
-    })
-  });
+      const button = e.target as HTMLButtonElement
+      button.click()
+    }
+  })
 }
 
 settings.onInit((settings) => {
-  if (!settings.active || !settings.activeStrategies.includes("max-purchases"))
+  if (!settings.active || !settings.activeStrategies.includes("review-third-party"))
     return
 
   observer.addEffect((signal) => {
@@ -399,8 +426,7 @@ settings.onInit((settings) => {
     }, signal)
 
     domainGetters.getOneClickBuyNow?.(document.body)?.forEach((p) => {
-      
-      p.button?.addEventListener("click", (e) => onPlaceOrderClick(e, p.item))
+      p.button?.addEventListener("click", onPlaceOrderClick)
     }, signal)
   })
 })

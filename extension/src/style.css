@@ -3,7 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 body {
   font-family: "Roboto", serif;
   font-optical-sizing: auto;
