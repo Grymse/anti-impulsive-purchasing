@@ -236,7 +236,8 @@ export const config: PlasmoCSConfig = {
     "https://*.graza.co/*",
     "https://*.flybyjing.com/*",
     "https://getmaude.com/*",
-    "https://ugmonk.com/*"
+    "https://ugmonk.com/*",
+    "https://shop.app/*"
   ],
   all_frames: true
 }
