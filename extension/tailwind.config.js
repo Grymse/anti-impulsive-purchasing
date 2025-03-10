@@ -6,44 +6,44 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+        lessborder: "hsl(var(--less-border))", // x
+        lessinput: "hsl(var(--less-input))", // x
+        lessring: "hsl(var(--less-ring))", // x
+        lessbackground: "hsl(var(--less-background))", // x
+        lessforeground: "hsl(var(--less-foreground))", // x
+        lessprimary: { // x
+          DEFAULT: "hsl(var(--less-primary))",
+          foreground: "hsl(var(--less-primary-foreground))",
         },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+        lesssecondary: { // x
+          DEFAULT: "hsl(var(--less-secondary))",
+          foreground: "hsl(var(--less-secondary-foreground))",
         },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+        lessdestructive: { // x
+          DEFAULT: "hsl(var(--less-destructive))",
+          foreground: "hsl(var(--less-destructive-foreground))",
         },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+        lessmuted: { // x
+          DEFAULT: "hsl(var(--less-muted))",
+          foreground: "hsl(var(--less-muted-foreground))",
         },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+        lessaccent: { // x
+          DEFAULT: "hsl(var(--less-accent))",
+          foreground: "hsl(var(--less-accent-foreground))",
         },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+        lesspopover: { // x
+          DEFAULT: "hsl(var(--less-popover))",
+          foreground: "hsl(var(--less-popover-foreground))",
         },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+        lesscard: {
+          DEFAULT: "hsl(var(--less-card))",
+          foreground: "hsl(var(--less-card-foreground))",
         },
       },
       borderRadius: {
-        lg: `var(--radius)`,
-        md: `calc(var(--radius) - 2px)`,
-        sm: "calc(var(--radius) - 4px)",
+        lesslg: `var(--radius)`,
+        lessmd: `calc(var(--radius) - 2px)`,
+        lesssm: "calc(var(--radius) - 4px)",
       },
     },
   },

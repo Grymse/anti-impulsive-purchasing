@@ -579,14 +579,14 @@ function AlternativeActivitiesModal({
           ← Back to categories
         </Button>
 
-        <div className={`p-6 ${parentCategory?.color} rounded-lg border mb-4`}>
+        <div className={`p-6 ${parentCategory?.color} rounded-lesslg border mb-4`}>
           <div className="flex items-center gap-3 mb-3">
             <span className="text-3xl">{selectedActivity.icon}</span>
             <h3 className="text-xl font-semibold">{selectedActivity.title}</h3>
           </div>
           <p className="text-gray-600 mb-5">{selectedActivity.description}</p>
 
-          <div className="mb-6 bg-white p-4 rounded-md">
+          <div className="mb-6 bg-white p-4 rounded-lessmd">
             <h4 className="font-medium mb-3">Try these ideas:</h4>
             <ul className="list-disc pl-5 space-y-2">
               {selectedActivity.examples.map((example, index) => (
@@ -599,7 +599,7 @@ function AlternativeActivitiesModal({
 
           {selectedActivity.resources &&
             selectedActivity.resources.length > 0 && (
-              <div className="bg-white p-4 rounded-md">
+              <div className="bg-white p-4 rounded-lessmd">
                 <h4 className="font-medium mb-3">Helpful resources:</h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedActivity.resources.map((resource, index) => (
@@ -652,7 +652,7 @@ function AlternativeActivitiesModal({
                 {category.activities.map((activity) => (
                   <div
                     key={activity.id}
-                    className={`p-4 border rounded-md cursor-pointer hover:bg-gray-50 transition-colors ${category.color}`}
+                    className={`p-4 border rounded-lessmd cursor-pointer hover:bg-gray-50 transition-colors ${category.color}`}
                     onClick={() => showActivityDetails(activity)}>
                     <div className="flex items-center gap-2">
                       <span className="text-xl">{activity.icon}</span>
@@ -687,7 +687,7 @@ function AlternativeActivitiesModal({
         }}
         className="max-w-lg bg-white shadow-xl"
         onClick={(e) => e.stopPropagation()}>
-        <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-t-xl">
+        <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lesst-xl">
           <div className="flex items-center gap-3">
             <span className="text-2xl">🌟</span>
             <div>

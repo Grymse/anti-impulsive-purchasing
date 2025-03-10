@@ -66,11 +66,11 @@ function IndexPopup() {
   const worksOnDomain = getters.hasDomain(currentDomain ?? "");
   
   return <main className={`${preferDarkmode && 'dark'} p-8 py-6 w-64 flex flex-col gap-4 items-center`}>
-    <div className="-z-10 bg-background absolute top-0 w-full h-full">
+    <div className="-z-10 bg-lessbackground absolute top-0 w-full h-full">
       <BackgroundWave isActive={isActive} />
     </div>
     <MainLogo size={128} active={isActive} />
-    <p className="text-foreground text-sm text-center">By activating you are accepting our <a className="text-primary cursor-pointer underline" onClick={onOpenPrivacyPolicy}>Privacy Policy</a></p>
+    <p className="text-lessforeground text-sm text-center">By activating you are accepting our <a className="text-lessprimary cursor-pointer underline" onClick={onOpenPrivacyPolicy}>Privacy Policy</a></p>
     <div className="flex w-full">
       <Button
         className="w-full mb-6"
@@ -100,7 +100,7 @@ function RequestWebsiteModal({domainName, children}: {domainName: string, childr
   }
 
   return <>
-    {show && <div className="z-10 top-0 left-0 w-full h-full bg-background bg-opacity-50 flex items-center justify-center">
+    {show && <div className="z-10 top-0 left-0 w-full h-full bg-lessbackground bg-opacity-50 flex items-center justify-center">
       <Card>
         <CardHeader>
           <Text className="text-wrap text-ellipsis">Request {domainName.slice(0, 25)}{25 < domainName.length ? "..." : ""}</Text>

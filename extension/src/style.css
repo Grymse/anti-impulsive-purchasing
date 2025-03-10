@@ -11,6 +11,32 @@ body {
 
 @layer base {
   :root {
+    --less-background: 0 0% 100%;
+    --less-foreground: 222.2 84% 4.9%;
+    --less-card: 0 0% 100%;
+    --less-card-foreground: 222.2 84% 4.9%;
+    --less-popover: 0 0% 100%;
+    --less-popover-foreground: 222.2 84% 4.9%;
+    --less-primary: 221.2 83.2% 53.3%;
+    --less-primary-foreground: 210 40% 98%;
+    --less-secondary: 210 40% 96.1%;
+    --less-secondary-foreground: 222.2 47.4% 11.2%;
+    --less-muted: 210 40% 96.1%;
+    --less-muted-foreground: 215.4 16.3% 46.9%;
+    --less-accent: 210 40% 96.1%;
+    --less-accent-foreground: 222.2 47.4% 11.2%;
+    --less-destructive: 0 84.2% 60.2%;
+    --less-destructive-foreground: 210 40% 98%;
+    --less-border: 214.3 31.8% 91.4%;
+    --less-input: 214.3 31.8% 91.4%;
+    --less-ring: 221.2 83.2% 53.3%;
+    --less-radius: 1rem;
+    --less-chart-1: 12 76% 61%;
+    --less-chart-2: 173 58% 39%;
+    --less-chart-3: 197 37% 24%;
+    --less-chart-4: 43 74% 66%;
+    --less-chart-5: 27 87% 67%;
+    
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -39,6 +65,31 @@ body {
   }
 
   .dark {
+    --less-background: 222.2 84% 4.9%;
+    --less-foreground: 210 40% 98%;
+    --less-card: 222.2 84% 4.9%;
+    --less-card-foreground: 210 40% 98%;
+    --less-popover: 222.2 84% 4.9%;
+    --less-popover-foreground: 210 40% 98%;
+    --less-primary: 217.2 91.2% 59.8%;
+    --less-primary-foreground: 222.2 47.4% 11.2%;
+    --less-secondary: 217.2 32.6% 17.5%;
+    --less-secondary-foreground: 210 40% 98%;
+    --less-muted: 217.2 32.6% 17.5%;
+    --less-muted-foreground: 215 20.2% 65.1%;
+    --less-accent: 217.2 32.6% 17.5%;
+    --less-accent-foreground: 210 40% 98%;
+    --less-destructive: 0 62.8% 30.6%;
+    --less-destructive-foreground: 210 40% 98%;
+    --less-border: 217.2 32.6% 17.5%;
+    --less-input: 217.2 32.6% 17.5%;
+    --less-ring: 224.3 76.3% 48%;
+    --less-chart-1: 220 70% 50%;
+    --less-chart-2: 160 60% 45%;
+    --less-chart-3: 30 80% 55%;
+    --less-chart-4: 280 65% 60%;
+    --less-chart-5: 340 75% 55%;
+
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
@@ -83,9 +134,9 @@ body {
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-lessborder outline-lessring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-lessbackground text-lessforeground;
   }
 }

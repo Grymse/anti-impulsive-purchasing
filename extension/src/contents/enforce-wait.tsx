@@ -366,19 +366,19 @@ function WaitTimer({ onCancel, onComplete }: WaitTimerProps) {
           ) : Date.now() < currentPermit.start ? (
             <div className="flex flex-col items-center gap-4">
               <div className="grid grid-cols-3 gap-4 text-center">
-                <div className="p-3 bg-slate-100 rounded-md">
+                <div className="p-3 bg-slate-100 rounded-lessmd">
                   <div className="text-3xl font-bold">
                     {waitTime?.hours || 0}
                   </div>
                   <div className="text-sm text-slate-500">Hours</div>
                 </div>
-                <div className="p-3 bg-slate-100 rounded-md">
+                <div className="p-3 bg-slate-100 rounded-lessmd">
                   <div className="text-3xl font-bold">
                     {waitTime?.minutes || 0}
                   </div>
                   <div className="text-sm text-slate-500">Minutes</div>
                 </div>
-                <div className="p-3 bg-slate-100 rounded-md">
+                <div className="p-3 bg-slate-100 rounded-lessmd">
                   <div className="text-3xl font-bold">
                     {waitTime?.seconds || 0}
                   </div>
@@ -435,7 +435,7 @@ function WaitTimer({ onCancel, onComplete }: WaitTimerProps) {
                     Each website you shop at has its own permit.
                   </p>
 
-                  <div className="bg-slate-50 p-3 rounded-md space-y-2">
+                  <div className="bg-slate-50 p-3 rounded-lessmd space-y-2">
                     <p className="font-medium">When you start a wait timer:</p>
                     <ul className="list-disc list-inside">
                       <li>

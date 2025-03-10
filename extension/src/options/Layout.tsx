@@ -7,7 +7,7 @@ export default function Layout({ children, isActive }: { children: ReactNode, is
   ).matches
 
   return (
-    <div className={preferDarkmode ? "dark bg-background" : "bg-background"} style={{
+    <div className={preferDarkmode ? "dark bg-lessbackground" : "bg-lessbackground"} style={{
       colorScheme: preferDarkmode ? 'dark' : '',
     }}>
       <BackgroundWave isActive={isActive} />
