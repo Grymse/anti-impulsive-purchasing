@@ -54,7 +54,7 @@ export type Settings = {
 export const settings = new PersistentValue<Settings>("settings",
     {
         active: true,
-        activeStrategies: ["visualize-alternatives"]
+        activeStrategies: ["corporate-agenda"]
     }
 );
 

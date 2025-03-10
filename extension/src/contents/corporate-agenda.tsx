@@ -20,11 +20,11 @@ import {
   CardTitle
 } from "~components/ui/card"
 import { Label } from "~components/ui/label"
+import { useScaling } from "~hooks/useScaling"
 import { sendAnalytics } from "~lib/analytics"
 import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
 import { settings } from "~lib/settings"
-import { useScaling } from "~hooks/useScaling"
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -242,6 +242,31 @@ export const config: PlasmoCSConfig = {
   all_frames: true
 }
 
+// Reusable countdown timer component
+interface CountdownTimerProps {
+  countdown: number
+  className?: string
+}
+
+const CountdownTimer = ({ countdown, className = "" }: CountdownTimerProps) => {
+  if (countdown <= 0) return null
+
+  return (
+    <div
+      className={`bg-blue-50 border-2 border-blue-300 rounded-md p-3 flex items-center justify-center ${className}`}>
+      <div className="flex flex-col items-center">
+        <div className="text-2xl font-bold text-blue-700 mb-1">{countdown}</div>
+        <div className="text-xs text-blue-700">seconds remaining</div>
+        <div className="w-full mt-2 bg-blue-200 rounded-full h-2 overflow-hidden">
+          <div
+            className="bg-blue-600 h-full transition-all duration-1000 ease-linear"
+            style={{ width: `${(10 - countdown) * 10}%` }}></div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // Define marketing tactic categories and examples
 const marketingTactics = [
   {
@@ -313,7 +338,23 @@ function CorporateGreedAwareness({
 }: CorporateGreedAwarenessProps) {
   const [currentCategory, setCurrentCategory] = useState<number | null>(null)
   const [acknowledged, setAcknowledged] = useState(false)
-  const {scale} = useScaling();
+  const [countdown, setCountdown] = useState(0)
+  const { scale } = useScaling()
+
+  // Countdown timer effect when accordion is opened
+  useEffect(() => {
+    let timerId: NodeJS.Timeout
+
+    if (currentCategory !== null && countdown > 0) {
+      timerId = setInterval(() => {
+        setCountdown((prev) => Math.max(0, prev - 1))
+      }, 1000)
+    }
+
+    return () => {
+      if (timerId) clearInterval(timerId)
+    }
+  }, [currentCategory, countdown])
 
   const handleAcknowledge = () => {
     setAcknowledged(true)
@@ -343,14 +384,20 @@ function CorporateGreedAwareness({
           into impulse purchases:
         </p>
 
+        {countdown > 0 && (
+          <CountdownTimer countdown={countdown} className="mb-4" />
+        )}
+
         <Accordion
           type="single"
           collapsible
           className="space-y-2"
           onValueChange={(value) => {
-            if (value) {
+            console.log("value", value)
+            if (value && value.length !== 0) {
               const index = parseInt(value)
               setCurrentCategory(index)
+              setCountdown(10) // Start countdown from 10 when opened
               sendAnalytics("corporate_agenda_select_category", {
                 category: marketingTactics[index].category
               })
@@ -359,8 +406,9 @@ function CorporateGreedAwareness({
                 sendAnalytics("corporate_agenda_collapse_category", {
                   category: marketingTactics[currentCategory].category
                 })
+                setCurrentCategory(null)
+                setCountdown(0)
               }
-              setCurrentCategory(null)
             }
           }}
           value={
@@ -401,7 +449,7 @@ function CorporateGreedAwareness({
         <Button
           className="w-full bg-red-600 hover:bg-red-700 text-white"
           onClick={handleAcknowledge}
-          disabled={currentCategory === null}>
+          disabled={countdown !== 0}>
           Continue
         </Button>
       </div>
@@ -452,8 +500,8 @@ function CorporateGreedAwareness({
 
   return (
     <div
-    className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
-    onClick={onCancel}>
+      className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
+      onClick={onCancel}>
       <Card
         style={{
           transform: `scale(${scale})`
@@ -526,6 +574,84 @@ const onPlaceOrderClick = (e: Event) => {
   })
 }
 
+// Key for storing the last suggestion timestamp in browser storage
+const LAST_SUGGESTION_KEY = "corporate_agenda_last_suggestion_time"
+const SUGGESTION_INTERVAL = 1000 * 60 * 3 // 3 minutes
+
+// Function to check if it's time to show a suggestion based on stored timestamp
+const shouldShowSuggestion = async (): Promise<boolean> => {
+  try {
+    const data = await chrome.storage.local.get(LAST_SUGGESTION_KEY)
+    const lastSuggestionTime = data[LAST_SUGGESTION_KEY] as number
+    const currentTime = Date.now()
+
+    // If no previous suggestion or it's been more than SUGGESTION_INTERVAL since last suggestion
+    if (
+      !lastSuggestionTime ||
+      currentTime - lastSuggestionTime >= SUGGESTION_INTERVAL
+    ) {
+      return true
+    }
+
+    return false
+  } catch (error) {
+    console.error("Error checking suggestion timing:", error)
+    return false
+  }
+}
+
+// Function to update the last suggestion timestamp
+const updateLastSuggestionTime = async (): Promise<void> => {
+  try {
+    await chrome.storage.local.set({ [LAST_SUGGESTION_KEY]: Date.now() })
+  } catch (error) {
+    console.error("Error updating suggestion timestamp:", error)
+  }
+}
+
+// Function to present the corporate agenda intervention
+const showCorporateAgendaIntervention = () => {
+  // Check if user is still on the page and the extension is active
+  if (
+    document.hidden ||
+    !settings.value.active ||
+    !settings.value.activeStrategies.includes("corporate-agenda")
+  ) {
+    return
+  }
+
+  createGreedAwareness({
+    onFinish: () => {
+      // Update the timestamp when modal is closed
+      updateLastSuggestionTime()
+    }
+  })
+
+  // Update the timestamp
+  updateLastSuggestionTime()
+}
+
+// Function to start checking for suggestion timing
+const startSuggestionCheck = () => {
+  // Run the check every 10 seconds
+  const checkInterval = 10000
+
+  // Set up the interval for checking
+  const intervalId = setInterval(async () => {
+    // Check if it's time to show a suggestion
+    const shouldShow = await shouldShowSuggestion()
+
+    if (shouldShow) {
+      showCorporateAgendaIntervention()
+    }
+  }, checkInterval)
+
+  // Return a cleanup function
+  return () => {
+    clearInterval(intervalId)
+  }
+}
+
 settings.onInit((settings) => {
   if (
     !settings.active ||
@@ -544,5 +670,26 @@ settings.onInit((settings) => {
     domainGetters.getOneClickBuyNow?.(document.body)?.forEach((p) => {
       p.button?.addEventListener("click", onPlaceOrderClick)
     }, signal)
+
+    // Start the suggestion check system
+    const cleanup = startSuggestionCheck()
+
+    // If tab becomes visible, check if we should show a suggestion
+    document.addEventListener(
+      "visibilitychange",
+      async () => {
+        if (!document.hidden) {
+          // Only check but don't force a suggestion
+          const shouldShow = await shouldShowSuggestion()
+          if (shouldShow) {
+            showCorporateAgendaIntervention()
+          }
+        }
+      },
+      signal
+    )
+
+    // Clean up the interval when the effect is cleaned up
+    return cleanup
   })
 })
