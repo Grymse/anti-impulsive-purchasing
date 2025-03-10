@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 
 import "../style.css"
 
-import { Button } from "~components/ui/button"
+import { Button, CountdownButton } from "~components/ui/button"
 import {
   Card,
   CardContent,
@@ -309,37 +309,81 @@ export default function maxPurchases() {
         }}
         className="max-w-xl bg-white"
         onClick={(e) => e.stopPropagation()}>
-        <CardHeader className="relative">
-          <Button variant="secondary" className="w-10 absolute right-6" onClick={() => setShowEdit(!showEdit)}>
-            <Pencil />
+        <CardHeader className="relative border-b pb-4">
+          <Button 
+            variant="secondary" 
+            className="w-10 absolute right-6 hover:bg-lessdestructive/10 transition-colors" 
+            onClick={() => setShowEdit(!showEdit)}
+            title="Edit your monthly purchase limit"
+          >
+            <Pencil className={showEdit ? "text-lessdestructive" : ""} />
           </Button>
-          <CardTitle>Limited purchases</CardTitle>
+          <CardTitle className="text-2xl">Limited Purchases</CardTitle>
+          <p className="text-sm text-lessmuted-foreground mt-1">Your monthly spending accountability tracker</p>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col mt-4 gap-8">
-            <div className="flex flex-col gap-4">
-            <p>
-              You have purchased <span className={`${hasRunOut ? 'text-lessdestructive' : 'text-lessprimary'} font-bold text-xl`}>{current}</span> out of <span className={`${hasRunOut ? 'text-lessdestructive' : 'text-lessprimary'} font-bold text-xl`}>{maxItems}</span> items this month.
-            </p>
-            <div className="flex gap-2 items-center">
-              {showEdit &&
-                <Button variant="secondary" className="w-10" onClick={decreaseMaxItems}>
-                  <Minus />
-                </Button>
-              }
-            <StepProgress length={maxItems} current={current} />
-              {showEdit &&
-                <Button variant="secondary" className="w-10" onClick={increaseMaxItems}>
-                  <Plus />
-                </Button>
-              }
+          <div className="flex flex-col mt-6 gap-8">
+            <div className="flex flex-col gap-5">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Monthly progress:</span>
+                <span className="text-sm font-medium">
+                  <span className={`${hasRunOut ? 'text-lessdestructive' : 'text-lessprimary'} font-bold`}>{current}</span>
+                  <span> / </span>
+                  <span className={`${hasRunOut ? 'text-lessdestructive' : 'text-lessprimary'} font-bold`}>{maxItems}</span>
+                </span>
+              </div>
+              
+              <div className="flex gap-3 items-center">
+                {showEdit &&
+                  <Button variant="secondary" className="w-10 h-10 p-0 rounded-full shadow-sm" onClick={decreaseMaxItems}>
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                }
+                <div className="flex-1">
+                  <StepProgress length={maxItems} current={current} />
+                </div>
+                {showEdit &&
+                  <CountdownButton 
+                    variant="destructive" 
+                    className="w-10 h-10 p-0 rounded-full shadow-sm" 
+                    onClick={increaseMaxItems}
+                    countdown={10000} // 10 seconds
+                    resetOnClick={true}
+                    onCountdownComplete={() => {}}
+                  >
+                    <Plus className="h-4 w-4 text-white" />
+                  </CountdownButton>
+                }
+              </div>
+              
+              {showEdit && (
+                <div className="bg-lessdestructive/10 rounded-lg p-3 border border-lessdestructive/20 mt-1">
+                  <p className="text-sm text-lessmuted-foreground">
+                    {hasRunOut ? (
+                      <>
+                        <span className="font-semibold">You've already reached your limit this month.</span> Increasing it now defeats the purpose of setting boundaries. Stay strong with your original commitment to mindful spending.
+                      </>
+                    ) : (
+                      <>
+                        <span className="font-semibold">Are you sure you want to change your limit?</span> Increasing your purchase limit might undermine your commitment to mindful spending. Remember why you set these boundaries in the first place.
+                      </>
+                    )}
+                  </p>
+                </div>
+              )}
             </div>
+            
+            <div className={`rounded-lg p-4 ${hasSufficient ? 'bg-lessprimary/10 border border-lessprimary/20' : 'bg-lessdestructive/10 border border-lessdestructive/20'}`}>
+              {hasSufficient ? (
+                <p className="text-center font-medium">
+                  You're about to use <span className="text-lessprimary font-bold">{itemsInCart}</span> of your remaining <span className="text-lessprimary font-bold">{maxItems - current}</span> items this month
+                </p>
+              ) : (
+                <p className="text-center font-medium">
+                  You don't have enough purchases left to buy <span className="text-lessdestructive font-bold">{itemsInCart}</span> items
+                </p>
+              )}
             </div>
-            {hasSufficient ? (
-              <p>You are about to use <span className="text-lessprimary font-bold">{itemsInCart}</span> of your remaining <span className="text-lessprimary font-bold">{maxItems - current}</span> items this month</p>
-            ) : (
-              <p>You do not have enough purchases left, to buy <span className="text-lessdestructive font-bold">{itemsInCart}</span> items</p>
-            )}
 
             <div className="flex justify-between gap-4">
               <Button variant="outline" className="w-full" onClick={cancel}>
