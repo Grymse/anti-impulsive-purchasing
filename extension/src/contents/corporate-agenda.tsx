@@ -11,7 +11,7 @@ import {
   AccordionTrigger
 } from "~components/ui/accordion"
 import { Badge } from "~components/ui/badge"
-import { Button } from "~components/ui/button"
+import { Button, CountdownButton } from "~components/ui/button"
 import {
   Card,
   CardContent,
@@ -20,11 +20,12 @@ import {
   CardTitle
 } from "~components/ui/card"
 import { Label } from "~components/ui/label"
+import { useScaling } from "~hooks/useScaling"
 import { sendAnalytics } from "~lib/analytics"
+import { INTERVENTION_INTERVAL } from "~lib/constants"
 import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
 import { settings } from "~lib/settings"
-import { useScaling } from "~hooks/useScaling"
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -241,7 +242,6 @@ export const config: PlasmoCSConfig = {
   ],
   all_frames: true
 }
-
 // Define marketing tactic categories and examples
 const marketingTactics = [
   {
@@ -313,7 +313,23 @@ function CorporateGreedAwareness({
 }: CorporateGreedAwarenessProps) {
   const [currentCategory, setCurrentCategory] = useState<number | null>(null)
   const [acknowledged, setAcknowledged] = useState(false)
-  const {scale} = useScaling();
+  const [countdown, setCountdown] = useState(30)
+  const { scale } = useScaling()
+
+  // Countdown timer effect when accordion is opened
+  useEffect(() => {
+    let timerId: NodeJS.Timeout
+
+    if (currentCategory !== null && countdown > 0) {
+      timerId = setInterval(() => {
+        setCountdown((prev) => Math.max(0, prev - 1))
+      }, 1000)
+    }
+
+    return () => {
+      if (timerId) clearInterval(timerId)
+    }
+  }, [currentCategory, countdown])
 
   const handleAcknowledge = () => {
     setAcknowledged(true)
@@ -331,82 +347,6 @@ function CorporateGreedAwareness({
     })
     onContinue()
   }
-
-  const renderMainView = () => (
-    <div className="flex flex-col gap-6">
-      <div className="p-4 border rounded-lessmd bg-red-50">
-        <h3 className="font-semibold text-lg text-red-700 mb-2">
-          Before you spend your hard-earned money...
-        </h3>
-        <p className="text-sm mb-4">
-          Be aware of these common marketing tactics designed to manipulate you
-          into impulse purchases:
-        </p>
-
-        <Accordion
-          type="single"
-          collapsible
-          className="space-y-2"
-          onValueChange={(value) => {
-            if (value) {
-              const index = parseInt(value)
-              setCurrentCategory(index)
-              sendAnalytics("corporate_agenda_select_category", {
-                category: marketingTactics[index].category
-              })
-            } else {
-              if (currentCategory !== null) {
-                sendAnalytics("corporate_agenda_collapse_category", {
-                  category: marketingTactics[currentCategory].category
-                })
-              }
-              setCurrentCategory(null)
-            }
-          }}
-          value={
-            currentCategory !== null ? currentCategory.toString() : undefined
-          }>
-          {marketingTactics.map((tactic, index) => (
-            <AccordionItem
-              key={index}
-              value={index.toString()}
-              className="border rounded-lessmd bg-white data-[state=open]:border-red-400 data-[state=open]:shadow-sm">
-              <AccordionTrigger className="px-3 py-2 hover:no-underline">
-                <h4 className="font-medium">{tactic.category}</h4>
-              </AccordionTrigger>
-              <AccordionContent className="px-3">
-                <div className="space-y-3">
-                  <p className="text-sm text-gray-700">{tactic.description}</p>
-                  <div className="bg-gray-50 p-3 rounded-lessmd">
-                    <p className="text-xs font-medium mb-1">Common examples:</p>
-                    <ul className="text-xs text-gray-600 space-y-1">
-                      {tactic.examples.map((example, i) => (
-                        <li key={i} className="flex items-start">
-                          <span className="text-red-500 mr-1">•</span> {example}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </div>
-
-      <div className="flex justify-between gap-4 mt-2">
-        <Button variant="outline" className="w-full" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button
-          className="w-full bg-red-600 hover:bg-red-700 text-white"
-          onClick={handleAcknowledge}
-          disabled={currentCategory === null}>
-          Continue
-        </Button>
-      </div>
-    </div>
-  )
 
   const renderAcknowledgedView = () => (
     <div className="flex flex-col gap-6">
@@ -452,15 +392,15 @@ function CorporateGreedAwareness({
 
   return (
     <div
-    className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
-    onClick={onCancel}>
+      className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
+      onClick={onCancel}>
       <Card
         style={{
           transform: `scale(${scale})`
         }}
         className="max-w-xl bg-white rounded-lesslg overflow-hidden"
         onClick={(e) => e.stopPropagation()}>
-        <CardHeader className="bg-red-600 text-white rounded-lesst-lg">
+        <CardHeader className="bg-red-600 text-white rounded-lesslg">
           <CardTitle>Marketing Awareness Check</CardTitle>
           <CardDescription className="text-red-100">
             Recognize how companies are trying to influence your purchase
@@ -468,9 +408,107 @@ function CorporateGreedAwareness({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {acknowledged ? renderAcknowledgedView() : renderMainView()}
+          {acknowledged ? (
+            renderAcknowledgedView()
+          ) : (
+            <MainView
+              countdown={countdown}
+              currentCategory={currentCategory}
+              setCurrentCategory={setCurrentCategory}
+              handleAcknowledge={handleAcknowledge}
+            />
+          )}
         </CardContent>
       </Card>
+    </div>
+  )
+}
+
+type MainViewProps = {
+  countdown: number
+  currentCategory: number | null
+  setCurrentCategory: (index: number | null) => void
+  handleAcknowledge: () => void
+}
+function MainView({
+  countdown,
+  currentCategory,
+  setCurrentCategory,
+  handleAcknowledge
+}) {
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="p-4 border rounded-lessmd bg-red-50">
+        <h3 className="font-semibold text-lg text-red-700 mb-2">
+          Before you spend your hard-earned money...
+        </h3>
+        <p className="text-sm mb-4">
+          Be aware of these common marketing tactics designed to manipulate you
+          into impulse purchases:
+        </p>
+
+        <Accordion
+          type="single"
+          collapsible
+          className="space-y-2"
+          onValueChange={(value) => {
+            if (value && value.trim().length !== 0) {
+              const index = parseInt(value)
+              setCurrentCategory(index)
+              sendAnalytics("corporate_agenda_select_category", {
+                category: marketingTactics[index].category
+              })
+            } else {
+              if (currentCategory !== null) {
+                sendAnalytics("corporate_agenda_collapse_category", {
+                  category: marketingTactics[currentCategory].category
+                })
+              }
+              setCurrentCategory(null)
+            }
+          }}
+          value={currentCategory !== null ? currentCategory.toString() : ""}>
+          {marketingTactics.map((tactic, index) => (
+            <AccordionItem
+              key={index}
+              value={index.toString()}
+              className="border rounded-lessmd bg-white data-[state=open]:border-red-400 data-[state=open]:shadow-sm">
+              <AccordionTrigger className="px-3 py-2 hover:no-underline">
+                <h4 className="font-medium">{tactic.category}</h4>
+              </AccordionTrigger>
+              <AccordionContent className="px-3">
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-700">{tactic.description}</p>
+                  <div className="bg-gray-50 p-3 rounded-lessmd">
+                    <p className="text-xs font-medium mb-1">Common examples:</p>
+                    <ul className="text-xs text-gray-600 space-y-1">
+                      {tactic.examples.map((example, i) => (
+                        <li key={i} className="flex items-start">
+                          <span className="text-red-500 mr-1">•</span> {example}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
+
+      <div className="flex justify-between gap-4 mt-2">
+        <Button
+          variant="abort"
+          onClick={() => (window.location.href = "https://www.google.com")}>
+          Abort Shopping
+        </Button>
+        <CountdownButton
+          className="w-full bg-red-600 hover:bg-red-700 text-white"
+          onClick={handleAcknowledge}
+          countdown={30000}>
+          Continue
+        </CountdownButton>
+      </div>
     </div>
   )
 }
@@ -508,10 +546,89 @@ export default function CorporateAgenda() {
   )
 }
 
+// Key for storing the last suggestion timestamp in browser storage
+const LAST_SUGGESTION_KEY = "corporate_agenda_last_suggestion_time"
+const SUGGESTION_INTERVAL = INTERVENTION_INTERVAL
+
+// Function to check if it's time to show a suggestion based on stored timestamp
+const shouldShowSuggestion = async (): Promise<boolean> => {
+  try {
+    const data = await chrome.storage.local.get(LAST_SUGGESTION_KEY)
+    const lastSuggestionTime = data[LAST_SUGGESTION_KEY] as number
+    const currentTime = Date.now()
+
+    // If no previous suggestion or it's been more than SUGGESTION_INTERVAL since last suggestion
+    if (
+      !lastSuggestionTime ||
+      currentTime - lastSuggestionTime >= SUGGESTION_INTERVAL
+    ) {
+      return true
+    }
+
+    return false
+  } catch (error) {
+    console.error("Error checking suggestion timing:", error)
+    return false
+  }
+}
+
+// Function to update the last suggestion timestamp
+const updateLastSuggestionTime = async (): Promise<void> => {
+  try {
+    await chrome.storage.local.set({ [LAST_SUGGESTION_KEY]: Date.now() })
+  } catch (error) {
+    console.error("Error updating suggestion timestamp:", error)
+  }
+}
+
+// Function to present the corporate agenda intervention
+const showCorporateAgendaIntervention = () => {
+  // Check if user is still on the page and the extension is active
+  if (
+    document.hidden ||
+    !settings.value.active ||
+    !settings.value.activeStrategies.includes("corporate-agenda")
+  ) {
+    return
+  }
+
+  createGreedAwareness({
+    onFinish: () => {
+      // Update the timestamp when modal is closed
+      updateLastSuggestionTime()
+    }
+  })
+
+  // Update the timestamp
+  updateLastSuggestionTime()
+}
+
+// Function to start checking for suggestion timing
+const startSuggestionCheck = () => {
+  // Run the check every 5 seconds
+  const checkInterval = 5000
+
+  // Set up the interval for checking
+  const intervalId = setInterval(async () => {
+    // Check if it's time to show a suggestion
+    const shouldShow = await shouldShowSuggestion()
+
+    if (shouldShow) {
+      showCorporateAgendaIntervention()
+    }
+  }, checkInterval)
+
+  // Return a cleanup function
+  return () => {
+    clearInterval(intervalId)
+  }
+}
+
+// Function to handle click on place order buttons
 const onPlaceOrderClick = (e: Event) => {
   const isBlocked =
     document.body.getAttribute("data-plasmo-place-order-blocked") === "true"
-  if (!isBlocked) return // If the button is not blocked, we don't need to show the intervention
+  if (!isBlocked) return // If the button is not blocked, we don't need to show the modal
 
   e.preventDefault()
   e.stopPropagation()
@@ -536,6 +653,7 @@ settings.onInit((settings) => {
   observer.addEffect((signal) => {
     document.body.setAttribute("data-plasmo-place-order-blocked", "true")
 
+    // Set up event listeners for purchase buttons
     const domainGetters = getters.getDomainGetters()
     domainGetters.placeOrderButtons(document.body).forEach((button) => {
       button.addEventListener("click", onPlaceOrderClick)
@@ -544,5 +662,26 @@ settings.onInit((settings) => {
     domainGetters.getOneClickBuyNow?.(document.body)?.forEach((p) => {
       p.button?.addEventListener("click", onPlaceOrderClick)
     }, signal)
+
+    // Start the suggestion check system
+    const cleanup = startSuggestionCheck()
+
+    // If tab becomes visible, check if we should show a suggestion
+    document.addEventListener(
+      "visibilitychange",
+      async () => {
+        if (!document.hidden) {
+          // Only check but don't force a suggestion
+          const shouldShow = await shouldShowSuggestion()
+          if (shouldShow) {
+            showCorporateAgendaIntervention()
+          }
+        }
+      },
+      signal
+    )
+
+    // Clean up the interval when the effect is cleaned up
+    return cleanup
   })
 })

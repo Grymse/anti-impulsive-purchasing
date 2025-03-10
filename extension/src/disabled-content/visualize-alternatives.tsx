@@ -2,6 +2,8 @@ import cssText from "data-text:~style.css"
 import type { PlasmoCSConfig } from "plasmo"
 import { useEffect, useRef, useState } from "react"
 
+import { cart } from "~lib/purchases"
+
 import "../style.css"
 
 import { Button } from "~components/ui/button"
@@ -13,11 +15,106 @@ import {
   CardTitle
 } from "~components/ui/card"
 import { Label } from "~components/ui/label"
+import { Progress } from "~components/ui/progress"
+import { useScaling } from "~hooks/useScaling"
 import { sendAnalytics } from "~lib/analytics"
 import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
 import { settings } from "~lib/settings"
-import { useScaling } from "~hooks/useScaling"
+
+// Reusable countdown timer component
+interface CountdownTimerProps {
+  countdown: number
+  className?: string
+}
+
+const CountdownTimer = ({ countdown, className = "" }: CountdownTimerProps) => {
+  if (countdown <= 0) return null
+
+  return (
+    <div
+      className={`bg-blue-50 border-2 border-blue-300 rounded-md p-3 flex items-center justify-center ${className}`}>
+      <div className="flex flex-col items-center">
+        <div className="text-2xl font-bold text-blue-700 mb-1">{countdown}</div>
+        <div className="text-xs text-blue-700">seconds remaining</div>
+        <div className="w-full mt-2 bg-blue-200 rounded-full h-2 overflow-hidden">
+          <div
+            className="bg-blue-600 h-full transition-all duration-1000 ease-linear"
+            style={{ width: `${(10 - countdown) * 10}%` }}></div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Reusable button group component with abort, back and continue
+interface ActionButtonsProps {
+  hasExplored: boolean
+  countdown: number
+  handleAbortShopping: () => void
+  handleBackToOptions: () => void
+  handleContinue: () => void
+  isInitialView?: boolean
+}
+
+const ActionButtons = ({
+  hasExplored,
+  countdown,
+  handleAbortShopping,
+  handleBackToOptions,
+  handleContinue,
+  isInitialView = false
+}: ActionButtonsProps) => {
+  return (
+    <div className="flex justify-between gap-4 mt-2">
+      <Button
+        variant="destructive"
+        className="w-full"
+        onClick={handleAbortShopping}>
+        Abort Shopping
+      </Button>
+
+      {!isInitialView && (
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={handleBackToOptions}>
+          Back to Options
+        </Button>
+      )}
+
+      {hasExplored || !isInitialView ? (
+        <div className="w-full">
+          {countdown > 0 ? (
+            <Button
+              type="submit"
+              className="w-full relative overflow-hidden bg-gray-300 cursor-not-allowed"
+              disabled>
+              <div className="flex items-center justify-center">
+                <span>Continue in {countdown} seconds</span>
+              </div>
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              className="w-full bg-green-600 hover:bg-green-700"
+              onClick={handleContinue}>
+              Continue with Purchase
+            </Button>
+          )}
+        </div>
+      ) : (
+        <Button
+          type="submit"
+          className="w-full"
+          disabled
+          title="Please explore one of the options above first">
+          Continue with Purchase
+        </Button>
+      )}
+    </div>
+  )
+}
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -271,11 +368,53 @@ function AlternativeInvestment({
 }: AlternativeInvestmentProps) {
   const [years, setYears] = useState(10)
   const [editableAmount, setEditableAmount] = useState(amount)
+  const [countdown, setCountdown] = useState(10)
+  const [hasExplored, setHasExplored] = useState(false)
+  const [countdownActive, setCountdownActive] = useState(false)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     // Update editable amount when prop changes
     setEditableAmount(amount)
   }, [amount])
+
+  useEffect(() => {
+    // When an option is selected for the first time
+    if (selectedOption !== "initial" && !hasExplored) {
+      // Mark as explored and reset the timer
+      setHasExplored(true)
+      setCountdown(10)
+    }
+  }, [selectedOption, hasExplored])
+
+  // Dedicated effect for the countdown timer that runs regardless of which view is shown
+  useEffect(() => {
+    // Only activate timer when user has explored
+    if (hasExplored && countdown > 0) {
+      // Clear any existing interval first
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+      }
+
+      // Start the interval
+      timerRef.current = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timerRef.current as NodeJS.Timeout)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    }
+
+    // Cleanup function
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+      }
+    }
+  }, [hasExplored, countdown])
 
   // Calculate growth for different time periods based on the editable amount
   const growth5Years = calculateInvestmentGrowth(editableAmount, 5)
@@ -317,8 +456,14 @@ function AlternativeInvestment({
     setYears(parseInt(e.target.value))
   }
 
+  const handleAbortShopping = () => {
+    window.location.href = "https://www.google.com"
+  }
+
   const renderMonthlyContent = () => (
     <div className="flex flex-col gap-6">
+      <CountdownTimer countdown={countdown} />
+
       <div className="border p-4 rounded-lessmd bg-gray-50">
         <h3 className="font-medium text-lg">Monthly Subscription Value</h3>
 
@@ -359,19 +504,19 @@ function AlternativeInvestment({
         </div>
       </div>
 
-      <div className="flex justify-between gap-4 mt-2">
-        <Button variant="outline" className="w-full" onClick={onBack}>
-          Back
-        </Button>
-        <Button type="submit" className="w-full" onClick={onContinue}>
-          Continue with Purchase
-        </Button>
-      </div>
+      <ActionButtons
+        hasExplored={hasExplored}
+        countdown={countdown}
+        handleAbortShopping={handleAbortShopping}
+        handleBackToOptions={() => onSelectOption("initial")}
+        handleContinue={onContinue}
+      />
     </div>
   )
 
   const renderSavingsContent = () => (
     <div className="flex flex-col gap-6">
+      <CountdownTimer countdown={countdown} />
       <div className="border p-4 rounded-lessmd bg-gray-50">
         <h3 className="font-medium text-lg">Savings Goal Contribution</h3>
 
@@ -415,19 +560,20 @@ function AlternativeInvestment({
         </div>
       </div>
 
-      <div className="flex justify-between gap-4 mt-2">
-        <Button variant="outline" className="w-full" onClick={onBack}>
-          Back
-        </Button>
-        <Button type="submit" className="w-full" onClick={onContinue}>
-          Continue with Purchase
-        </Button>
-      </div>
+      <ActionButtons
+        hasExplored={hasExplored}
+        countdown={countdown}
+        handleAbortShopping={handleAbortShopping}
+        handleBackToOptions={() => onSelectOption("initial")}
+        handleContinue={onContinue}
+      />
     </div>
   )
 
   const renderInvestmentContent = () => (
     <div className="flex flex-col gap-6">
+      <CountdownTimer countdown={countdown} />
+
       <div className="border p-4 rounded-lessmd bg-gray-50">
         <h3 className="font-medium text-lg">Investment Growth Potential</h3>
 
@@ -509,21 +655,23 @@ function AlternativeInvestment({
         </div>
       </div>
 
-      <div className="flex justify-between gap-4 mt-2">
-        <Button variant="outline" className="w-full" onClick={onBack}>
-          Back
-        </Button>
-        <Button type="submit" className="w-full" onClick={onContinue}>
-          Continue with Purchase
-        </Button>
-      </div>
+      <ActionButtons
+        hasExplored={hasExplored}
+        countdown={countdown}
+        handleAbortShopping={handleAbortShopping}
+        handleBackToOptions={() => onSelectOption("initial")}
+        handleContinue={onContinue}
+      />
     </div>
   )
 
   const renderInitialContent = () => (
     <div className="flex flex-col gap-6">
+      {/* Show countdown timer when user has explored an option */}
+      {hasExplored && <CountdownTimer countdown={countdown} />}
+
       <div className="p-4 border rounded-lessmd bg-gray-50">
-        <Label htmlFor="amount-lessinput" className="font-medium mb-2 block">
+        <Label htmlFor="amount-input" className="font-medium mb-2 block">
           Purchase Amount:
         </Label>
         <div className="flex items-center gap-2">
@@ -543,34 +691,56 @@ function AlternativeInvestment({
         </p>
       </div>
 
-      <p className="text-sm font-medium text-center mb-2 text-blue-600">
-        Please explore one of these options before continuing
-      </p>
+      {!hasExplored ? (
+        <div className="p-3 border-2 border-yellow-400 bg-yellow-50 rounded-md">
+          <p className="text-sm font-bold text-center text-yellow-800">
+            ⚠️ You must explore one of these alternatives before continuing
+          </p>
+          <p className="text-xs text-center text-yellow-700 mt-1">
+            Click on any option below to learn more about what else you could do
+            with this money
+          </p>
+        </div>
+      ) : (
+        <div className="p-3 border-2 border-green-400 bg-green-50 rounded-md">
+          <p className="text-sm font-bold text-center text-green-800">
+            ✅ Thank you for exploring an alternative!
+          </p>
+          <p className="text-xs text-center text-green-700 mt-1">
+            You can now continue with your purchase or explore more alternatives
+          </p>
+        </div>
+      )}
+
       <div className="grid gap-4">
         {alternatives.map((alt) => (
           <div
             key={alt.id}
-            className="border p-4 rounded-lessmd cursor-pointer hover:bg-gray-50 transition-colors"
+            className={`border-2 p-4 rounded-lessmd cursor-pointer hover:bg-gray-50 transition-colors ${
+              selectedOption === alt.id
+                ? "border-blue-500 bg-blue-50"
+                : "border-gray-200"
+            }`}
             onClick={() => onSelectOption(alt.id)}>
             <h3 className="font-medium">{alt.title}</h3>
-            <p className="text-sm text-lessmuted-foreground">{alt.description}</p>
-            <p className="text-xs text-blue-600 mt-2">Click to explore →</p>
+            <p className="text-sm text-muted-foreground">{alt.description}</p>
+            <p className="text-xs text-blue-600 mt-2 font-medium">
+              {selectedOption === alt.id
+                ? "Currently viewing"
+                : "Click to explore →"}
+            </p>
           </div>
         ))}
       </div>
 
-      <div className="flex justify-between gap-4 mt-2">
-        <Button variant="outline" className="w-full" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          className="w-full"
-          disabled
-          title="Please explore one of the options above first">
-          Continue with Purchase
-        </Button>
-      </div>
+      <ActionButtons
+        hasExplored={hasExplored}
+        countdown={countdown}
+        handleAbortShopping={handleAbortShopping}
+        handleBackToOptions={() => {}}
+        handleContinue={onContinue}
+        isInitialView={true}
+      />
     </div>
   )
 
@@ -587,12 +757,12 @@ function AlternativeInvestment({
     }
   }
 
-  const {scale} = useScaling();
-  
+  const { scale } = useScaling()
+
   return (
     <div
-    className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
-    onClick={onCancel}>
+      className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
+      onClick={onCancel}>
       <Card
         style={{
           transform: `scale(${scale})`
@@ -669,6 +839,7 @@ export default function VisualizeAlternatives() {
       amount,
       from: currentView
     })
+    // Just go back to initial view without resetting the countdown
     setCurrentView("initial")
   }
 
@@ -687,7 +858,7 @@ export default function VisualizeAlternatives() {
   )
 }
 
-const onPlaceOrderClick = (e: Event) => {
+const onPlaceOrderClick = async (e: Event) => {
   const isBlocked =
     document.body.getAttribute("data-plasmo-place-order-blocked") === "true"
   if (!isBlocked) return // If the button is not blocked, we don't need to show the visualization
@@ -701,13 +872,12 @@ const onPlaceOrderClick = (e: Event) => {
 
   try {
     // Try getting cart items from domain-specific getters only
-    const domainGetters = getters.getDomainGetters()
-    const cartItems = domainGetters.getCartItems(document.body)
+    const cartItems = await cart.getFromStorage()
 
     if (cartItems && cartItems.length > 0) {
       // Calculate total amount
       totalAmount = cartItems.reduce((sum, item) => {
-        return sum + item.price * item.quantity
+        return sum + item.price
       }, 0)
 
       // Get currency from first item

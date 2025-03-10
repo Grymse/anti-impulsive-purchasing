@@ -265,7 +265,7 @@ export const WebsiteList = () => {
               <Header variant="h2" className='w-full text-center mb-4'>{category.category}</Header>
               <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
               {category.websites.filter(filterWebsite).map((website) => (
-                <a key={website.url} href={website.url} className="flex flex-col w-full items-center p-4 border rounded shadow-sm hover:bg-accent">
+                <a key={website.url} href={website.url} className="flex flex-col w-full items-center p-4 border rounded shadow-sm hover:bg-lessaccent">
                 <img
                   src={`https://www.google.com/s2/favicons?sz=64&domain=${website.url}`}
                   alt={`${website.name} favicon`}

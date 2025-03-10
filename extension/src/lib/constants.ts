@@ -2,6 +2,7 @@
 export const PERMIT_WAIT_TIME = parseInt(process.env.PLASMO_PUBLIC_PERMIT_WAIT_TIME || "86400000"); // default: 24 hours (1 day)
 export const PERMIT_LENGTH = parseInt(process.env.PLASMO_PUBLIC_PERMIT_LENGTH || "172800000"); // default: 48 hours (2 days)
 export const PERMIT_ON_PAY_GRACE = parseInt(process.env.PLASMO_PUBLIC_PERMIT_ON_PAY_GRACE || "3000000"); // default: 50 minutes
+export const INTERVENTION_INTERVAL = parseInt(process.env.PLASMO_PUBLIC_INTERVENTION_INTERVAL || "180000"); // default: 3 minute
 
 // Format milliseconds to human-readable time
 export function formatTime(milliseconds: number): string {
