@@ -19,9 +19,9 @@ import { sendAnalytics } from "~lib/analytics"
 import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
 import { settings } from "~lib/settings"
-import { useScaling } from "~hooks/useScaling"
 import Text from "~options/Text"
-import MainLogo from "~components/ui/MainLogo"
+import ModalBackground from "~components/BackgroundModal"
+import { useScaling } from "~hooks/useScaling"
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -303,16 +303,7 @@ export default function needThis() {
     onFinish.current?.();
   }
 
-  return (
-    <div
-      id="popover-questionary"
-      className={`fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center`}
-      onClick={cancel}>
-      <div style={{
-        transform: `scale(${scale})`,
-      }} className="absolute bottom-0 w-full">
-        <MainLogo size={25} />
-      </div>
+  return <ModalBackground onClick={cancel}>
       <Card style={{
         transform: `scale(${scale})`,
       }} className="w-xl text-base bg-white" onClick={(e) => e.stopPropagation()}>
@@ -327,8 +318,7 @@ export default function needThis() {
           <Content cancel={cancel} submit={submit} />
         </CardContent>
       </Card>
-    </div>
-  )
+  </ModalBackground>
 }
 
 type ContentProps = {
@@ -476,11 +466,11 @@ const onPlaceOrderClick = (e: Event) => {
 }
 
 settings.onInit((settings) => {
-  /* setTimeout(() => {
+  setTimeout(() => {
   createQuestionary({
     onFinish: () => {
     }
-  }),1000}); */
+  }),1000});
 
   if (!settings.active || !settings.activeStrategies.includes("need-this"))
     return
