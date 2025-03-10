@@ -1,4 +1,8 @@
-import { Link } from "../Text";
+import { useState } from 'react';
+import Text, { Link } from './Text';
+import { Input } from '~components/ui/input';
+import { Card, CardContent, CardHeader } from '~components/ui/card';
+import Header from './Header';
 
 // Type definitions for website data
 interface Website {
@@ -225,82 +229,56 @@ export const websiteCategories: WebsiteCategory[] = [
   },
 ];
 
-// Component to render a single website link
-export const WebsiteLink = ({ website }: { website: Website }) => {
-  return (
-    <Link href={website.url}>{website.name}</Link>
-  );
-};
+function roundDownToClosestTen(num: number) {
+  return Math.floor(num / 10) * 10
+}
+
+const amountOfWebsites = roundDownToClosestTen(websiteCategories.reduce((acc, category) => acc + category.websites.length, 0));
+
 
 // Component to render the website search and list
 export const WebsiteList = () => {
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toLowerCase();
-    const websiteList = document.getElementById("website-list");
-    if (!websiteList) return;
+  const [search, setSearch] = useState<string>("");
+  const lowercaseSearch = search.toLowerCase();
 
-    const items = websiteList.getElementsByTagName("li");
-    for (let i = 0; i < items.length; i++) {
-      const website = items[i].textContent?.toLowerCase() || "";
-      if (website.includes(value)) {
-        items[i].style.display = "";
-      } else {
-        items[i].style.display = "none";
-      }
-    }
-
-    // Show/hide region headers based on visible children
-    const regions = websiteList.getElementsByClassName("region-header");
-    for (let i = 0; i < regions.length; i++) {
-      const region = regions[i] as HTMLElement;
-      const nextSibling = region.nextElementSibling;
-      if (nextSibling && nextSibling.tagName === "UL") {
-        const items = nextSibling.getElementsByTagName("li");
-        let hasVisibleItems = false;
-
-        for (let j = 0; j < items.length; j++) {
-          if (items[j].style.display !== "none") {
-            hasVisibleItems = true;
-            break;
-          }
-        }
-
-        region.style.display = hasVisibleItems ? "" : "none";
-      }
-    }
-  };
+  function filterWebsite(website: Website) {
+    if (search.trim() === "") return true;
+    return website.name.toLowerCase().includes(lowercaseSearch);
+  }
 
   return (
-    <>
-      <div className="mb-4">
-        The extension currently supports over 200 shopping sites. Use the
+    <div className="space-y-4">
+      <Text className="mb-4">
+        The extension currently supports over {amountOfWebsites} shopping sites. Use the
         search box below to check if your favorite site is supported:
-      </div>
-      <div className="my-4">
-        <input
-          type="text"
-          placeholder="Search for a website..."
-          className="w-full p-2 border rounded-md bg-black/40 text-white"
-          onChange={handleSearch}
-        />
-      </div>
-      <div
-        id="website-list"
-        className="mt-4 max-h-96 overflow-y-auto pr-2 bg-white/5 rounded-md p-4 border border-white/10"
-      >
-        {websiteCategories.map((category) => (
-          <div key={category.category}>
-            <span className="font-semibold region-header">{category.category}</span>
-            <ul className="my-2 space-y-1 pl-5 list-disc">
-              {category.websites.map((website) => (
-                <li key={website.url}>
-                  <WebsiteLink website={website} />
-                </li>
+      </Text>
+      <Input
+        type="text"
+        placeholder="Search for a website..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+      <Card className="overflow-hidden">
+        <CardContent className="max-h-96 overflow-y-scroll">
+            {websiteCategories.map((category) => (
+            <div key={category.category}>
+              <Header variant="h2" className='w-full text-center mb-4'>{category.category}</Header>
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
+              {category.websites.filter(filterWebsite).map((website) => (
+                <a key={website.url} href={website.url} className="flex flex-col w-full items-center p-4 border rounded shadow-sm hover:bg-lessaccent">
+                <img
+                  src={`https://www.google.com/s2/favicons?sz=64&domain=${website.url}`}
+                  alt={`${website.name} favicon`}
+                  className="w-8 h-8 mb-2"
+                />
+                <p className="text-sm text-center text-wrap overflow-hidden w-full max-w-full">{website.name}</p>
+                </a>
               ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-    </>
+              </div>
+            </div>
+            ))}
+        </CardContent>
+      </Card>
+    </div>
   );
 };

@@ -4,9 +4,7 @@ import IconSrc from "data-base64:~assets/icon.png"
 import "../style.css"
 
 import { useConsent } from "~hooks/useConsent"
-import { Button } from "~components/ui/button"
-import Header from "./Header"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~components/ui/card"
 import { Label } from "~components/ui/label"
 import { Switch } from "~components/ui/switch"
 import { settings, strategies } from "~lib/settings"
@@ -26,7 +24,8 @@ function SettingsPage() {
         ${preferDarkmode ? "dark" : ""}
         min-h-screen
         flex flex-col items-center justify-center
-        bg-background
+        bg-lessbackground
+        text-lessforeground
         px-8 py-6
       `}>
       <div className="max-w-2xl space-y-2">
@@ -90,7 +89,7 @@ function SettingsPage() {
             return <div key={strategy.code} className="flex items-center justify-between space-x-4">
                 <Label htmlFor={strategy.code} className="flex flex-col space-y-1">
                     <span>{strategy.name}</span>
-                    <span className="text-xs font-normal leading-snug text-muted-foreground">
+                    <span className="text-xs font-normal leading-snug text-lessmuted-foreground">
                     {strategy.description}
                     </span>
                 </Label>

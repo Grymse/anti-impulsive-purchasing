@@ -1,5 +1,6 @@
 type AnalyticsPayloads = {
   'uninstall': undefined;
+  'delete-data': undefined;
 };
 type AnalyticsEvent = {
   type: keyof AnalyticsPayloads;
@@ -30,6 +31,7 @@ export async function sendAnalytics<T extends keyof AnalyticsPayloads>(
     created_at: new Date().toISOString(),
   };
 
+  console.log("Send analytics");
   const URL = import.meta.env.VITE_SUPABASE_URL + "analytics?apikey=" + import.meta.env.VITE_ANALYTICS_SECRET
 
   fetch(URL, {

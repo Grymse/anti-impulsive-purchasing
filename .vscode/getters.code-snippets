@@ -17,5 +17,45 @@
 		"});"
 	  ],
 	  "description": "Insert an empty getters.register function"
+	},
+	"Half Filled getters.register": {
+	  "prefix": "gtrshlf",
+	  "body": [
+		"getters.register(\"${1:domain}\", {",
+		"    placeOrderButtons: (e: HTMLElement) => {",
+		"        // TODO: FIX",
+		"        if (!location.href.includes('EXAMPLE')) return [];",
+		"",
+		"        // Array.from(document.querySelectorAll('.paypal-buttons, #gpay-button-online-api-id')).map(createInnerChild);",
+		"        return Array.from(document.querySelectorAll('.EXAMPLE'));",
+		"    },",
+		"",
+		"    addToCartButtons: (e: HTMLElement) => {",
+		"        // TODO: FIX",
+		"        // findFromText(document.querySelectorAll('button'),\"Tilføj til kurv\")",
+		"        return Array.from(document.querySelectorAll('.EXAMPLE'));",
+		"    },",
+		"",
+		"    getCartItems: (e: HTMLElement) => {",
+		"        // TODO: FIX",
+		"        if (!location.href.includes('EXAMPLE')) return [];",
+		"",
+		"        const items = document.querySelectorAll('.EXAMPLE');",
+		"",
+		"        return Array.from(items).map(item => {",
+		"            const quantity = parseInt(item.querySelector('.EXAMPLE')?.textContent ?? \"1\");",
+		"            const {price, currency} = splitPriceCurrency(item.querySelector('.EXAMPLE')?.textContent);",
+		"",
+		"            return {",
+		"                quantity,",
+		"                price,",
+		"                currency",
+		"            }",
+		"        });",
+		"    }",
+		"});"
+	  ],
+	  "description": "Insert an empty getters.register function"
 	}
   }
+  

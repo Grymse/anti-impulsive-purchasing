@@ -23,13 +23,14 @@ import { sendAnalytics } from "~lib/analytics"
 import {
   formatTime,
   PERMIT_LENGTH,
-  PERMIT_ON_PAY_GRACE,
   PERMIT_WAIT_TIME
 } from "~lib/constants"
 import { getters as getterRegistry } from "~lib/getters"
 import { observer } from "~lib/observer"
 import permit, { type Permit } from "~lib/permit"
 import { settings } from "~lib/settings"
+import { useScaling } from "~hooks/useScaling"
+import ModalBackground from "~components/BackgroundModal"
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -241,7 +242,8 @@ export const config: PlasmoCSConfig = {
     "https://*.graza.co/*",
     "https://*.flybyjing.com/*",
     "https://getmaude.com/*",
-    "https://ugmonk.com/*"
+    "https://ugmonk.com/*",
+    "https://shop.app/*"
   ],
   all_frames: true
 }
@@ -279,9 +281,8 @@ function WaitTimer({ onCancel, onComplete }: WaitTimerProps) {
     minutes: number
     seconds: number
   } | null>(currentPermit ? permitToWaitTime(currentPermit) : null)
-  const [intervalId, setIntervalId] = useState<number | null>(null)
-  const [showInfo, setShowInfo] = useState(false)
   const domain = document.location.hostname
+  const {scale} = useScaling();
 
   // Using permit constants from constants.ts
 
@@ -315,8 +316,6 @@ function WaitTimer({ onCancel, onComplete }: WaitTimerProps) {
       }
     }, 1000)
 
-    setIntervalId(id)
-
     return () => {
       if (id) clearInterval(id)
     }
@@ -332,11 +331,18 @@ function WaitTimer({ onCancel, onComplete }: WaitTimerProps) {
     })
   }
 
+
+  
+
   return (
-    <div
-      className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
-      onClick={onCancel}>
-      <Card className="max-w-xl bg-white" onClick={(e) => e.stopPropagation()}>
+    <ModalBackground
+    onClick={onCancel}>
+      <Card
+        style={{
+          transform: `scale(${scale})`
+        }}
+        className="max-w-xl bg-white"
+        onClick={(e) => e.stopPropagation()}>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Wait Before Purchasing</span>
@@ -360,19 +366,19 @@ function WaitTimer({ onCancel, onComplete }: WaitTimerProps) {
           ) : Date.now() < currentPermit.start ? (
             <div className="flex flex-col items-center gap-4">
               <div className="grid grid-cols-3 gap-4 text-center">
-                <div className="p-3 bg-slate-100 rounded-md">
+                <div className="p-3 bg-slate-100 rounded-lessmd">
                   <div className="text-3xl font-bold">
                     {waitTime?.hours || 0}
                   </div>
                   <div className="text-sm text-slate-500">Hours</div>
                 </div>
-                <div className="p-3 bg-slate-100 rounded-md">
+                <div className="p-3 bg-slate-100 rounded-lessmd">
                   <div className="text-3xl font-bold">
                     {waitTime?.minutes || 0}
                   </div>
                   <div className="text-sm text-slate-500">Minutes</div>
                 </div>
-                <div className="p-3 bg-slate-100 rounded-md">
+                <div className="p-3 bg-slate-100 rounded-lessmd">
                   <div className="text-3xl font-bold">
                     {waitTime?.seconds || 0}
                   </div>
@@ -429,7 +435,7 @@ function WaitTimer({ onCancel, onComplete }: WaitTimerProps) {
                     Each website you shop at has its own permit.
                   </p>
 
-                  <div className="bg-slate-50 p-3 rounded-md space-y-2">
+                  <div className="bg-slate-50 p-3 rounded-lessmd space-y-2">
                     <p className="font-medium">When you start a wait timer:</p>
                     <ul className="list-disc list-inside">
                       <li>
@@ -463,7 +469,7 @@ function WaitTimer({ onCancel, onComplete }: WaitTimerProps) {
           </Accordion>
         </CardContent>
       </Card>
-    </div>
+    </ModalBackground>
   )
 }
 
@@ -530,6 +536,9 @@ function onPlaceOrderClick(e: Event) {
   }
 
   document.body.setAttribute("data-plasmo-place-order-blocked", "false")
+  const button = e.target as HTMLElement
+  button.click?.()
+  
   permit.markAsUsed()
 }
 
@@ -543,14 +552,15 @@ function effect(signal: { signal: AbortSignal }) {
     p.button?.addEventListener("click", onPlaceOrderClick)
   }, signal)
 
+}
+
+settings.onInit((settings) => {
+  
+  if (!settings.active || !settings.activeStrategies.includes("enforce-wait"))
+    return
+  observer.addEffect(effect)
   document.body.setAttribute(
     "data-plasmo-place-order-blocked",
     permit.isValid() ? "false" : "true"
   )
-}
-
-settings.onInit((settings) => {
-  if (!settings.active || !settings.activeStrategies.includes("enforce-wait"))
-    return
-  observer.addEffect(effect)
 })

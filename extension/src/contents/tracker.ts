@@ -5,7 +5,6 @@ import { getters, type ShoppingItem } from "~lib/getters";
 import { observer } from "~lib/observer";
 import { Stopwatch } from "ts-stopwatch";
 import { sendAnalytics } from "~lib/analytics";
-import { PersistentValue } from "~lib/utils";
 import { settings } from "~lib/settings";
 import { cart, purchases } from "~lib/purchases";
 
@@ -213,7 +212,8 @@ export const config: PlasmoCSConfig = {
     "https://*.graza.co/*",
     "https://*.flybyjing.com/*",
     "https://getmaude.com/*",
-    "https://ugmonk.com/*"
+    "https://ugmonk.com/*",
+    "https://shop.app/*"
   ],
   all_frames: true
 }

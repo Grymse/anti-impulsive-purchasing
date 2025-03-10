@@ -27,7 +27,13 @@ type AnalyticsPayloads = {
   "remove-data": undefined;
   "cancel": undefined;
   "answer": { question: string; answer: string };
+  "wait-abort-shopping";
+
+  // General events
   'uninstall': undefined;
+  "open-popup": undefined;
+  "open-options": undefined;
+  "request-add-website": string;
   
   // Enforce wait events
   "enforce_wait_modal_shown": { domain: string; permitExists: boolean; permitIsValid: boolean };
