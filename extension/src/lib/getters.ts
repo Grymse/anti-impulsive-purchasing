@@ -221,7 +221,7 @@ getters.register(['amazon.com', 'amazon.se', 'amazon.co.uk', 'amazon.de'], {
     },
 
     addToCartButtons: (e: HTMLElement) => {
-      const buttons = e.querySelectorAll<HTMLElement>('#add-to-cart-button, input#buy-now-button, [name="submit.addToCart"], .add-to-cart .a-button-lessinput, input[data-asin], div[data-csa-c-action="addToCart"] button, input[name="submit.gc-add-to-cart"], div.ucw-cards-product-atc button, div[data-testid="point-area"] div div div div div div div div div div div div div div button');
+      const buttons = e.querySelectorAll<HTMLElement>('#add-to-cart-button, input#buy-now-button, [name="submit.addToCart"], .add-to-cart .a-button-input, input[data-asin], div[data-csa-c-action="addToCart"] button, input[name="submit.gc-add-to-cart"], div.ucw-cards-product-atc button, div[data-testid="point-area"] div div div div div div div div div div div div div div button');
       return Array.from(buttons);
     },
 
@@ -272,7 +272,7 @@ getters.register(['amazon.com', 'amazon.se', 'amazon.co.uk', 'amazon.de'], {
                 const productContainer = product.closest('.a-section');
                 const unsplitPrice = productContainer.querySelector<HTMLElement>('.a-price .a-offscreen').textContent;
                 const { price, currency } = splitPriceCurrency(unsplitPrice);
-                const button = productContainer.querySelector<HTMLElement>('.a-button-lessinput');
+                const button = productContainer.querySelector<HTMLElement>('.a-button-input');
                 const label = productContainer.querySelector<HTMLElement>('.a-button-text');
 
                 return {
@@ -408,7 +408,7 @@ getters.register("matas.dk", {
         if(!location.href.includes('oversigt')) return [];
         
         const x = Array.from(document.querySelectorAll<HTMLElement>('button'))
-            .filter(e => e.textContent.includes('til betaling') || e.getAttribute('less-button') === "place-order");
+            .filter(e => e.textContent.includes('til betaling') || e.getAttribute('button') === "place-order");
         
         return x;
     },
@@ -601,7 +601,7 @@ getters.register("magasin.dk", {
     },
 
     addToCartButtons: (e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[class="button -lessprimary -fw --brand-default add-to-cart js-size-selection-modal  is-disabled"], button[ref="add-to-cart-btn"], svg[class="svg-icon svg-icon-quickAddButton"]');
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="button -primary -fw --brand-default add-to-cart js-size-selection-modal  is-disabled"], button[ref="add-to-cart-btn"], svg[class="svg-icon svg-icon-quickAddButton"]');
         return Array.from(buttons);
     },
 
@@ -632,7 +632,7 @@ getters.register("magasin.dk", {
 getters.register("shein.com", {
     placeOrderButtons:(e: HTMLElement) => {
         if (!location.href.includes('checkout')) return [];
-        const buttons = Array.from(e.querySelectorAll<HTMLElement>('.j-place-order button.sui-button-common__lessprimary, #paypal-vault-button'));
+        const buttons = Array.from(e.querySelectorAll<HTMLElement>('.j-place-order button.sui-button-common__primary, #paypal-vault-button'));
         return buttons.map(createInnerChild);
     },
 
@@ -853,7 +853,7 @@ getters.register("bestbuy.com", {
 
         return Array.from(qtyHolders).map(qtyHolder => {
             const qty = qtyHolder.querySelector('select').value;
-            const unsplitPrice = qtyHolder.parentElement.querySelector('div.price-block__lessprimary-price').textContent;
+            const unsplitPrice = qtyHolder.parentElement.querySelector('div.price-block__primary-price').textContent;
             const {price, currency} = splitPriceCurrency(unsplitPrice);
 
             return {
@@ -1038,7 +1038,7 @@ getters.register("aliexpress.com", {
 
     getCartItems: (e: HTMLElement) => {
        if(!location.href.includes('p/trade/')) return;
-        const itemInputs = document.querySelectorAll<HTMLInputElement>('.comet-lessinput-number-lessinput');
+        const itemInputs = document.querySelectorAll<HTMLInputElement>('.comet-input-number-input');
 
         return Array.from(itemInputs).map(item => {
             // Total
@@ -1610,7 +1610,7 @@ getters.register("ditur.dk", {
     getCartItems: (e: HTMLElement) => {
         if (!location.href.includes('/checkout')) return [];
 
-        const items = document.querySelectorAll('#quote-summary .grid .border-cart-lesssecondary')
+        const items = document.querySelectorAll('#quote-summary .grid .border-cart-secondary')
 
         return Array.from(items).map(item => {
             const quantity = parseQty(item.querySelector('.items-baseline .text-xs')?.textContent ?? "1");
@@ -1630,7 +1630,7 @@ getters.register(["kaufmann.dk","quint.dk"], {
     placeOrderButtons: (e: HTMLElement) => {
         if (!location.href.includes('/checkout')) return [];
         
-        return toArray(document.querySelector<HTMLElement>('form[name=paymentForm] button.button_lessprimary')).map(createInnerChild);
+        return toArray(document.querySelector<HTMLElement>('form[name=paymentForm] button.button_primary')).map(createInnerChild);
     },
 
     addToCartButtons: (e: HTMLElement) => {
@@ -1756,7 +1756,7 @@ getters.register("av-cables.dk", {
     getCartItems: (e: HTMLElement) => {
         if (!location.href.includes('/kurv')) return [];
 
-        const itemInputs = document.querySelectorAll<HTMLInputElement>('input[data-test-id="quantity-lessinput"]');
+        const itemInputs = document.querySelectorAll<HTMLInputElement>('input[data-test-id="quantity-input"]');
 
         return Array.from(itemInputs).map(itemInput => {
             const unsplitPrice = Array.from(itemInput.closest('div').parentElement.children).at(-1).querySelector('span span').textContent;

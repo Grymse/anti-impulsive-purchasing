@@ -27,6 +27,7 @@ type AnalyticsPayloads = {
   "remove-data": undefined;
   "cancel": undefined;
   "answer": { question: string; answer: string };
+  "wait-abort-shopping";
 
   // General events
   'uninstall': undefined;
