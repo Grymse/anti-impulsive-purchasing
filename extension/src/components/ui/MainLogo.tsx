@@ -13,7 +13,7 @@ export default function MainLogo({size, active = true, className = ""}: Props) {
       alt="Extension Logo (On)"
       width={size}
       height={size}
-      className="relative w-auto h-auto max-w-[200px] animation-breathe"
+      className={cn("relative w-auto h-auto animation-breathe", `max-w-[${size}px]`)}
       />
     </div>
   }

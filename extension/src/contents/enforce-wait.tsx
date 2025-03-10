@@ -30,6 +30,7 @@ import { observer } from "~lib/observer"
 import permit, { type Permit } from "~lib/permit"
 import { settings } from "~lib/settings"
 import { useScaling } from "~hooks/useScaling"
+import ModalBackground from "~components/BackgroundModal"
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -334,8 +335,7 @@ function WaitTimer({ onCancel, onComplete }: WaitTimerProps) {
   
 
   return (
-    <div
-    className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
+    <ModalBackground
     onClick={onCancel}>
       <Card
         style={{
@@ -469,7 +469,7 @@ function WaitTimer({ onCancel, onComplete }: WaitTimerProps) {
           </Accordion>
         </CardContent>
       </Card>
-    </div>
+    </ModalBackground>
   )
 }
 

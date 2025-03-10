@@ -21,6 +21,7 @@ import { sendAnalytics } from "~lib/analytics"
 import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
 import { settings } from "~lib/settings"
+import ModalBackground from "~components/BackgroundModal"
 
 // Reusable countdown timer component
 interface CountdownTimerProps {
@@ -760,8 +761,7 @@ function AlternativeInvestment({
   const { scale } = useScaling()
 
   return (
-    <div
-      className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
+    <ModalBackground
       onClick={onCancel}>
       <Card
         style={{
@@ -778,7 +778,7 @@ function AlternativeInvestment({
         </CardHeader>
         <CardContent>{renderContent()}</CardContent>
       </Card>
-    </div>
+    </ModalBackground>
   )
 }
 
