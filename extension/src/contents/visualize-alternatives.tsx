@@ -2,6 +2,8 @@ import cssText from "data-text:~style.css"
 import type { PlasmoCSConfig } from "plasmo"
 import { useEffect, useRef, useState } from "react"
 
+import { cart } from "~lib/purchases"
+
 import "../style.css"
 
 import { Button } from "~components/ui/button"
@@ -13,11 +15,11 @@ import {
   CardTitle
 } from "~components/ui/card"
 import { Label } from "~components/ui/label"
+import { useScaling } from "~hooks/useScaling"
 import { sendAnalytics } from "~lib/analytics"
 import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
 import { settings } from "~lib/settings"
-import { useScaling } from "~hooks/useScaling"
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -587,12 +589,12 @@ function AlternativeInvestment({
     }
   }
 
-  const {scale} = useScaling();
-  
+  const { scale } = useScaling()
+
   return (
     <div
-    className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
-    onClick={onCancel}>
+      className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
+      onClick={onCancel}>
       <Card
         style={{
           transform: `scale(${scale})`
@@ -687,7 +689,7 @@ export default function VisualizeAlternatives() {
   )
 }
 
-const onPlaceOrderClick = (e: Event) => {
+const onPlaceOrderClick = async (e: Event) => {
   const isBlocked =
     document.body.getAttribute("data-plasmo-place-order-blocked") === "true"
   if (!isBlocked) return // If the button is not blocked, we don't need to show the visualization
@@ -701,13 +703,12 @@ const onPlaceOrderClick = (e: Event) => {
 
   try {
     // Try getting cart items from domain-specific getters only
-    const domainGetters = getters.getDomainGetters()
-    const cartItems = domainGetters.getCartItems(document.body)
+    const cartItems = await cart.getFromStorage()
 
     if (cartItems && cartItems.length > 0) {
       // Calculate total amount
       totalAmount = cartItems.reduce((sum, item) => {
-        return sum + item.price * item.quantity
+        return sum + item.price
       }, 0)
 
       // Get currency from first item
