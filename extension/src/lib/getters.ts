@@ -31,29 +31,16 @@ function splitPriceCurrency(price?: string | null) {
 function parsePrice(price: string): number {
     // Remove any non-numeric characters except for '.' and ','
     const cleanedPrice = price.replace(/[^\d.,]/g, '');
+    if (!cleanedPrice) return 0;
+    if (cleanedPrice.length < 3) return parseFloat(cleanedPrice);
 
-    // Check if the price contains both '.' and ','
-    if (cleanedPrice.includes('.') && cleanedPrice.includes(',')) {
-        // Assume the last occurrence of either '.' or ',' is the decimal separator
-        const lastDotIndex = cleanedPrice.lastIndexOf('.');
-        const lastCommaIndex = cleanedPrice.lastIndexOf(',');
-
-        if (lastDotIndex > lastCommaIndex) {
-            // '.' is the decimal separator
-            return parseFloat(cleanedPrice.replace(/,/g, ''));
-        } else {
-            // ',' is the decimal separator
-            return parseFloat(cleanedPrice.replace(/\./g, '').replace(',', '.'));
-        }
-    }
+    const lastDotIndex = cleanedPrice.lastIndexOf('.') - cleanedPrice.length;
+    const lastCommaIndex = cleanedPrice.lastIndexOf(',') - cleanedPrice.length;
 
     // If the price contains only one of '.' or ',', determine the format
-    if (cleanedPrice.includes('.')) {
-        // Assume American format
-        return parseFloat(cleanedPrice);
-    } else if (cleanedPrice.includes(',')) {
+    if (lastCommaIndex >= -3 || lastDotIndex === -4) {
         // Assume Danish format
-        return parseFloat(cleanedPrice.replace(',', '.'));
+        return parseFloat(cleanedPrice.replace('.', '').replace(',', '.'));
     }
 
     // If no decimal separator is found, parse as an integer
