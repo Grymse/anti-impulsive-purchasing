@@ -20,6 +20,7 @@ import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
 import { settings } from "~lib/settings"
 import { useScaling } from "~hooks/useScaling"
+import ModalBackground from "~components/BackgroundModal"
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -345,9 +346,7 @@ export default function needThis() {
   if (!show) return null
   
   return (
-    <div
-    id="popover-questionary"
-    className={`fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center`}
+    <ModalBackground
     onClick={cancel}>
       <Card
         style={{
@@ -394,7 +393,7 @@ export default function needThis() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </ModalBackground>
   )
 }
 
