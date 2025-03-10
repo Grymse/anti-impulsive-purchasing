@@ -377,11 +377,11 @@ export default function needThis() {
                   onChange={(e) => setText(e.target.value)}
                 />
                 <p
-                  className={`text-xs absolute bottom-1 right-4 ${textfieldSufficient ? "hidden" : "text-destructive"}`}>
+                  className={`text-xs absolute bottom-1 right-4 ${textfieldSufficient ? "hidden" : "text-lessdestructive"}`}>
                   Mininimum {currentQuestion.minWords} words
                 </p>
               </div>
-              {error && <p className="text-destructive text-sm">{error}</p>}
+              {error && <p className="text-lessdestructive text-sm">{error}</p>}
             </div>
             <div className="flex justify-between gap-4">
               <Button variant="outline" className="w-full" onClick={onPrevious}>

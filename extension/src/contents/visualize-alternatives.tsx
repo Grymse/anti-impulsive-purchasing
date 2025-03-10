@@ -319,31 +319,31 @@ function AlternativeInvestment({
 
   const renderMonthlyContent = () => (
     <div className="flex flex-col gap-6">
-      <div className="border p-4 rounded-md bg-gray-50">
+      <div className="border p-4 rounded-lessmd bg-gray-50">
         <h3 className="font-medium text-lg">Monthly Subscription Value</h3>
 
         <div className="mt-3 mb-4">
-          <Label htmlFor="monthly-amount-input" className="text-sm mb-1 block">
+          <Label htmlFor="monthly-amount-lessinput" className="text-sm mb-1 block">
             Adjust Amount:
           </Label>
           <div className="flex items-center gap-2">
             <span className="text-gray-700">{currency}</span>
             <input
-              id="monthly-amount-input"
+              id="monthly-amount-lessinput"
               type="number"
               value={editableAmount}
               onChange={handleAmountChange}
               min="1"
-              className="w-full p-2 border rounded-md"
+              className="w-full p-2 border rounded-lessmd"
             />
           </div>
         </div>
 
-        <div className="mt-4 p-4 bg-white rounded-md">
+        <div className="mt-4 p-4 bg-white rounded-lessmd">
           <p className="text-center font-medium text-xl">
             {formatCurrency(editableAmount / 12, currency)} per month
           </p>
-          <p className="text-sm text-muted-foreground mt-2">
+          <p className="text-sm text-lessmuted-foreground mt-2">
             Instead of a one-time purchase, this amount could get you a monthly
             subscription for an entire year.
           </p>
@@ -372,31 +372,31 @@ function AlternativeInvestment({
 
   const renderSavingsContent = () => (
     <div className="flex flex-col gap-6">
-      <div className="border p-4 rounded-md bg-gray-50">
+      <div className="border p-4 rounded-lessmd bg-gray-50">
         <h3 className="font-medium text-lg">Savings Goal Contribution</h3>
 
         <div className="mt-3 mb-4">
-          <Label htmlFor="savings-amount-input" className="text-sm mb-1 block">
+          <Label htmlFor="savings-amount-lessinput" className="text-sm mb-1 block">
             Adjust Amount:
           </Label>
           <div className="flex items-center gap-2">
             <span className="text-gray-700">{currency}</span>
             <input
-              id="savings-amount-input"
+              id="savings-amount-lessinput"
               type="number"
               value={editableAmount}
               onChange={handleAmountChange}
               min="1"
-              className="w-full p-2 border rounded-md"
+              className="w-full p-2 border rounded-lessmd"
             />
           </div>
         </div>
 
-        <div className="mt-4 p-4 bg-white rounded-md">
+        <div className="mt-4 p-4 bg-white rounded-lessmd">
           <p className="text-center font-medium text-xl">
             {formatCurrency(editableAmount, currency)}
           </p>
-          <p className="text-sm text-muted-foreground mt-2">
+          <p className="text-sm text-lessmuted-foreground mt-2">
             This amount could be saved toward a meaningful financial goal.
           </p>
           <div className="mt-4 grid gap-2">
@@ -428,24 +428,24 @@ function AlternativeInvestment({
 
   const renderInvestmentContent = () => (
     <div className="flex flex-col gap-6">
-      <div className="border p-4 rounded-md bg-gray-50">
+      <div className="border p-4 rounded-lessmd bg-gray-50">
         <h3 className="font-medium text-lg">Investment Growth Potential</h3>
 
         <div className="mt-3 mb-4">
           <Label
-            htmlFor="investment-amount-input"
+            htmlFor="investment-amount-lessinput"
             className="text-sm mb-1 block">
             Adjust Amount:
           </Label>
           <div className="flex items-center gap-2">
             <span className="text-gray-700">{currency}</span>
             <input
-              id="investment-amount-input"
+              id="investment-amount-lessinput"
               type="number"
               value={editableAmount}
               onChange={handleAmountChange}
               min="1"
-              className="w-full p-2 border rounded-md"
+              className="w-full p-2 border rounded-lessmd"
             />
           </div>
         </div>
@@ -459,7 +459,7 @@ function AlternativeInvestment({
             max="30"
             value={years}
             onChange={handleSliderChange}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mt-2"
+            className="w-full h-2 bg-gray-200 rounded-lesslg appearance-none cursor-pointer mt-2"
           />
 
           <div className="flex justify-between mt-1 text-xs text-gray-500">
@@ -468,7 +468,7 @@ function AlternativeInvestment({
             <span>30 yrs</span>
           </div>
 
-          <div className="flex flex-col gap-2 mt-4 p-4 bg-white rounded-md">
+          <div className="flex flex-col gap-2 mt-4 p-4 bg-white rounded-lessmd">
             <h3 className="font-medium text-center text-xl">
               {formatCurrency(currentGrowth, currency)}
             </h3>
@@ -522,19 +522,19 @@ function AlternativeInvestment({
 
   const renderInitialContent = () => (
     <div className="flex flex-col gap-6">
-      <div className="p-4 border rounded-md bg-gray-50">
-        <Label htmlFor="amount-input" className="font-medium mb-2 block">
+      <div className="p-4 border rounded-lessmd bg-gray-50">
+        <Label htmlFor="amount-lessinput" className="font-medium mb-2 block">
           Purchase Amount:
         </Label>
         <div className="flex items-center gap-2">
           <span className="text-gray-700">{currency}</span>
           <input
-            id="amount-input"
+            id="amount-lessinput"
             type="number"
             value={editableAmount}
             onChange={handleAmountChange}
             min="1"
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-lessmd"
             placeholder="Enter amount"
           />
         </div>
@@ -550,10 +550,10 @@ function AlternativeInvestment({
         {alternatives.map((alt) => (
           <div
             key={alt.id}
-            className="border p-4 rounded-md cursor-pointer hover:bg-gray-50 transition-colors"
+            className="border p-4 rounded-lessmd cursor-pointer hover:bg-gray-50 transition-colors"
             onClick={() => onSelectOption(alt.id)}>
             <h3 className="font-medium">{alt.title}</h3>
-            <p className="text-sm text-muted-foreground">{alt.description}</p>
+            <p className="text-sm text-lessmuted-foreground">{alt.description}</p>
             <p className="text-xs text-blue-600 mt-2">Click to explore →</p>
           </div>
         ))}

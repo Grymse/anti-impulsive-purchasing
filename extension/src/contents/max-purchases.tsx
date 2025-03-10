@@ -320,7 +320,7 @@ export default function maxPurchases() {
           <div className="flex flex-col mt-4 gap-8">
             <div className="flex flex-col gap-4">
             <p>
-              You have purchased <span className={`${hasRunOut ? 'text-destructive' : 'text-primary'} font-bold text-xl`}>{current}</span> out of <span className={`${hasRunOut ? 'text-destructive' : 'text-primary'} font-bold text-xl`}>{maxItems}</span> items this month.
+              You have purchased <span className={`${hasRunOut ? 'text-lessdestructive' : 'text-lessprimary'} font-bold text-xl`}>{current}</span> out of <span className={`${hasRunOut ? 'text-lessdestructive' : 'text-lessprimary'} font-bold text-xl`}>{maxItems}</span> items this month.
             </p>
             <div className="flex gap-2 items-center">
               {showEdit &&
@@ -337,9 +337,9 @@ export default function maxPurchases() {
             </div>
             </div>
             {hasSufficient ? (
-              <p>You are about to use <span className="text-primary font-bold">{itemsInCart}</span> of your remaining <span className="text-primary font-bold">{maxItems - current}</span> items this month</p>
+              <p>You are about to use <span className="text-lessprimary font-bold">{itemsInCart}</span> of your remaining <span className="text-lessprimary font-bold">{maxItems - current}</span> items this month</p>
             ) : (
-              <p>You do not have enough purchases left, to buy <span className="text-destructive font-bold">{itemsInCart}</span> items</p>
+              <p>You do not have enough purchases left, to buy <span className="text-lessdestructive font-bold">{itemsInCart}</span> items</p>
             )}
 
             <div className="flex justify-between gap-4">
