@@ -22,6 +22,7 @@ import {
 import { Label } from "~components/ui/label"
 import { useScaling } from "~hooks/useScaling"
 import { sendAnalytics } from "~lib/analytics"
+import { INTERVENTION_INTERVAL } from "~lib/constants"
 import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
 import { settings } from "~lib/settings"
@@ -259,8 +260,8 @@ const CountdownTimer = ({ countdown, className = "" }: CountdownTimerProps) => {
         <div className="text-xs text-blue-700">seconds remaining</div>
         <div className="w-full mt-2 bg-blue-200 rounded-full h-2 overflow-hidden">
           <div
-            className="bg-blue-600 h-full transition-all duration-1000 ease-linear"
-            style={{ width: `${(10 - countdown) * 10}%` }}></div>
+            className="bg-blue-600 h-full transition-all duration-30000 ease-linear"
+            style={{ width: `${(countdown / 30) * 100}%` }}></div>
         </div>
       </div>
     </div>
@@ -338,7 +339,7 @@ function CorporateGreedAwareness({
 }: CorporateGreedAwarenessProps) {
   const [currentCategory, setCurrentCategory] = useState<number | null>(null)
   const [acknowledged, setAcknowledged] = useState(false)
-  const [countdown, setCountdown] = useState(0)
+  const [countdown, setCountdown] = useState(30)
   const { scale } = useScaling()
 
   // Countdown timer effect when accordion is opened
@@ -397,7 +398,6 @@ function CorporateGreedAwareness({
             if (value && value.length !== 0) {
               const index = parseInt(value)
               setCurrentCategory(index)
-              setCountdown(10) // Start countdown from 10 when opened
               sendAnalytics("corporate_agenda_select_category", {
                 category: marketingTactics[index].category
               })
@@ -407,7 +407,6 @@ function CorporateGreedAwareness({
                   category: marketingTactics[currentCategory].category
                 })
                 setCurrentCategory(null)
-                setCountdown(0)
               }
             }
           }}
@@ -443,8 +442,11 @@ function CorporateGreedAwareness({
       </div>
 
       <div className="flex justify-between gap-4 mt-2">
-        <Button variant="outline" className="w-full" onClick={onCancel}>
-          Cancel
+        <Button
+          variant="outline"
+          className="w-full bg-blue-500 hover:bg-blue-600 "
+          onClick={() => (window.location.href = "https://www.google.com")}>
+          Abort Shopping
         </Button>
         <Button
           className="w-full bg-red-600 hover:bg-red-700 text-white"
@@ -556,27 +558,8 @@ export default function CorporateAgenda() {
   )
 }
 
-const onPlaceOrderClick = (e: Event) => {
-  const isBlocked =
-    document.body.getAttribute("data-plasmo-place-order-blocked") === "true"
-  if (!isBlocked) return // If the button is not blocked, we don't need to show the intervention
-
-  e.preventDefault()
-  e.stopPropagation()
-
-  createGreedAwareness({
-    onFinish: () => {
-      document.body.setAttribute("data-plasmo-place-order-blocked", "false")
-
-      const button = e.target as HTMLButtonElement
-      button.click()
-    }
-  })
-}
-
 // Key for storing the last suggestion timestamp in browser storage
 const LAST_SUGGESTION_KEY = "corporate_agenda_last_suggestion_time"
-const SUGGESTION_INTERVAL = 1000 * 60 * 3 // 3 minutes
 
 // Function to check if it's time to show a suggestion based on stored timestamp
 const shouldShowSuggestion = async (): Promise<boolean> => {
@@ -588,7 +571,7 @@ const shouldShowSuggestion = async (): Promise<boolean> => {
     // If no previous suggestion or it's been more than SUGGESTION_INTERVAL since last suggestion
     if (
       !lastSuggestionTime ||
-      currentTime - lastSuggestionTime >= SUGGESTION_INTERVAL
+      currentTime - lastSuggestionTime >= INTERVENTION_INTERVAL
     ) {
       return true
     }
@@ -661,15 +644,6 @@ settings.onInit((settings) => {
 
   observer.addEffect((signal) => {
     document.body.setAttribute("data-plasmo-place-order-blocked", "true")
-
-    const domainGetters = getters.getDomainGetters()
-    domainGetters.placeOrderButtons(document.body).forEach((button) => {
-      button.addEventListener("click", onPlaceOrderClick)
-    }, signal)
-
-    domainGetters.getOneClickBuyNow?.(document.body)?.forEach((p) => {
-      p.button?.addEventListener("click", onPlaceOrderClick)
-    }, signal)
 
     // Start the suggestion check system
     const cleanup = startSuggestionCheck()
