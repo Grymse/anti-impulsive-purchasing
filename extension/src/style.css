@@ -131,6 +131,20 @@ body {
 }
 
 
+.animation-loading {
+  animation-name: scale-left-right;
+  animation-duration: 2s;
+  animation-timing-function: linear;
+}
+
+@keyframes scale-left-right {
+    0% {
+      width: 100%;
+    }
+    100% {
+      width: 0%;
+    }
+}
 
 @layer base {
   * {

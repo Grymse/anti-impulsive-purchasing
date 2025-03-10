@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lessmd text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-lessring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center text-lessforeground justify-center gap-2 whitespace-nowrap rounded-lessmd text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-lessring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -13,11 +13,13 @@ const buttonVariants = cva(
           "bg-lessprimary text-lessprimary-foreground shadow hover:bg-lessprimary/90",
         destructive:
           "bg-lessdestructive text-lessdestructive-foreground shadow-sm hover:bg-lessdestructive/90",
+        abort:
+          "w-full bg-red-50 hover:bg-red-100 text-red-700 border-red-200 border shadow-sm",
         outline:
-          "border border-lessinput bg-lessbackground shadow-sm hover:bg-accentmuted hover:text-accentmuted-lessforeground",
+          "border border-lessinput bg-lessbackground shadow-sm hover:bg-lessaccent hover:text-lessaccent-foreground",
         secondary:
           "bg-lesssecondary text-lesssecondary-foreground shadow-sm hover:bg-lesssecondary/80",
-        ghost: "hover:bg-accentmuted hover:text-accentmuted-lessforeground",
+        ghost: "hover:bg-lessmuted hover:text-lessaccent-foreground",
         link: "text-lessprimary underline-offset-4 hover:underline",
       },
       size: {
@@ -54,4 +56,40 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 )
 Button.displayName = "Button"
 
-export { Button, buttonVariants }
+export interface CountdownButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean,
+  countdown: number
+}
+
+const CountdownButton = React.forwardRef<HTMLButtonElement, CountdownButtonProps>(
+  ({ className, variant, size, countdown, asChild = false, children, ...props }, ref) => {
+    const [disabled, setDisabled] = React.useState(true);
+
+    React.useEffect(() => {
+      const timeout = setTimeout(() => {
+        setDisabled(false);
+      }, countdown);
+      return () => clearInterval(timeout);
+    },[]);
+
+    return (
+      <Button
+        className={cn(buttonVariants({ variant, size, className }), "relative overflow-hidden disabled:opacity-100")}
+        ref={ref}
+        {...props}
+        disabled={disabled}
+      >
+        <div
+          style={{animationDuration: `${countdown}ms`}}
+         className="absolute bg-white/70 h-full right-0 animation-loading" />
+        {children}
+      </Button>
+    )
+  }
+)
+
+CountdownButton.displayName = "CountdownButton"
+
+export { Button, CountdownButton, buttonVariants }

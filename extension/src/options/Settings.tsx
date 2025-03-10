@@ -4,9 +4,7 @@ import IconSrc from "data-base64:~assets/icon.png"
 import "../style.css"
 
 import { useConsent } from "~hooks/useConsent"
-import { Button } from "~components/ui/button"
-import Header from "./Header"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~components/ui/card"
 import { Label } from "~components/ui/label"
 import { Switch } from "~components/ui/switch"
 import { settings, strategies } from "~lib/settings"
@@ -27,6 +25,7 @@ function SettingsPage() {
         min-h-screen
         flex flex-col items-center justify-center
         bg-lessbackground
+        text-lessforeground
         px-8 py-6
       `}>
       <div className="max-w-2xl space-y-2">
