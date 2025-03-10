@@ -375,7 +375,7 @@ function CorporateGreedAwareness({
 
   const renderMainView = () => (
     <div className="flex flex-col gap-6">
-      <div className="p-4 border rounded-md bg-red-50">
+      <div className="p-4 border rounded-lessmd bg-red-50">
         <h3 className="font-semibold text-lg text-red-700 mb-2">
           Before you spend your hard-earned money...
         </h3>
@@ -418,14 +418,14 @@ function CorporateGreedAwareness({
             <AccordionItem
               key={index}
               value={index.toString()}
-              className="border rounded-md bg-white data-[state=open]:border-red-400 data-[state=open]:shadow-sm">
+              className="border rounded-lessmd bg-white data-[state=open]:border-red-400 data-[state=open]:shadow-sm">
               <AccordionTrigger className="px-3 py-2 hover:no-underline">
                 <h4 className="font-medium">{tactic.category}</h4>
               </AccordionTrigger>
               <AccordionContent className="px-3">
                 <div className="space-y-3">
                   <p className="text-sm text-gray-700">{tactic.description}</p>
-                  <div className="bg-gray-50 p-3 rounded-md">
+                  <div className="bg-gray-50 p-3 rounded-lessmd">
                     <p className="text-xs font-medium mb-1">Common examples:</p>
                     <ul className="text-xs text-gray-600 space-y-1">
                       {tactic.examples.map((example, i) => (
@@ -458,7 +458,7 @@ function CorporateGreedAwareness({
 
   const renderAcknowledgedView = () => (
     <div className="flex flex-col gap-6">
-      <div className="p-4 border rounded-md bg-red-50">
+      <div className="p-4 border rounded-lessmd bg-red-50">
         <h3 className="font-semibold text-lg text-red-700 mb-2">
           One final thought...
         </h3>
@@ -468,7 +468,7 @@ function CorporateGreedAwareness({
           profit, not to improve your wellbeing.
         </p>
 
-        <div className="bg-white p-4 rounded-md border border-red-200">
+        <div className="bg-white p-4 rounded-lessmd border border-red-200">
           <p className="text-sm font-medium mb-2">Ask yourself:</p>
           <ul className="text-sm space-y-2">
             <li className="flex items-start">
@@ -506,9 +506,9 @@ function CorporateGreedAwareness({
         style={{
           transform: `scale(${scale})`
         }}
-        className="max-w-xl bg-white rounded-lg overflow-hidden"
+        className="max-w-xl bg-white rounded-lesslg overflow-hidden"
         onClick={(e) => e.stopPropagation()}>
-        <CardHeader className="bg-red-600 text-white rounded-t-lg">
+        <CardHeader className="bg-red-600 text-white rounded-lesst-lg">
           <CardTitle>Marketing Awareness Check</CardTitle>
           <CardDescription className="text-red-100">
             Recognize how companies are trying to influence your purchase

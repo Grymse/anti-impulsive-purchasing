@@ -6,7 +6,7 @@ type Props = {size: number, active: boolean};
 export default function MainLogo({size, active}: Props) {
   if (active) {
     return <div className="relative">
-      <div className="absolute -inset-4 rounded-full bg-gradient-to-r from-purple-500/30 to-blue-500/30 blur-lg animate-pulse"></div>
+      <div className="absolute -inset-4 rounded-lessfull bg-gradient-to-r from-purple-500/30 to-blue-500/30 blur-lg animate-pulse"></div>
       <img
       src={IconSrc}
       alt="Extension Logo (On)"

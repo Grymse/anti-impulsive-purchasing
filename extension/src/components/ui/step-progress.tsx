@@ -8,7 +8,7 @@ type Props = {
 export default function StepProgress({current, length}: Props) {
 
     let bars = Array.from({length: length}, (_, i) => {
-        return <div key={i} className={`w-full h-full rounded-full mx-1 ${i < current ? 'bg-primary' : 'bg-gray-300'}`}></div>
+        return <div key={i} className={`w-full h-full rounded-lessfull mx-1 ${i < current ? 'bg-lessprimary' : 'bg-gray-300'}`}></div>
     })
 
   return (

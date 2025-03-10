@@ -17,7 +17,7 @@ export function Progress({
 
   return (
     <div className="flex justify-between w-full items-center relative">
-        <div className="w-full h-1 absolute bg-muted" />
+        <div className="w-full h-1 absolute bg-lessmuted" />
 
         <div className="flex gap-2 z-10">
             {leftSideLabels.map((label) => <Badge onClick={() => setCurrent(label)}  key={label} variant="secondary">{label}</Badge>)}

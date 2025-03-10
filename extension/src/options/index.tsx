@@ -33,7 +33,7 @@ function IndexPage({ isActive, toggleActive }: { isActive: boolean, toggleActive
   return (
     <div className="max-w-2xl space-y-2 text-base">
       <div className="flex flex-col items-center justify-center mb-8">
-        <blockquote className="text-primary text-xl font-light italic my-16">
+        <blockquote className="text-lessprimary text-xl font-light italic my-16">
           “One who is patient glows with an inner radiance.” - Allan Lokos
         </blockquote>
 
@@ -48,7 +48,7 @@ function IndexPage({ isActive, toggleActive }: { isActive: boolean, toggleActive
           >
             Welcome to Less
           </Header>
-          <Text className="text-xl mt-2 text-muted-foreground">
+          <Text className="text-xl mt-2 text-lessmuted-foreground">
             Take a breath and think before you buy
           </Text>
         </div>
@@ -60,7 +60,7 @@ function IndexPage({ isActive, toggleActive }: { isActive: boolean, toggleActive
         >
           Turn {isActive ? "off" : "on"}
         </Button>
-        <Text className="text-muted-foreground">By turning on the extension, you agree to the terms & conditions below.</Text>
+        <Text className="text-lessmuted-foreground">By turning on the extension, you agree to the terms & conditions below.</Text>
       </div>
       {/* First Text Block */}
 
@@ -216,7 +216,7 @@ function IndexPage({ isActive, toggleActive }: { isActive: boolean, toggleActive
       <Text>
         The Less team
         <br />
-        <span className="text-muted-foreground">
+        <span className="text-lessmuted-foreground">
           Nicolai Grymer & Frederik Rothe
           <br />
           IT-University of Copenhagen

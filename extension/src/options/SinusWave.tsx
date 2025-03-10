@@ -94,7 +94,7 @@ export default function SinusWave({
   return (
     <div className={`relative mx-auto my-4 ${withFrame ? 'p-4' : ''}`}>
       {withFrame && (
-        <div className="absolute inset-0 rounded-lg border-2 border-primary/30 bg-background/50 backdrop-blur-sm shadow-md"></div>
+        <div className="absolute inset-0 rounded-lesslg border-2 border-lessprimary/30 bg-lessbackground/50 backdrop-blur-sm shadow-md"></div>
       )}
       <canvas 
         ref={canvasRef} 
