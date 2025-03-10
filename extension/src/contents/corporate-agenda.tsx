@@ -11,7 +11,7 @@ import {
   AccordionTrigger
 } from "~components/ui/accordion"
 import { Badge } from "~components/ui/badge"
-import { Button } from "~components/ui/button"
+import { Button, CountdownButton } from "~components/ui/button"
 import {
   Card,
   CardContent,
@@ -242,32 +242,6 @@ export const config: PlasmoCSConfig = {
   ],
   all_frames: true
 }
-
-// Reusable countdown timer component
-interface CountdownTimerProps {
-  countdown: number
-  className?: string
-}
-
-const CountdownTimer = ({ countdown, className = "" }: CountdownTimerProps) => {
-  if (countdown <= 0) return null
-
-  return (
-    <div
-      className={`bg-blue-50 border-2 border-blue-300 rounded-md p-3 flex items-center justify-center ${className}`}>
-      <div className="flex flex-col items-center">
-        <div className="text-2xl font-bold text-blue-700 mb-1">{countdown}</div>
-        <div className="text-xs text-blue-700">seconds remaining</div>
-        <div className="w-full mt-2 bg-blue-200 rounded-full h-2 overflow-hidden">
-          <div
-            className="bg-blue-600 h-full transition-all duration-30000 ease-linear"
-            style={{ width: `${(countdown / 30) * 100}%` }}></div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 // Define marketing tactic categories and examples
 const marketingTactics = [
   {
@@ -473,10 +447,6 @@ function MainView({
           into impulse purchases:
         </p>
 
-        {countdown > 0 && (
-          <CountdownTimer countdown={countdown} className="mb-4" />
-        )}
-
         <Accordion
           type="single"
           collapsible
@@ -528,17 +498,16 @@ function MainView({
 
       <div className="flex justify-between gap-4 mt-2">
         <Button
-          variant="outline"
-          className="w-full bg-blue-500 hover:bg-blue-600 "
+          variant="abort"
           onClick={() => (window.location.href = "https://www.google.com")}>
           Abort Shopping
         </Button>
-        <Button
+        <CountdownButton
           className="w-full bg-red-600 hover:bg-red-700 text-white"
           onClick={handleAcknowledge}
-          disabled={countdown !== 0}>
+          countdown={30000}>
           Continue
-        </Button>
+        </CountdownButton>
       </div>
     </div>
   )
