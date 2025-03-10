@@ -15,12 +15,12 @@ import {
   CardTitle
 } from "~components/ui/card"
 import { Label } from "~components/ui/label"
+import { Progress } from "~components/ui/progress"
 import { useScaling } from "~hooks/useScaling"
 import { sendAnalytics } from "~lib/analytics"
 import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
 import { settings } from "~lib/settings"
-import { Progress } from "~components/ui/progress"
 
 // Reusable countdown timer component
 interface CountdownTimerProps {
@@ -30,17 +30,17 @@ interface CountdownTimerProps {
 
 const CountdownTimer = ({ countdown, className = "" }: CountdownTimerProps) => {
   if (countdown <= 0) return null
-  
+
   return (
-    <div className={`bg-blue-50 border-2 border-blue-300 rounded-md p-3 flex items-center justify-center ${className}`}>
+    <div
+      className={`bg-blue-50 border-2 border-blue-300 rounded-md p-3 flex items-center justify-center ${className}`}>
       <div className="flex flex-col items-center">
         <div className="text-2xl font-bold text-blue-700 mb-1">{countdown}</div>
         <div className="text-xs text-blue-700">seconds remaining</div>
         <div className="w-full mt-2 bg-blue-200 rounded-full h-2 overflow-hidden">
-          <div 
-            className="bg-blue-600 h-full transition-all duration-1000 ease-linear" 
-            style={{ width: `${(10-countdown)*10}%` }}
-          ></div>
+          <div
+            className="bg-blue-600 h-full transition-all duration-1000 ease-linear"
+            style={{ width: `${(10 - countdown) * 10}%` }}></div>
         </div>
       </div>
     </div>
@@ -67,22 +67,22 @@ const ActionButtons = ({
 }: ActionButtonsProps) => {
   return (
     <div className="flex justify-between gap-4 mt-2">
-      <Button 
-        variant="destructive" 
-        className="w-full" 
+      <Button
+        variant="destructive"
+        className="w-full"
         onClick={handleAbortShopping}>
         Abort Shopping
       </Button>
-      
+
       {!isInitialView && (
-        <Button 
-          variant="outline" 
-          className="w-full" 
+        <Button
+          variant="outline"
+          className="w-full"
           onClick={handleBackToOptions}>
           Back to Options
         </Button>
       )}
-      
+
       {hasExplored || !isInitialView ? (
         <div className="w-full">
           {countdown > 0 ? (
@@ -386,7 +386,7 @@ function AlternativeInvestment({
       setCountdown(10)
     }
   }, [selectedOption, hasExplored])
-  
+
   // Dedicated effect for the countdown timer that runs regardless of which view is shown
   useEffect(() => {
     // Only activate timer when user has explored
@@ -395,7 +395,7 @@ function AlternativeInvestment({
       if (timerRef.current) {
         clearInterval(timerRef.current)
       }
-      
+
       // Start the interval
       timerRef.current = setInterval(() => {
         setCountdown((prev) => {
@@ -407,7 +407,7 @@ function AlternativeInvestment({
         })
       }, 1000)
     }
-    
+
     // Cleanup function
     return () => {
       if (timerRef.current) {
@@ -463,7 +463,7 @@ function AlternativeInvestment({
   const renderMonthlyContent = () => (
     <div className="flex flex-col gap-6">
       <CountdownTimer countdown={countdown} />
-      
+
       <div className="border p-4 rounded-md bg-gray-50">
         <h3 className="font-medium text-lg">Monthly Subscription Value</h3>
 
@@ -504,7 +504,7 @@ function AlternativeInvestment({
         </div>
       </div>
 
-      <ActionButtons 
+      <ActionButtons
         hasExplored={hasExplored}
         countdown={countdown}
         handleAbortShopping={handleAbortShopping}
@@ -517,7 +517,7 @@ function AlternativeInvestment({
   const renderSavingsContent = () => (
     <div className="flex flex-col gap-6">
       <CountdownTimer countdown={countdown} />
-      
+
       <div className="border p-4 rounded-md bg-gray-50">
         <h3 className="font-medium text-lg">Savings Goal Contribution</h3>
 
@@ -561,7 +561,7 @@ function AlternativeInvestment({
         </div>
       </div>
 
-      <ActionButtons 
+      <ActionButtons
         hasExplored={hasExplored}
         countdown={countdown}
         handleAbortShopping={handleAbortShopping}
@@ -574,7 +574,7 @@ function AlternativeInvestment({
   const renderInvestmentContent = () => (
     <div className="flex flex-col gap-6">
       <CountdownTimer countdown={countdown} />
-      
+
       <div className="border p-4 rounded-md bg-gray-50">
         <h3 className="font-medium text-lg">Investment Growth Potential</h3>
 
@@ -656,7 +656,7 @@ function AlternativeInvestment({
         </div>
       </div>
 
-      <ActionButtons 
+      <ActionButtons
         hasExplored={hasExplored}
         countdown={countdown}
         handleAbortShopping={handleAbortShopping}
@@ -670,7 +670,7 @@ function AlternativeInvestment({
     <div className="flex flex-col gap-6">
       {/* Show countdown timer when user has explored an option */}
       {hasExplored && <CountdownTimer countdown={countdown} />}
-    
+
       <div className="p-4 border rounded-md bg-gray-50">
         <Label htmlFor="amount-input" className="font-medium mb-2 block">
           Purchase Amount:
@@ -698,7 +698,8 @@ function AlternativeInvestment({
             ⚠️ You must explore one of these alternatives before continuing
           </p>
           <p className="text-xs text-center text-yellow-700 mt-1">
-            Click on any option below to learn more about what else you could do with this money
+            Click on any option below to learn more about what else you could do
+            with this money
           </p>
         </div>
       ) : (
@@ -717,21 +718,23 @@ function AlternativeInvestment({
           <div
             key={alt.id}
             className={`border-2 p-4 rounded-md cursor-pointer hover:bg-gray-50 transition-colors ${
-              selectedOption === alt.id 
-                ? "border-blue-500 bg-blue-50" 
+              selectedOption === alt.id
+                ? "border-blue-500 bg-blue-50"
                 : "border-gray-200"
             }`}
             onClick={() => onSelectOption(alt.id)}>
             <h3 className="font-medium">{alt.title}</h3>
             <p className="text-sm text-muted-foreground">{alt.description}</p>
             <p className="text-xs text-blue-600 mt-2 font-medium">
-              {selectedOption === alt.id ? "Currently viewing" : "Click to explore →"}
+              {selectedOption === alt.id
+                ? "Currently viewing"
+                : "Click to explore →"}
             </p>
           </div>
         ))}
       </div>
 
-      <ActionButtons 
+      <ActionButtons
         hasExplored={hasExplored}
         countdown={countdown}
         handleAbortShopping={handleAbortShopping}
@@ -804,14 +807,6 @@ export default function VisualizeAlternatives() {
     setAmount(a)
     setCurrency(c)
     setCurrentView("initial")
-    // Reset the exploration state and timer
-    setHasExplored(false)
-    setCountdown(10)
-    // Clear any existing timer
-    if (timerRef.current) {
-      clearInterval(timerRef.current)
-      timerRef.current = null
-    }
     onFinish.current = f
   }
 
@@ -829,7 +824,7 @@ export default function VisualizeAlternatives() {
       amount,
       from: currentView
     })
-    window.location.href = "https://www.google.com"
+    setShow(false)
   }
 
   const handleOptionSelect = (option: AlternativeOption) => {
