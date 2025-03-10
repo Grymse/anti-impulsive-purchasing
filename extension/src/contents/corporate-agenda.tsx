@@ -374,90 +374,6 @@ function CorporateGreedAwareness({
     onContinue()
   }
 
-  const renderMainView = () => (
-    <div className="flex flex-col gap-6">
-      <div className="p-4 border rounded-lessmd bg-red-50">
-        <h3 className="font-semibold text-lg text-red-700 mb-2">
-          Before you spend your hard-earned money...
-        </h3>
-        <p className="text-sm mb-4">
-          Be aware of these common marketing tactics designed to manipulate you
-          into impulse purchases:
-        </p>
-
-        {countdown > 0 && (
-          <CountdownTimer countdown={countdown} className="mb-4" />
-        )}
-
-        <Accordion
-          type="single"
-          collapsible
-          className="space-y-2"
-          onValueChange={(value) => {
-            console.log("value", value)
-            if (value && value.length !== 0) {
-              const index = parseInt(value)
-              setCurrentCategory(index)
-              sendAnalytics("corporate_agenda_select_category", {
-                category: marketingTactics[index].category
-              })
-            } else {
-              if (currentCategory !== null) {
-                sendAnalytics("corporate_agenda_collapse_category", {
-                  category: marketingTactics[currentCategory].category
-                })
-                setCurrentCategory(null)
-              }
-            }
-          }}
-          value={
-            currentCategory !== null ? currentCategory.toString() : undefined
-          }>
-          {marketingTactics.map((tactic, index) => (
-            <AccordionItem
-              key={index}
-              value={index.toString()}
-              className="border rounded-lessmd bg-white data-[state=open]:border-red-400 data-[state=open]:shadow-sm">
-              <AccordionTrigger className="px-3 py-2 hover:no-underline">
-                <h4 className="font-medium">{tactic.category}</h4>
-              </AccordionTrigger>
-              <AccordionContent className="px-3">
-                <div className="space-y-3">
-                  <p className="text-sm text-gray-700">{tactic.description}</p>
-                  <div className="bg-gray-50 p-3 rounded-lessmd">
-                    <p className="text-xs font-medium mb-1">Common examples:</p>
-                    <ul className="text-xs text-gray-600 space-y-1">
-                      {tactic.examples.map((example, i) => (
-                        <li key={i} className="flex items-start">
-                          <span className="text-red-500 mr-1">•</span> {example}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </div>
-
-      <div className="flex justify-between gap-4 mt-2">
-        <Button
-          variant="outline"
-          className="w-full bg-blue-500 hover:bg-blue-600 "
-          onClick={() => (window.location.href = "https://www.google.com")}>
-          Abort Shopping
-        </Button>
-        <Button
-          className="w-full bg-red-600 hover:bg-red-700 text-white"
-          onClick={handleAcknowledge}
-          disabled={countdown !== 0}>
-          Continue
-        </Button>
-      </div>
-    </div>
-  )
-
   const renderAcknowledgedView = () => (
     <div className="flex flex-col gap-6">
       <div className="p-4 border rounded-lessmd bg-red-50">
@@ -510,7 +426,7 @@ function CorporateGreedAwareness({
         }}
         className="max-w-xl bg-white rounded-lesslg overflow-hidden"
         onClick={(e) => e.stopPropagation()}>
-        <CardHeader className="bg-red-600 text-white rounded-lesst-lg">
+        <CardHeader className="bg-red-600 text-white rounded-lesslg">
           <CardTitle>Marketing Awareness Check</CardTitle>
           <CardDescription className="text-red-100">
             Recognize how companies are trying to influence your purchase
@@ -518,9 +434,112 @@ function CorporateGreedAwareness({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {acknowledged ? renderAcknowledgedView() : renderMainView()}
+          {acknowledged ? (
+            renderAcknowledgedView()
+          ) : (
+            <MainView
+              countdown={countdown}
+              currentCategory={currentCategory}
+              setCurrentCategory={setCurrentCategory}
+              handleAcknowledge={handleAcknowledge}
+            />
+          )}
         </CardContent>
       </Card>
+    </div>
+  )
+}
+
+type MainViewProps = {
+  countdown: number
+  currentCategory: number | null
+  setCurrentCategory: (index: number | null) => void
+  handleAcknowledge: () => void
+}
+function MainView({
+  countdown,
+  currentCategory,
+  setCurrentCategory,
+  handleAcknowledge
+}) {
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="p-4 border rounded-lessmd bg-red-50">
+        <h3 className="font-semibold text-lg text-red-700 mb-2">
+          Before you spend your hard-earned money...
+        </h3>
+        <p className="text-sm mb-4">
+          Be aware of these common marketing tactics designed to manipulate you
+          into impulse purchases:
+        </p>
+
+        {countdown > 0 && (
+          <CountdownTimer countdown={countdown} className="mb-4" />
+        )}
+
+        <Accordion
+          type="single"
+          collapsible
+          className="space-y-2"
+          onValueChange={(value) => {
+            if (value && value.trim().length !== 0) {
+              const index = parseInt(value)
+              setCurrentCategory(index)
+              sendAnalytics("corporate_agenda_select_category", {
+                category: marketingTactics[index].category
+              })
+            } else {
+              if (currentCategory !== null) {
+                sendAnalytics("corporate_agenda_collapse_category", {
+                  category: marketingTactics[currentCategory].category
+                })
+              }
+              setCurrentCategory(null)
+            }
+          }}
+          value={currentCategory !== null ? currentCategory.toString() : ""}>
+          {marketingTactics.map((tactic, index) => (
+            <AccordionItem
+              key={index}
+              value={index.toString()}
+              className="border rounded-lessmd bg-white data-[state=open]:border-red-400 data-[state=open]:shadow-sm">
+              <AccordionTrigger className="px-3 py-2 hover:no-underline">
+                <h4 className="font-medium">{tactic.category}</h4>
+              </AccordionTrigger>
+              <AccordionContent className="px-3">
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-700">{tactic.description}</p>
+                  <div className="bg-gray-50 p-3 rounded-lessmd">
+                    <p className="text-xs font-medium mb-1">Common examples:</p>
+                    <ul className="text-xs text-gray-600 space-y-1">
+                      {tactic.examples.map((example, i) => (
+                        <li key={i} className="flex items-start">
+                          <span className="text-red-500 mr-1">•</span> {example}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
+
+      <div className="flex justify-between gap-4 mt-2">
+        <Button
+          variant="outline"
+          className="w-full bg-blue-500 hover:bg-blue-600 "
+          onClick={() => (window.location.href = "https://www.google.com")}>
+          Abort Shopping
+        </Button>
+        <Button
+          className="w-full bg-red-600 hover:bg-red-700 text-white"
+          onClick={handleAcknowledge}
+          disabled={countdown !== 0}>
+          Continue
+        </Button>
+      </div>
     </div>
   )
 }
@@ -560,7 +579,7 @@ export default function CorporateAgenda() {
 
 // Key for storing the last suggestion timestamp in browser storage
 const LAST_SUGGESTION_KEY = "corporate_agenda_last_suggestion_time"
-const INTERVAL = INTERVENTION_INTERVAL
+const SUGGESTION_INTERVAL = INTERVENTION_INTERVAL
 
 // Function to check if it's time to show a suggestion based on stored timestamp
 const shouldShowSuggestion = async (): Promise<boolean> => {
@@ -570,7 +589,10 @@ const shouldShowSuggestion = async (): Promise<boolean> => {
     const currentTime = Date.now()
 
     // If no previous suggestion or it's been more than SUGGESTION_INTERVAL since last suggestion
-    if (!lastSuggestionTime || currentTime - lastSuggestionTime >= INTERVAL) {
+    if (
+      !lastSuggestionTime ||
+      currentTime - lastSuggestionTime >= SUGGESTION_INTERVAL
+    ) {
       return true
     }
 
@@ -614,8 +636,8 @@ const showCorporateAgendaIntervention = () => {
 
 // Function to start checking for suggestion timing
 const startSuggestionCheck = () => {
-  // Run the check every 10 seconds
-  const checkInterval = 10000
+  // Run the check every 5 seconds
+  const checkInterval = 5000
 
   // Set up the interval for checking
   const intervalId = setInterval(async () => {
@@ -633,6 +655,25 @@ const startSuggestionCheck = () => {
   }
 }
 
+// Function to handle click on place order buttons
+const onPlaceOrderClick = (e: Event) => {
+  const isBlocked =
+    document.body.getAttribute("data-plasmo-place-order-blocked") === "true"
+  if (!isBlocked) return // If the button is not blocked, we don't need to show the modal
+
+  e.preventDefault()
+  e.stopPropagation()
+
+  createGreedAwareness({
+    onFinish: () => {
+      document.body.setAttribute("data-plasmo-place-order-blocked", "false")
+
+      const button = e.target as HTMLButtonElement
+      button.click()
+    }
+  })
+}
+
 settings.onInit((settings) => {
   if (
     !settings.active ||
@@ -642,6 +683,16 @@ settings.onInit((settings) => {
 
   observer.addEffect((signal) => {
     document.body.setAttribute("data-plasmo-place-order-blocked", "true")
+
+    // Set up event listeners for purchase buttons
+    const domainGetters = getters.getDomainGetters()
+    domainGetters.placeOrderButtons(document.body).forEach((button) => {
+      button.addEventListener("click", onPlaceOrderClick)
+    }, signal)
+
+    domainGetters.getOneClickBuyNow?.(document.body)?.forEach((p) => {
+      p.button?.addEventListener("click", onPlaceOrderClick)
+    }, signal)
 
     // Start the suggestion check system
     const cleanup = startSuggestionCheck()
