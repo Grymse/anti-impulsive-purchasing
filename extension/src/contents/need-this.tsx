@@ -466,12 +466,6 @@ const onPlaceOrderClick = (e: Event) => {
 }
 
 settings.onInit((settings) => {
-  setTimeout(() => {
-  createQuestionary({
-    onFinish: () => {
-    }
-  }),1000});
-
   if (!settings.active || !settings.activeStrategies.includes("need-this"))
     return
 
