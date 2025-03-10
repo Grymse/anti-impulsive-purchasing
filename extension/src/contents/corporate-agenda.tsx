@@ -560,6 +560,7 @@ export default function CorporateAgenda() {
 
 // Key for storing the last suggestion timestamp in browser storage
 const LAST_SUGGESTION_KEY = "corporate_agenda_last_suggestion_time"
+const INTERVAL = INTERVENTION_INTERVAL
 
 // Function to check if it's time to show a suggestion based on stored timestamp
 const shouldShowSuggestion = async (): Promise<boolean> => {
@@ -569,10 +570,7 @@ const shouldShowSuggestion = async (): Promise<boolean> => {
     const currentTime = Date.now()
 
     // If no previous suggestion or it's been more than SUGGESTION_INTERVAL since last suggestion
-    if (
-      !lastSuggestionTime ||
-      currentTime - lastSuggestionTime >= INTERVENTION_INTERVAL
-    ) {
+    if (!lastSuggestionTime || currentTime - lastSuggestionTime >= INTERVAL) {
       return true
     }
 

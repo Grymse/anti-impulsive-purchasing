@@ -18,11 +18,12 @@ import {
   CardHeader,
   CardTitle
 } from "~components/ui/card"
+import { useScaling } from "~hooks/useScaling"
 import { sendAnalytics } from "~lib/analytics"
+import { INTERVENTION_INTERVAL } from "~lib/constants"
 import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
 import { settings } from "~lib/settings"
-import { useScaling } from "~hooks/useScaling"
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -235,7 +236,7 @@ export const config: PlasmoCSConfig = {
     "https://*.flybyjing.com/*",
     "https://getmaude.com/*",
     "https://ugmonk.com/*",
-    "https://shop.app/*",
+    "https://shop.app/*"
   ],
   all_frames: true
 }
@@ -579,7 +580,8 @@ function AlternativeActivitiesModal({
           ← Back to categories
         </Button>
 
-        <div className={`p-6 ${parentCategory?.color} rounded-lesslg border mb-4`}>
+        <div
+          className={`p-6 ${parentCategory?.color} rounded-lesslg border mb-4`}>
           <div className="flex items-center gap-3 mb-3">
             <span className="text-3xl">{selectedActivity.icon}</span>
             <h3 className="text-xl font-semibold">{selectedActivity.title}</h3>
@@ -674,13 +676,12 @@ function AlternativeActivitiesModal({
     )
   }
 
-  const {scale} = useScaling();
-  
+  const { scale } = useScaling()
 
   return (
     <div
-    className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
-    onClick={() => onCancel()}>
+      className="fixed bg-black/75 z-50 w-screen h-screen flex items-center justify-center"
+      onClick={() => onCancel()}>
       <Card
         style={{
           transform: `scale(${scale})`
@@ -919,7 +920,7 @@ const getRandomActivity = (): Activity => {
 
 // Key for storing the last suggestion timestamp in browser storage
 const LAST_SUGGESTION_KEY = "alternate_activities_last_suggestion_time"
-const SUGGESTION_INTERVAL = 1000 * 10 // 3 minutes
+const SUGGESTION_INTERVAL = INTERVENTION_INTERVAL
 
 // Function to check if it's time to show a suggestion based on stored timestamp
 const shouldShowSuggestion = async (): Promise<boolean> => {
