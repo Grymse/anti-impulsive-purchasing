@@ -230,6 +230,7 @@ getters.register(['amazon.com', 'amazon.se', 'amazon.co.uk', 'amazon.de'], {
             const items = Array.from(document.querySelectorAll('div[data-csa-c-item-id]'));
 
             return items.map(item => {
+                // total
                 const quantity = parseInt(item.querySelector('div[name="sc-quantity"] span[data-a-selector="value"]')?.textContent ?? "1");
                 const unsplitPrice = item.querySelector<HTMLElement>('.sc-item-price-block .a-price .a-offscreen')?.textContent;
                 const {price, currency} = splitPriceCurrency(unsplitPrice);
@@ -311,6 +312,7 @@ getters.register('zalando.dk', {
     },
 
     getCartItems: (e: HTMLElement) => {
+        // total
         const itemElements = e.querySelectorAll<HTMLElement>('article.cart-product-card');
         if (!itemElements) return [];
         const priceElements = Array.from(itemElements).map(i => i.querySelector('header section p').textContent);
@@ -361,6 +363,7 @@ getters.register("ebay.com", {
     getCartItems: (e: HTMLElement) => {
         const listings = e.querySelectorAll<HTMLElement>('.line-item--listings');
         if (!listings) return [];
+        // total
 
         return Array.from(listings).map(l => {
             const price = l.querySelector<HTMLElement>('.item-price');
@@ -372,7 +375,7 @@ getters.register("ebay.com", {
 
             return {
                 quantity,
-                price: (splitPriceCurrency(price.innerText).price) / quantity,
+                price: (splitPriceCurrency(price.innerText).price),
                 currency: splitPriceCurrency(price.innerText).currency
             };
         });
@@ -391,7 +394,7 @@ getters.register("shop.app", {
     getCartItems: (e: HTMLElement) => {
         const basket = document.querySelectorAll<HTMLElement>('aside div[role="rowgroup"]')[1];
         const items = basket.querySelectorAll<HTMLElement>('div[role="row"]');
-
+        // total
         return Array.from(items).map(item => {
             const {price, currency} = splitPriceCurrency(item.querySelectorAll<HTMLElement>('div[role="cell"]')[3].textContent);
             return {
@@ -422,7 +425,7 @@ getters.register("matas.dk", {
         return Array.from(quantities).map(q => {
             const box = q.parentElement.parentElement.parentElement.parentElement.parentElement;
             const price = Array.from(box.querySelectorAll<HTMLElement>('div[direction="column"] span')).filter(i => i.innerText.includes('kr.'))[0];
-            
+            // total
             return {
                 quantity: parseInt(q.value),
                 price: splitPriceCurrency(price.innerText).price,
@@ -447,7 +450,7 @@ getters.register("proshop.dk", {
         if(!location.href.includes('/Basket')) return [];
 
         const items = Array.from(document.querySelectorAll('#basketLines li'))
-
+        // total
         return items.map(item => {
             const quantity = item.querySelector<HTMLInputElement>('input[type="number"]')?.value;
             const price = splitPriceCurrency(item.querySelector<HTMLElement>('.basketLinePriceWithVat b')?.textContent);
@@ -467,7 +470,7 @@ getters.register("boozt.com", {
     },
 
     addToCartButtons: (e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('div[class="product-actions__add-to-cart"]');
+        const buttons = e.querySelectorAll<HTMLElement>('div[class="product-actions__add-to-cart"], div.size-selector__button-add-to-cart');
         return Array.from(buttons);
     },
 
@@ -823,8 +826,6 @@ getters.register("homedepot.com", {
 });
 
 getters.register("bestbuy.com", {
-    
-    
     placeOrderButtons: (e: HTMLElement) => {
         const paypal = Array.from(e.querySelectorAll<HTMLElement>('.paypal-component')).map(createInnerChild);
         return Array.from(e.querySelectorAll<HTMLElement>('button.checkout-buttons__paypal, .payment__order-summary button')).concat(paypal);
@@ -1263,6 +1264,7 @@ getters.register("asos.com", {
         if(!location.href.includes('secure.asos.com')) return [];
 
         const items = Array.from(document.querySelectorAll('li.item.product-item'));
+        // total
 
         return items.map(item => {
             const quantity = parseQty(item.querySelector('.item-quantity').textContent ?? "1");
@@ -1335,7 +1337,7 @@ getters.register("lowes.com", {
 
                 const quantity = parseQty(item.querySelector(`span[data-selector="art-sc-pickupItemQty${index}"]`)?.textContent);
                 const {price, currency} = splitPriceCurrency(item.querySelector(`div[data-selector="art-sc-pickupItemPrice${index}"]`)?.textContent);
-
+                // total
                 return {
                     quantity,
                     price,
@@ -1351,7 +1353,7 @@ getters.register("lowes.com", {
         return items.map(item => {
             const quantity = parseQty(item.querySelector('input').value);
             const {price, currency} = splitPriceCurrency(item.querySelector('div[data-selector="art-sc-itemPrice"]').textContent);
-
+            // total
             return {
                 quantity,
                 price,
@@ -1409,6 +1411,7 @@ getters.register("dell.com", {
                 flatMap(i => Array.from(i.shadowRoot?.querySelectorAll('item-component')).map(i => i?.shadowRoot)).filter(i => !!i);
         
         if (!items) return [];
+        // total
         return items.map(item => {
             const qty = item.querySelector('item-quantity')?.shadowRoot?.querySelector('input')?.value;
             const {price, currency } = splitPriceCurrency(item.querySelector('.price_total_display')?.textContent);
@@ -1437,7 +1440,7 @@ getters.register("kohls.com", {
         return items.map(item => {
             const quantity = parseInt(item.querySelector('.quantity-user-selected-text')?.textContent ?? "1");
             const {price, currency} = splitPriceCurrency(item.querySelector('.product-price-list-sale-price')?.textContent);
-
+            // total
             return {
                 quantity,
                 price,
@@ -1468,7 +1471,7 @@ getters.register("walgreens.com", {
         return items.map(item => {
             const quantity = parseInt(item.querySelector('input')?.value ?? "1");
             const {price, currency} = splitPriceCurrency(item.querySelector('p.wag-cart-prd-gift-price span')?.textContent);
-
+            // total
             return {
                 quantity,
                 price,
@@ -1496,7 +1499,7 @@ getters.register("lenovo.com", {
         return Array.from(items).map(item => {
             const quantity = parseInt(item.querySelector('input')?.value ?? "1");
             const {price, currency} = splitPriceCurrency(item.querySelector('.priceSavings h1')?.textContent);
-
+            // total
             return {
                 quantity,
                 price,
@@ -1526,7 +1529,7 @@ getters.register("hp.com", {
         return items.map(item => {
             const {price, currency} = splitPriceCurrency(item.querySelector('.product-price-tab span')?.textContent);
             const quantity = parseInt(item.querySelector('input').value ?? "1");
-
+            // total
             return {
                 quantity,
                 price,
@@ -1553,7 +1556,7 @@ getters.register("nordstrom.com", {
         return Array.from(items).map(item => {
             const quantity = parseInt(item.querySelector('select')?.value ?? "1");
             const {price, currency} = splitPriceCurrency(item.querySelector('#item-pricing span')?.textContent);
-
+            // total
             return {
                 quantity,
                 price,
@@ -1611,7 +1614,7 @@ getters.register("ditur.dk", {
         if (!location.href.includes('/checkout')) return [];
 
         const items = document.querySelectorAll('#quote-summary .grid .border-cart-secondary')
-
+        // total
         return Array.from(items).map(item => {
             const quantity = parseQty(item.querySelector('.items-baseline .text-xs')?.textContent ?? "1");
             const {price, currency} = splitPriceCurrency(item.querySelector('.product-price span')?.textContent);
@@ -1641,7 +1644,7 @@ getters.register(["kaufmann.dk","quint.dk"], {
         if (!location.href.includes('/checkout')) return [];
 
         const items = document.querySelectorAll('.checkout__sidebar__order-line')
-
+        // total
         return Array.from(items).map(item => {
             const quantity = parseQty(item.querySelector('.checkout__sidebar__order-line__price')?.children?.[0]?.textContent ?? "1");
             const {price, currency} = splitPriceCurrency(Array.from(item.querySelector('.checkout__sidebar__order-line__price')?.children)?.at(-1)?.textContent);
@@ -1670,7 +1673,7 @@ getters.register("maxizoo.dk", {
         if (!location.href.includes('/onestepcheckout')) return [];
 
         const items = document.querySelectorAll('table.onestepcheckout-summary tbody tr')
-
+        // total
         return Array.from(items).map(item => {
             const quantity = parseInt(item.querySelector('input')?.value ?? "1");
             const {price, currency} = splitPriceCurrency(item.querySelector('.price')?.textContent);
@@ -1698,7 +1701,7 @@ getters.register("fribikeshop.dk", {
     getCartItems: (e: HTMLElement) => {
         if (!location.href.includes('/checkout')) return [];
         const items = document.querySelectorAll('.checkout__minicart-item');
-
+        // total
         return Array.from(items).map(item => {
             const quantity = parseQty(item.querySelector('strong')?.textContent ?? "1");
             const {price, currency} = splitPriceCurrency(item.querySelector('.checkout__minicart-item-price')?.textContent);
@@ -1728,7 +1731,7 @@ getters.register("williamdam.dk", {
         if (!location.href.includes('/kassen')) return [];
 
         const items = document.querySelectorAll('#cart_summary_short tr[id]');
-
+        // total
         return Array.from(items).map(item => {
             const quantity = parseQty(item.children[0]?.textContent ?? "1");
             const {price, currency} = splitPriceCurrency(item.children[2]?.textContent ?? "");
@@ -1757,7 +1760,7 @@ getters.register("av-cables.dk", {
         if (!location.href.includes('/kurv')) return [];
 
         const itemInputs = document.querySelectorAll<HTMLInputElement>('input[data-test-id="quantity-input"]');
-
+        // total
         return Array.from(itemInputs).map(itemInput => {
             const unsplitPrice = Array.from(itemInput.closest('div').parentElement.children).at(-1).querySelector('span span').textContent;
             const quantity = parseInt(itemInput.value);
@@ -1787,7 +1790,7 @@ getters.register("plantetorvet.dk", {
         if (!location.href.includes('/checkout')) return [];
 
         const itemQtys = document.querySelectorAll('.media .badge-success');
-
+        // total
         return Array.from(itemQtys).map(itemQty => {
             const quantity = parseInt(itemQty?.textContent ?? "1");
             const unsplitPrice = itemQty.parentElement.parentElement.querySelector('.text-right')
@@ -1817,7 +1820,7 @@ getters.register("salling.dk", {
         if (!location.href.includes('/checkout')) return [];
 
         const items = document.querySelectorAll('.checkout-header__overlay li.lines__item')
-
+        // total
         return Array.from(items).map(item => {
             const quantity = parseQty(item.querySelector('.basket-summary-line__summary-count')?.textContent ?? "1");
             const unsplitPrice = item.querySelector('.basket-line-price')?.children?.[0]?.textContent;
@@ -1849,7 +1852,7 @@ getters.register("lampeguru.dk", {
         if (!location.href.includes('/checkout')) return [];
 
         const itemImgs = document.querySelector('#checkout').children[0].children[1].children[1].querySelectorAll('img')
-
+        // total
         return Array.from(itemImgs).map(item => {
             const unparsedQuantity = item.parentElement.children?.[1]?.textContent
             const unparsedPrice = Array.from(item.parentElement.parentElement.children[1].children[1].children[1].children).at(-1)?.textContent;
@@ -1881,7 +1884,7 @@ getters.register("havehandel.dk", {
         if (!location.href.includes('/checkout')) return [];
 
         const items = document.querySelectorAll('tbody .cart_item');
-
+        // total
         return Array.from(items).map(item => {
             const quantity = parseQty(item.querySelector('.product-quantity')?.textContent ?? "1");
             const {price, currency} = splitPriceCurrency(item.querySelector('.product-total')?.textContent);
@@ -1917,7 +1920,7 @@ getters.register("sinful.dk", {
         return Array.from(itemsQty).map(itemQty => {
             const quantity = parseQty(itemQty?.textContent ?? "1");
             const {price, currency} = splitPriceCurrency(Array.from(itemQty.parentElement.children[1].children)?.at(-1)?.textContent);
-
+            // total
             return {
                 quantity,
                 price,
@@ -1950,7 +1953,7 @@ getters.register("hyggeonkel.dk", {
             const quantity = parseQty(itemQty.textContent ?? "1");
             const unparsedPrice = Array.from(itemQty.parentElement.querySelectorAll('td[align="right"]')).at(-1);
             const {price} = splitPriceCurrency(unparsedPrice?.textContent);
-
+            
             return {
                 quantity,
                 price,
@@ -1975,7 +1978,7 @@ getters.register("legeakademiet.dk", {
         if (!location.href.includes('/checkout')) return [];
 
         const items = document.querySelectorAll('.product-item')
-
+        // total
         return Array.from(items).map(item => {
             const quantity = parseInt(item.querySelector('input')?.value ?? "1");
             const {price, currency} = splitPriceCurrency(item.querySelector('.cart-price')?.textContent);
@@ -2004,7 +2007,7 @@ getters.register("lampemesteren.dk", {
         if (!location.href.includes('/mcheckout')) return [];
 
         const items = document.querySelectorAll('tr.cart__data')
-
+        // total
         return Array.from(items).map(item => {
             const quantity = parseInt(item.querySelector('input')?.value ?? "1");
             const {price, currency} = splitPriceCurrency(item.querySelector('.cart-item__price')?.textContent);
@@ -2034,7 +2037,7 @@ getters.register("zooplus.dk", {
         if (!location.href.includes('/checkout')) return [];
 
         const items = document.querySelectorAll('.item__price__info');
-
+        // total
         return Array.from(items).map(item => {
             const unparsedPrice = item.querySelector('.item__price__total .z-product-price__price-wrap')?.textContent;
             const quantity = parseQty(item.querySelector('.item__price__quantity')?.textContent ?? "1");
@@ -2064,7 +2067,7 @@ getters.register("harald-nyborg.dk", {
         if (!location.href.includes('/kurv')) return [];
 
         const itemsQty = document.querySelectorAll<HTMLInputElement>('input[type="number"]')
-
+        // total
         return Array.from(itemsQty).map(itemQty => {
             const quantity = parseInt(itemQty.value ?? "1");
             const unparsedPrice = itemQty.closest('li')?.children?.[0]?.children?.[5];
