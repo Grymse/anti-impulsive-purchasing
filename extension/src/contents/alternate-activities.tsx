@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 
 import "../style.css"
 
+import ModalBackground from "~components/BackgroundModal"
 import {
   Accordion,
   AccordionContent,
@@ -24,7 +25,6 @@ import { INTERVENTION_INTERVAL } from "~lib/constants"
 import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
 import { settings } from "~lib/settings"
-import ModalBackground from "~components/BackgroundModal"
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -491,12 +491,14 @@ interface AlternativeActivitiesProps {
   onContinue: () => void
   onCancel: (categoryId?: string, activityId?: string) => void
   initialActivity?: Activity | null
+  closeModal: () => void
 }
 
 function AlternativeActivitiesModal({
   onContinue,
   onCancel,
-  initialActivity
+  initialActivity,
+  closeModal
 }: AlternativeActivitiesProps) {
   // Find category for the initial activity if provided
   const initialCategory = initialActivity
@@ -680,7 +682,7 @@ function AlternativeActivitiesModal({
   const { scale } = useScaling()
 
   return (
-    <ModalBackground onClick={onCancel}>
+    <ModalBackground onClick={closeModal}>
       <Card
         style={{
           transform: `scale(${scale})`
@@ -833,6 +835,10 @@ export default function AlternateActivities() {
     ]
   }
 
+  const closeModal = () => {
+    setShow(false)
+  }
+
   const handleCancel = (categoryId?: string, activityId?: string) => {
     // Determine which category to use for search
     let categoryToUse = "general"
@@ -883,6 +889,7 @@ export default function AlternateActivities() {
       onContinue={handleContinue}
       onCancel={handleCancel}
       initialActivity={initialActivity}
+      closeModal={closeModal}
     />
   )
 }
