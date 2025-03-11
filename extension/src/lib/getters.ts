@@ -483,6 +483,7 @@ getters.register("boozt.com", {
         const quantity = cart.querySelectorAll<HTMLElement>('select[class="select__dropdown skip-generic-styling"]');
 
         let items = [];
+        // total
         for (let i = 0; i < priceElement.length; i++) {
             items.push({
                 //@ts-expect-error .value is a valid field.
@@ -516,12 +517,13 @@ getters.register("hm.com", {
         const input = e.querySelectorAll<HTMLInputElement>('input[type="number"]');
 
         return Array.from(input).map(input => {
+            // total
             const article = (input.closest('article').childNodes[1]) as HTMLElement | undefined;
             const unsplitPrice = article?.querySelector('div span')?.textContent;
             const {price, currency} = splitPriceCurrency(unsplitPrice);
             return {
                 quantity: parseInt(input.value),
-                price,
+                price: price * parseInt(input.value),
                 currency
             };
         });
@@ -556,6 +558,7 @@ getters.register(shopifyDomains, {
         const basket = document.querySelectorAll<HTMLElement>('aside div[role="rowgroup"]')[1];
         const items = basket.querySelectorAll<HTMLElement>('div[role="row"]');
 
+        // total
         return Array.from(items).map(item => {
             const {price, currency} = splitPriceCurrency(item.querySelectorAll<HTMLElement>('div[role="cell"]')[3].textContent);
             return {
@@ -622,6 +625,7 @@ getters.register("magasin.dk", {
         });
         const quantityElements = Array.from(cart.querySelectorAll<HTMLElement>('div[class="product_card-item-quantity"]')).map(e => e.textContent.split(" ")[0]);
 
+        // total
         let items = [];
         for (let i = 0; i < priceElements.length; i++) {
             items.push({
@@ -647,6 +651,7 @@ getters.register("shein.com", {
     },
 
     getCartItems: (e: HTMLElement) => {
+        // total
         const items = document.querySelectorAll<HTMLElement>('.checkout-cart__item-effiency');
 
         return Array.from(items).map(item => {
@@ -663,7 +668,7 @@ getters.register("shein.com", {
 
             return {
                 quantity: parseInt(quantity),
-                price,
+                price: price * parseInt(quantity),
                 currency
             };
         })
@@ -688,6 +693,7 @@ getters.register("apple.com", {
         //@ts-expect-error: value is a valid field.
         const quantityElements = Array.from(cart.querySelectorAll<HTMLElement>('select[class="rs-quantity-dropdown form-dropdown-select"]')).map(e => e.value);
 
+        // total
         let items = [];
         for (let i = 0; i < priceElements.length; i++) {
             items.push({
@@ -722,6 +728,7 @@ getters.register("jemogfix.dk", {
 
         let items = [];
         for (let i = 0; i < priceElements.length; i++) {
+            // total
             items.push({
                 quantity: quantityElements[i],
                 price: parseFloat(priceElements[i]),
@@ -750,14 +757,16 @@ getters.register("temu.com", {
         if(!location.href.includes('bgt_order_checkout')) return [];
         const items = e.querySelectorAll('.splide__slide');
 
-        return Array.from(items).map(item => {    
+        return Array.from(items).map(item => {
+            // total    
             const priceAndQuantity = item.querySelector('span[data-priority-index]');
             const price = parsePrice(priceAndQuantity.childNodes[0].textContent);
             const currency = priceAndQuantity.childNodes[1].textContent;
+            const quantity = getNumberFromText(priceAndQuantity.childNodes[2]?.textContent ?? "1")
 
             return {
-                quantity: getNumberFromText(priceAndQuantity.childNodes[2]?.textContent ?? "1"),
-                price,
+                quantity,
+                price: price * quantity,
                 currency
             }
         });
@@ -781,7 +790,7 @@ getters.register("target.com", {
         return Array.from(items).map(item => {
             const quantity = parseInt(item.querySelector('select').value);
             const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>('p[data-test="cartItem-price"]').textContent);
-
+            // total
             return {
                 quantity,
                 price,
@@ -2145,9 +2154,10 @@ getters.register("jysk.dk", {
 
         let items = [];
         for (let i = 0; i < priceElements.length; i++) {
+            // total
             items.push({
                 quantity: parseInt(quantityElements[i]),
-                price: parseFloat(priceElements[i])/parseInt(quantityElements[i]),
+                price: parseFloat(priceElements[i]),
                 currency: "kr"
             });
         }
@@ -2173,10 +2183,11 @@ getters.register(["bilka.dk", "foetex.dk"], {
         const quantityElements = Array.from(cart.querySelectorAll<HTMLElement>('div[class="v-select__selection v-select__selection--comma"]')).map(e => e.textContent);
         
         let items = [];
+        // total
         for (let i = 0; i < priceElements.length; i++) {
             items.push({
                 quantity: parseInt(quantityElements[i]),
-                price: parseFloat(priceElements[i]) / parseInt(quantityElements[i]),
+                price: parseFloat(priceElements[i]),
                 currency: "kr"
             });
         }
@@ -2205,6 +2216,7 @@ getters.register("saxo.com", {
 
         let items = [];
         for (let i = 0; i < priceElements.length; i++) {
+            // total
             items.push({
                 quantity: parseInt(quantityElements[i]),
                 price: (priceElements[i]/100) * parseInt(quantityElements[i]),
@@ -2260,6 +2272,7 @@ getters.register("imerco.dk", {
     getCartItems: (e: HTMLElement) => {
         const info = Array.from(e.querySelectorAll<HTMLElement>('div[class="next-utw6et ed71law2"]'));
         if (info === null) return [];
+        // total
         const items = info.map(e => e.textContent.split('x')).map(e => {
             const quantity = getNumberFromText(e[0]);
             const price = (getNumberFromText(e[1])/100) * quantity;
@@ -2294,6 +2307,7 @@ getters.register("sport24.dk", {
         
         let items = [];
         for (let i = 0; i < priceElements.length; i++) {
+            // total
             items.push({
                 quantity: quantityElements[i],
                 price: priceElements[i] * quantityElements[i],
@@ -2358,6 +2372,7 @@ getters.register("power.dk", {
     
         let items = [];
         for (let i = 0; i < priceElements.length; i++) {
+            // total
             items.push({
                 quantity: quantities[i],
                 price: parseFloat(priceElements[i].replace('.', '').replace(',', '.')),
