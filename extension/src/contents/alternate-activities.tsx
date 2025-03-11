@@ -689,7 +689,7 @@ function AlternativeActivitiesModal({
         }}
         className="max-w-lg bg-white shadow-xl"
         onClick={(e) => e.stopPropagation()}>
-        <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lesst-xl">
+        <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl">
           <div className="flex items-center gap-3">
             <span className="text-2xl">🌟</span>
             <div>
