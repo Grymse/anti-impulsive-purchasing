@@ -1,7 +1,6 @@
 import { useEffect, useState, type MouseEventHandler } from "react"
 import { Button, CountdownButton } from "~components/ui/button"
 import {
-  Card,
   CardContent,
   CardDescription,
   CardHeader,
