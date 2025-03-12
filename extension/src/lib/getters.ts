@@ -1,10 +1,16 @@
 import { CarTaxiFront } from "lucide-react";
 
+export type OneBlickBuyButton = {
+    button?: HTMLElement;
+    label?: HTMLElement;
+    item: ShoppingItem;
+}
+
 export type ElementGetters = {
     placeOrderButtons: (e: HTMLElement) => HTMLElement[];
     addToCartButtons: (e: HTMLElement) => HTMLElement[];
     getCartItems: (e: HTMLElement) => ShoppingItem[];
-    getOneClickBuyNow?: (e: HTMLElement) => {button?: HTMLElement, label?: HTMLElement, item: ShoppingItem}[];
+    getOneClickBuyNow?: (e: HTMLElement) => OneBlickBuyButton[];
 }
 
 export type ShoppingItem = {
