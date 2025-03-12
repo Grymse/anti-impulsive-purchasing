@@ -69,9 +69,7 @@ export function Questionary({onComplete}:QuestionaryProps) {
     onComplete();
   }
 
-  return <Card style={{
-        transform: `scale(${scale})`,
-      }} className="w-xl text-base bg-white" onClick={(e) => e.stopPropagation()}>
+  return <>
         <CardHeader>
           <CardTitle>Reflection Questions</CardTitle>
           <CardDescription>
@@ -82,7 +80,7 @@ export function Questionary({onComplete}:QuestionaryProps) {
         <CardContent>
           <Content cancel={cancel} submit={submit} />
         </CardContent>
-      </Card>
+      </>
 }
 
 type ContentProps = {

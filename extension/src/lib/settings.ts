@@ -1,6 +1,7 @@
+import { getUserId } from "./analytics";
 import { PersistentValue } from "./utils";
 
-type StrategyType = "need-this" | "enforce-wait" | "visualize-alternatives"  | "max-purchases" | "corporate-agenda" | "alternate-activities";
+type StrategyType = "need-this" | "enforce-wait" | "visualize-alternatives"  | "max-purchases" | "corporate-agenda" | "alternate-activities" | "none";
 
 type Strategy = {
     name: string;
@@ -20,36 +21,23 @@ export const strategies : Strategy[] = [
         description: "Enforce a 24-hour wait time before you are allowed to buy",
     },
     {
-        code: "visualize-alternatives",
-        name: "Visualize Alternatives",
-        description: "See how your money could grow over time if invested instead of spent on this purchase",
-    },
-    {
-        code: "corporate-agenda",
-        name: "Corporate Agenda",
-        description: "Remind yourself of the marketing tactics used by companies to manipulate you into making impulsive purchases",
-    },
-    {
-        code: "max-purchases",
-        name: "Max Purchases",
-        description: "Set a limit on the number of purchases you can make in a month",
-    },
-    {
-        code: "alternate-activities",
-        name: "Alternative Activities",
-        description: "Explore alternative activities like hobbies, learning, or exercise instead of shopping",
+        code: "none",
+        name: "No strategy",
+        description: "No strategy is enforced. You are left with your own self-control",
     }
 ]
 
 export type Settings = {
     active: boolean;
     activeStrategies: StrategyType[];
+    hasSeenWelcomeModal?: boolean;
 }
 
 export const settings = new PersistentValue<Settings>("settings",
     {
         active: true,
-        activeStrategies: ["alternate-activities"]
+        activeStrategies: [],
+        hasSeenWelcomeModal: false
     }
 );
 
@@ -66,12 +54,13 @@ function idToIndex(id: string, max: number) {
 
 function selectStrategyFromId(id: string) : StrategyType {
     const index = idToIndex(id, strategies.length);
-    return strategies[index].code;
+    return strategies[index].code
 }
 
 // Enforce activeStrategy changes
 /* getUserId().then(userId => {
+    const strategy = selectStrategyFromId(userId);
     settings.onInit(prevSettings => {
-        settings.value = {...prevSettings, activeStrategies: [selectStrategyFromId(userId)]};
+        settings.value = {...prevSettings, activeStrategies: [strategy]};
     })
 }); */

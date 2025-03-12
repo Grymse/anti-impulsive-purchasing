@@ -1,12 +1,13 @@
 import { useScaling } from "~hooks/useScaling";
 import IconSrc from "data-base64:~assets/icon.png"
 import { createContext, useContext, useState, type ReactNode } from "react";
+import { Card } from "./ui/card";
 
 type ModalContext = {
     isOpen: boolean;
     close : () => void;
     setModal: (component: ReactNode) => void;
-    scale: string
+    scale: string;
 }
 
 const ModalContext = createContext<ModalContext>({isOpen: false, close: () => {}, setModal: () => {}, scale: "1"});
@@ -19,8 +20,7 @@ type Props = {
 function Modal({
     children,
 }: Props) {
-    const {scale, close, isOpen} = useModal();
-    
+    const {close, isOpen, scale} = useModal();
 
     if(!isOpen) return null;
 
@@ -44,7 +44,13 @@ function Modal({
                     />
                 </div>
             </div>
+            <Card style={{
+                transform: `scale(${scale})`
+                }}
+                className="max-w-xl bg-white"
+                onClick={(e) => e.stopPropagation()}>
             {children}
+            </Card>
         </div>
     )
 }
@@ -63,8 +69,8 @@ export default function createModal() {
     const ModalComponent = () =>
     {
         const [currentComponent, setCurrentComponentInner] = useState<ReactNode | null>(null);
-        setCurrentComponent = setCurrentComponentInner;
         const {scale} = useScaling();
+        setCurrentComponent = setCurrentComponentInner;
         const isOpen = currentComponent !== null;
         return <ModalContext.Provider value={{isOpen, close, setModal: setCurrentComponent, scale}}>
                 <Modal>

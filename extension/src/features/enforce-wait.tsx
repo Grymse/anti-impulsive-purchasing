@@ -108,13 +108,7 @@ function WaitTimer({ onCancel, onComplete, scale }: WaitTimerProps) {
 
   
 
-  return (
-  <Card
-        style={{
-          transform: `scale(${scale})`
-        }}
-        className="max-w-xl bg-white"
-        onClick={(e) => e.stopPropagation()}>
+  return <>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Wait Before Purchasing</span>
@@ -240,8 +234,7 @@ function WaitTimer({ onCancel, onComplete, scale }: WaitTimerProps) {
             </AccordionItem>
           </Accordion>
         </CardContent>
-      </Card>
-  )
+      </>
 }
 
 type EnforceWaitProps = {

@@ -6,10 +6,11 @@ import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
 import { settings } from "~lib/settings"
 import createModal from "~components/Modal"
-import { Questionary } from "./strategies/need-this"
+import { Questionary } from "../features/need-this"
 import permit from "~lib/permit"
-import { EnforceWait } from "./strategies/enforce-wait"
-import { trackerEffect, trackingInit } from "./strategies/tracking"
+import { EnforceWait } from "../features/enforce-wait"
+import { trackerEffect, trackingInit } from "../features/tracking"
+import { WelcomeModal } from "../features/welcome-modal"
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -328,5 +329,11 @@ settings.onInit((settings) => {
     )
   }
 
-  observer.addEffect(effect)
+  observer.addEffect(effect);
+  console.log("settings", settings);
+  if(!settings.hasSeenWelcomeModal) {
+    setTimeout(() => {
+      openModal(<WelcomeModal />)
+    }, 3000);
+  }
 });
