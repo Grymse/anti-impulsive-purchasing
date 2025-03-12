@@ -9,7 +9,7 @@ import createModal from "~components/Modal"
 import { Questionary } from "./strategies/need-this"
 import permit from "~lib/permit"
 import { EnforceWait } from "./strategies/enforce-wait"
-import { trackerEffect, trackingInit } from "./tracker"
+import { trackerEffect, trackingInit } from "./strategies/tracking"
 
 export const getStyle = () => {
   const style = document.createElement("style")
