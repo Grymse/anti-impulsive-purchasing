@@ -1,12 +1,22 @@
-// content.ts
+import cssText from "data-text:~style.css"
+import type { PlasmoCSConfig } from "plasmo"
+import "../style.css"
 
-import type { PlasmoCSConfig } from "plasmo";
-import { getters, type ShoppingItem } from "~lib/getters";
-import { observer } from "~lib/observer";
-import { Stopwatch } from "ts-stopwatch";
-import { sendAnalytics } from "~lib/analytics";
-import { settings } from "~lib/settings";
-import { cart, purchases } from "~lib/purchases";
+import { getters } from "~lib/getters"
+import { observer } from "~lib/observer"
+import { settings } from "~lib/settings"
+import createModal from "~components/Modal"
+import { Questionary } from "../features/need-this"
+import permit from "~lib/permit"
+import { EnforceWait } from "../features/enforce-wait"
+import { trackerEffect, trackingInit } from "../features/tracking"
+import { WelcomeModal } from "../features/welcome-modal"
+
+export const getStyle = () => {
+  const style = document.createElement("style")
+  style.textContent = cssText
+  return style
+}
 
 export const config: PlasmoCSConfig = {
   matches: [
@@ -218,109 +228,112 @@ export const config: PlasmoCSConfig = {
   all_frames: true
 }
 
-const INTERVAL_LENGTH = 1000 * 5; // 5 seconds
+const {
+  ModalComponent,
+  openModal,
+} = createModal();
 
-function effect(signal: {signal: AbortSignal}) {
-  const addToCartButtons = getters.getDomainGetters().addToCartButtons(document.body);
-  const placeOrderButtons = getters.getDomainGetters().placeOrderButtons(document.body);
-  const oneClickBuy = getters.getDomainGetters().getOneClickBuyNow?.(document.body);
+export default ModalComponent;
 
-  addToCartButtons.forEach((button) => {
-    button.addEventListener("click", onAddToCartClick);
-  }, signal);
 
-  placeOrderButtons.forEach((button) => {
-    button.addEventListener("click", onPlaceOrderClick);
-  }, signal);
+const onPlaceOrderClickNeed = (e: Event) => {
+  const isBlocked =
+    document.body.getAttribute("data-plasmo-place-order-blocked") === "true"
+  if (!isBlocked) return // If the button is not blocked, we don't need to show the questionary.
 
-  oneClickBuy?.forEach((p) => {
-    p.button?.addEventListener("click", (e) => {onInstantBuyClick([p.item]); e.stopPropagation; e.preventDefault()});
-  }, signal);
+  e.preventDefault();
+  e.stopPropagation();
 
-  saveCurrentItems();
+  const onComplete = () => {
+    document.body.setAttribute("data-plasmo-place-order-blocked", "false")
+
+    const button = e.target as HTMLButtonElement
+    button.click()
+  };
+
+  openModal(<Questionary onComplete={onComplete} />);
 }
 
-function onInstantBuyClick(items: ShoppingItem[]) {
-  const isBlocked = document.body.getAttribute('data-plasmo-place-order-blocked') === "true";
-  if (isBlocked) return;
+function onPlaceOrderClickWait(e: Event) {
+  permit.createIfNone()
 
-  if (isNewOrder(cart.value ?? [])) return;
-  
-  purchases.value = purchases.value.concat({time: Date.now(), items});
-  sendAnalytics('place-order', items);
-}
-
-let latestPlacedOrder;
-
-function isNewOrder(order: ShoppingItem[]) : boolean {
-  let tempLatestPlacedOrder = latestPlacedOrder;
-  latestPlacedOrder = order;
-  if(!tempLatestPlacedOrder) return true;
-  if(order.length !== tempLatestPlacedOrder.length) return true;
-  
-  return JSON.stringify(order) !== JSON.stringify(tempLatestPlacedOrder);
-}
-
-function onPlaceOrderClick(e: MouseEvent) {
-  const isBlocked = document.body.getAttribute('data-plasmo-place-order-blocked') === "true";
-  if (isBlocked) return;
-
-  const target = e.target as HTMLElement;
-  if((target).id === "less-inner-button-text") {
-    target.style.pointerEvents = "none";
+  const onComplete = () => {
+    document.body.setAttribute("data-plasmo-place-order-blocked", "false")
+    const button = e.target as HTMLElement
+    button.click?.()
+    permit.markAsUsed()
   }
 
-  if (!isNewOrder(cart.value ?? [])) return;
-
-  purchases.value = purchases.value.concat({time: Date.now(), items: cart.value ?? []});
-  sendAnalytics('place-order', cart.value ?? []);
+  if (!permit.isValid()) {
+    // Prevent the default action and stop event propagation if the permit is not valid
+    e.preventDefault()
+    e.stopPropagation()
+    openModal(<EnforceWait onComplete={onComplete} />)
+  } else onComplete();
 }
 
-function saveCurrentItems() {
-  const items = getters.getDomainGetters().getCartItems(document.body);
-  if(items.length === 0) return;
 
-  if(process.env.NODE_ENV === "development")
-    console.log("save items", items);
-
-  cart.value = items;
+function enforceWaitEffect(triggers: HTMLElement[], signal: {signal:AbortSignal}) {
+  triggers.forEach((trigger) => {
+    trigger.addEventListener("click", onPlaceOrderClickWait, signal)
+  })
 }
 
-function onAddToCartClick(e: Event) {
-  sendAnalytics('add-to-cart', undefined);
+function needThisEffect(triggers: HTMLElement[], signal: {signal:AbortSignal}) {
+  triggers.forEach((trigger) => {
+    trigger.addEventListener("click", onPlaceOrderClickNeed, signal)
+  })
 }
 
-function setupTimeMeasurement() {
-  const stopWatch = new Stopwatch();
-  stopWatch.start();
+const domainGetters = getters.getDomainGetters()
 
-  // Is triggered by the browser when the tab is hidden or visible
-  document.addEventListener("visibilitychange", () => {
-    document.hidden ? stopWatch.stop() : stopWatch.start();
+function effect(signal: { signal: AbortSignal }) {
+  const placeOrderButtons = domainGetters.placeOrderButtons(document.body)
+  const oneClickBuyNow = domainGetters.getOneClickBuyNow?.(document.body)
+  const addToCartButtons = domainGetters.addToCartButtons(document.body)
+  const currentCart = domainGetters.getCartItems(document.body)
+  const allBuyButtons = oneClickBuyNow ? [...placeOrderButtons, ...oneClickBuyNow.map((p) => p.button)] : placeOrderButtons
+
+  // Setup tracking
+  trackerEffect({
+    signal,
+    addToCartButtons,
+    placeOrderButtons,
+    oneClickBuy: oneClickBuyNow,
+    cartItems: currentCart
   });
 
-  // If another application is opened on top of the browser, the focus changes
-  window.addEventListener("focus", () => {
-    stopWatch.start();
-  });
-
-  window.addEventListener("blur", () => {
-    stopWatch.stop();
-  });
-
-  const sendTimeEvent = () => {
-    if (!stopWatch.isRunning()) return;
-    sendAnalytics('time-spent', {duration: stopWatch.getTime()});
-    stopWatch.start(true);
+  // Setup strategy
+  const currentStrategy = settings.value.activeStrategies[0]
+  // Specifically required for need this
+  switch (currentStrategy) {
+    case "need-this":
+      document.body.setAttribute("data-plasmo-place-order-blocked", "true");
+      needThisEffect(allBuyButtons, signal);
+      break;
+    case "enforce-wait":
+      enforceWaitEffect(allBuyButtons, signal);
+      break;
   }
-
-  setInterval(sendTimeEvent, INTERVAL_LENGTH); // Every so often
-  window.addEventListener("beforeunload", sendTimeEvent); // When the tab is closed
 }
 
 settings.onInit((settings) => {
   if (!settings.active) return;
-  setupTimeMeasurement();
-  observer.addEffect(effect)
-  sendAnalytics('page-view', undefined);
+  trackingInit();
+
+  // Specifically required for enforce-wait
+  if(settings.activeStrategies.includes("enforce-wait")) {
+    document.body.setAttribute(
+      "data-plasmo-place-order-blocked",
+      permit.isValid() ? "false" : "true"
+    )
+  }
+
+  observer.addEffect(effect);
+  console.log("settings", settings);
+  if(!settings.hasSeenWelcomeModal) {
+    setTimeout(() => {
+      openModal(<WelcomeModal />)
+    }, 3000);
+  }
 });

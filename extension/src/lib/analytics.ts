@@ -34,6 +34,7 @@ type AnalyticsPayloads = {
   "open-popup": undefined;
   "open-options": undefined;
   "request-add-website": string;
+  "welcome-modal-seen": undefined;
   
   // Enforce wait events
   "enforce_wait_modal_shown": { domain: string; permitExists: boolean; permitIsValid: boolean };
