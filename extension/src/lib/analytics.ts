@@ -37,35 +37,13 @@ type AnalyticsPayloads = {
   "welcome-modal-seen": undefined;
   
   // Enforce wait events
-  "enforce_wait_modal_shown": { domain: string; permitExists: boolean; permitIsValid: boolean, timeLeft: number };
-  "enforce_wait_timer_started": { domain: string; waitTime: number; permitLength: number };
-  "enforce_wait_canceled": { domain: string; permitActive: boolean; waitCompleted: boolean };
-  "enforce_wait_completed": { domain: string; permitActive: boolean };
-  "enforce_wait_info_expanded": { domain: string };
+  "enforce_wait_modal_shown": { permitExists: boolean; permitIsValid: boolean, timeLeft: number };
+  "enforce_wait_timer_started": { waitTime: number; permitLength: number };
+  "enforce_wait_canceled": {  permitActive: boolean; waitCompleted: boolean };
+  "enforce_wait_completed": {  permitActive: boolean };
+  "enforce_wait_info_expanded": undefined;
   "enforce_wait_period_completed": { domain: string; waitDuration: number };
-  
-  // Visualize alternatives events
-  "visualize_alternatives_continue": { amount: number; from: string };
-  "visualize_alternatives_cancel": { amount: number; from: string };
-  "visualize_alternatives_select_option": { amount: number; option: string };
-  "visualize_alternatives_back": { amount: number; from: string };
-  
-  // Corporate agenda events
-  "corporate_agenda_select_category": { category: string };
-  "corporate_agenda_collapse_category": { category: string };
-  "corporate_agenda_acknowledge": { category: string };
-  "corporate_agenda_continue": { acknowledged: boolean };
-  
-  // Alternate activities events
-  "alternate_activities_select_category": { category: string };
-  "alternate_activities_select_activity": { activity: string };
-  "alternate_activities_back": { from: string };
-  "alternate_activities_continue": { viewed: boolean };
-  "alternate_activities_resource_click": { resource: string; activity: string };
-  "alternate_activities_completed": { fromRandomSuggestion: boolean };
-  "alternate_activities_canceled": { fromRandomSuggestion: boolean };
-  "alternate_activities_aborted_shopping": { fromRandomSuggestion: boolean; searchQuery: string; category: string; activityId: string };
-  "alternate_activities_random_suggestion": { activity: string; category: string };
+  "enforce_wait_permit_valid_on_click": { timeLeft: number };
 };
 
 export async function sendAnalytics<T extends keyof AnalyticsPayloads>(

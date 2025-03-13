@@ -113,6 +113,53 @@ export const config: PlasmoCSConfig = {
     "https://ingvardchristensen.dk/*",
     "https://mobler.dk/*",
     "https://*.adidas.dk/*",
+    "https://vibholm.dk/*",
+"https://*.pandora.net/*",
+"https://*.vivino.com/*",
+"https://*.bedrenaetter.dk/*",
+"https://densidsteflaske.dk/*",
+"https://*.dilling.com/*",
+"https://*.helsebixen.dk/*",
+"https://*.jwlry.dk/*",
+"https://*.lomax.dk/*",
+"https://thearmypainter.com/*",
+"https://*.trendhim.dk/*",
+"https://altidenergi.dk/*",
+"https://arturel.dk/*",
+"https://basicandally.com/*",
+"https://*.birdie.design/*",
+"https://blandselvfroe.dk/*",
+"https://bottlehero.dk/*",
+"https://canacare.dk/*",
+"https://shop.caspersobczyk.dk/*",
+"https://fantombryg.dk/*",
+"https://flowintimates.com/*",
+"https://*.greeting.dk/*",
+"https://*.kodriget.dk/*",
+"https://sisicph.dk/*",
+"https://showerlabs.dk/*",
+"https://skagen-clothing.dk/*",
+"https://*.underflod.shop/*",
+"https://wecyclefurniture.dk/*",
+"https://andlight.dk/*",
+"https://bibsworld.com/*",
+"https://maanesten.com/*",
+"https://lesdeux.dk/*",
+"https://enamelcopenhagen.dk/*",
+"https://*.rains.com/*",
+"https://*.royalcopenhagen.com/*",
+"https://*.miinto.dk/*",
+"https://*.chanti.dk/*",
+"https://*.ganni.com/*",
+"https://*.babysam.dk/*",
+"https://*.vinted.dk/*",
+"https://camillakroeyer.dk/*",
+"https://bahne.dk/*",
+"https://*.envii.com/*",
+"https://*.emp-shop.dk/*",
+"https://nelly.com/*",
+"https://*.jdsports.dk/*",
+"https://*.stylepit.dk/*",
 
     // ----- Common domains -----
     "https://*.shein.com/*",
@@ -224,7 +271,7 @@ export const config: PlasmoCSConfig = {
     "https://*.flybyjing.com/*",
     "https://getmaude.com/*",
     "https://ugmonk.com/*",
-    "https://shop.app/*"
+    "https://shop.app/*",
   ],
   all_frames: true
 }
@@ -252,7 +299,14 @@ function onPlaceOrderClickWait(e: Event) {
       e.preventDefault()
       e.stopPropagation()
       openModal(<EnforceWait onComplete={onComplete} />)
-    } else onComplete();
+    } else {
+      const currentPermit = permit.get()!
+      sendAnalytics("enforce_wait_permit_valid_on_click", {
+        timeLeft: currentPermit.end - Date.now()
+      })
+      
+      onComplete();
+    }
   } catch (e: any) {
     sendErrorReport("onPlaceOrderListener", e)
   }

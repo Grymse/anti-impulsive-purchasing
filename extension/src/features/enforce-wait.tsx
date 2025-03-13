@@ -38,10 +38,9 @@ function permitToWaitTime(permit: Permit): {
 interface WaitTimerProps {
   onCancel: () => void
   onComplete: () => void
-  scale: string
 }
 
-function WaitTimer({ onCancel, onComplete, scale }: WaitTimerProps) {
+function WaitTimer({ onCancel, onComplete }: WaitTimerProps) {
   const [currentPermit, setCurrentPermit] = useState<Permit | null>(
     permit.get()
   )
@@ -93,7 +92,6 @@ function WaitTimer({ onCancel, onComplete, scale }: WaitTimerProps) {
     permit.createIfNone()
     setCurrentPermit(permit.get())
     sendAnalytics("enforce_wait_timer_started", {
-      domain: domain,
       waitTime: PERMIT_WAIT_TIME,
       permitLength: PERMIT_LENGTH
     })
@@ -175,9 +173,7 @@ function WaitTimer({ onCancel, onComplete, scale }: WaitTimerProps) {
           className="w-full"
           onValueChange={(value) => {
             if (value) {
-              sendAnalytics("enforce_wait_info_expanded", {
-                domain: domain
-              })
+              sendAnalytics("enforce_wait_info_expanded", undefined)
             }
           }}>
           <AccordionItem value="info">
@@ -234,20 +230,19 @@ type EnforceWaitProps = {
 }
 
 export function EnforceWait({ onComplete }: EnforceWaitProps) {
-  const { close, scale } = useModal()
+  const { close } = useModal()
 
   useEffect(() => {
+    const currentPermit : Permit | null = permit.get();
     sendAnalytics("enforce_wait_modal_shown", {
-      domain: document.location.hostname,
-      permitExists: !!permit.get(),
+      permitExists: !!currentPermit,
       permitIsValid: permit.isValid(),
-      timeLeft: permit.get() ? permit.get().end - Date.now() : -1
+      timeLeft: currentPermit ? currentPermit.end - Date.now() : -1
     })
   })
 
   const handleComplete = () => {
     sendAnalytics("enforce_wait_completed", {
-      domain: document.location.hostname,
       permitActive: permit.isValid()
     })
     close()
@@ -256,7 +251,6 @@ export function EnforceWait({ onComplete }: EnforceWaitProps) {
 
   const handleCancel = () => {
     sendAnalytics("enforce_wait_canceled", {
-      domain: document.location.hostname,
       permitActive: permit.get() ? Date.now() >= permit.get()!.start : false,
       waitCompleted: permit.isValid()
     })
@@ -267,7 +261,6 @@ export function EnforceWait({ onComplete }: EnforceWaitProps) {
     <WaitTimer
       onCancel={handleCancel}
       onComplete={handleComplete}
-      scale={scale}
     />
   )
 }

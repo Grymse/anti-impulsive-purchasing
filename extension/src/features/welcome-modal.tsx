@@ -13,7 +13,6 @@ export function WelcomeModal() {
         return () => {
             if (2000 < new Date().getTime() - openTime) {
                 settings.update( s => {return {...s, hasSeenWelcomeModal: true}});
-                console.log("settings", settings.value);
                 sendAnalytics("welcome-modal-seen", undefined);
             }
         }
