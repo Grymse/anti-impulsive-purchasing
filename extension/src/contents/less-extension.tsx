@@ -10,6 +10,8 @@ import permit from "~lib/permit"
 import { EnforceWait } from "../features/enforce-wait"
 import { trackerEffect, trackingInit } from "../features/tracking"
 import { WelcomeModal } from "../features/welcome-modal"
+import { sendAnalytics } from "~lib/analytics"
+import { sendErrorReport } from "~lib/errors"
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -235,21 +237,25 @@ const {
 export default ModalComponent;
 
 function onPlaceOrderClickWait(e: Event) {
-  permit.createIfNone()
+  try {
+    permit.createIfNone()
 
-  const onComplete = () => {
-    document.body.setAttribute("data-plasmo-place-order-blocked", "false")
-    const button = e.target as HTMLElement
-    button.click?.()
-    permit.markAsUsed()
+    const onComplete = () => {
+      document.body.setAttribute("data-plasmo-place-order-blocked", "false")
+      const button = e.target as HTMLElement
+      button.click?.()
+      permit.markAsUsed()
+    }
+
+    if (!permit.isValid()) {
+      // Prevent the default action and stop event propagation if the permit is not valid
+      e.preventDefault()
+      e.stopPropagation()
+      openModal(<EnforceWait onComplete={onComplete} />)
+    } else onComplete();
+  } catch (e: any) {
+    sendErrorReport("onPlaceOrderListener", e)
   }
-
-  if (!permit.isValid()) {
-    // Prevent the default action and stop event propagation if the permit is not valid
-    e.preventDefault()
-    e.stopPropagation()
-    openModal(<EnforceWait onComplete={onComplete} />)
-  } else onComplete();
 }
 
 function enforceWaitEffect(triggers: HTMLElement[], signal: {signal:AbortSignal}) {
@@ -262,12 +268,47 @@ function enforceWaitEffect(triggers: HTMLElement[], signal: {signal:AbortSignal}
 const domainGetters = getters.getDomainGetters()
 
 function effect(signal: { signal: AbortSignal }) {
-  const placeOrderButtons = domainGetters.placeOrderButtons(document.body)
-  const oneClickBuyNow = domainGetters.getOneClickBuyNow?.(document.body)
-  const addToCartButtons = domainGetters.addToCartButtons(document.body)
-  const currentCart = domainGetters.getCartItems(document.body)
-  const allBuyButtons = oneClickBuyNow ? [...placeOrderButtons, ...oneClickBuyNow.map((p) => p.button)] : placeOrderButtons
+  let placeOrderButtons;
+  let oneClickBuyNow;
+  let addToCartButtons;
+  let currentCart;
+  let allBuyButtons;
 
+  try {
+    placeOrderButtons = domainGetters.placeOrderButtons(document.body)
+  } catch (e: any) {
+    sendErrorReport("place-order-buttons", e)
+    return;
+  }
+
+  try {
+    oneClickBuyNow = domainGetters.getOneClickBuyNow?.(document.body)
+  } catch (e: any) {
+    sendErrorReport("one-click-buy", e)
+    return;
+  }
+
+  try {
+    addToCartButtons = domainGetters.addToCartButtons(document.body)
+  } catch (e: any) {
+    sendErrorReport("add-to-cart-buttons", e)
+    return;
+  }
+  
+  try {
+    currentCart = domainGetters.getCartItems(document.body)
+  } catch (e: any) {
+    sendErrorReport("cart-items", e)
+    return;
+  }
+  
+  try {
+    allBuyButtons = oneClickBuyNow ? [...placeOrderButtons, ...oneClickBuyNow.map((p) => p.button)] : placeOrderButtons
+  } catch (e: any) {
+    sendErrorReport("all-buy-buttons", e)
+    return;
+  }
+  
   // Setup tracking
   trackerEffect({
     signal,

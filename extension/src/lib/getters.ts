@@ -445,7 +445,7 @@ getters.register("matas.dk", {
 
 getters.register("proshop.dk", {
     placeOrderButtons:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[name="paymentOption"]')
+        const buttons = e.querySelectorAll<HTMLElement>('button[name="paymentOption"]');
         return Array.from(buttons)
     },
 
@@ -461,7 +461,7 @@ getters.register("proshop.dk", {
         // total
         return items.map(item => {
             const quantity = item.querySelector<HTMLInputElement>('input[type="number"]')?.value;
-            const price = splitPriceCurrency(item.querySelector<HTMLElement>('.basketLinePriceWithVat b')?.textContent);
+            const price = splitPriceCurrency(item.querySelector<HTMLElement>('.basketLinePriceWithVat b').textContent);
             return {
                 quantity: parseInt(quantity),
                 price: price.price,

@@ -81,7 +81,7 @@ export async function sendAnalytics<T extends keyof AnalyticsPayloads>(
     user_id: await getUserId(),
     session_id: await getSessionId(),
     created_at: new Date().toISOString(),
-    apikey: process.env.PLASMO_PUBLIC_ANALYTICS_SECRET,
+    apikey: process.env.PLASMO_PUBLIC_SECRET,
   };
 
   if (process.env.NODE_ENV === "development") {
@@ -106,7 +106,7 @@ type SessionID = {
   expires: number;
 };
 
-async function getSessionId(): Promise<string> {
+export async function getSessionId(): Promise<string> {
   const unparsedSession = (await chrome.storage.local.get("session"))
     ?.["session"];
   const session = JSON.parse(unparsedSession ?? "{}") as SessionID;
