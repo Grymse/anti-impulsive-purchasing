@@ -6,7 +6,6 @@ import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
 import { settings } from "~lib/settings"
 import createModal from "~components/Modal"
-import { Questionary } from "../features/need-this"
 import permit from "~lib/permit"
 import { EnforceWait } from "../features/enforce-wait"
 import { trackerEffect, trackingInit } from "../features/tracking"
@@ -235,25 +234,6 @@ const {
 
 export default ModalComponent;
 
-
-const onPlaceOrderClickNeed = (e: Event) => {
-  const isBlocked =
-    document.body.getAttribute("data-plasmo-place-order-blocked") === "true"
-  if (!isBlocked) return // If the button is not blocked, we don't need to show the questionary.
-
-  e.preventDefault();
-  e.stopPropagation();
-
-  const onComplete = () => {
-    document.body.setAttribute("data-plasmo-place-order-blocked", "false")
-
-    const button = e.target as HTMLButtonElement
-    button.click()
-  };
-
-  openModal(<Questionary onComplete={onComplete} />);
-}
-
 function onPlaceOrderClickWait(e: Event) {
   permit.createIfNone()
 
@@ -272,18 +252,12 @@ function onPlaceOrderClickWait(e: Event) {
   } else onComplete();
 }
 
-
 function enforceWaitEffect(triggers: HTMLElement[], signal: {signal:AbortSignal}) {
   triggers.forEach((trigger) => {
     trigger.addEventListener("click", onPlaceOrderClickWait, signal)
   })
 }
 
-function needThisEffect(triggers: HTMLElement[], signal: {signal:AbortSignal}) {
-  triggers.forEach((trigger) => {
-    trigger.addEventListener("click", onPlaceOrderClickNeed, signal)
-  })
-}
 
 const domainGetters = getters.getDomainGetters()
 
@@ -303,17 +277,9 @@ function effect(signal: { signal: AbortSignal }) {
     cartItems: currentCart
   });
 
-  // Setup strategy
-  const currentStrategy = settings.value.activeStrategies[0]
   // Specifically required for need this
-  switch (currentStrategy) {
-    case "need-this":
-      document.body.setAttribute("data-plasmo-place-order-blocked", "true");
-      needThisEffect(allBuyButtons, signal);
-      break;
-    case "enforce-wait":
+  if(settings.value.activeStrategies.includes("enforce-wait")) {
       enforceWaitEffect(allBuyButtons, signal);
-      break;
   }
 }
 
@@ -330,7 +296,7 @@ settings.onInit((settings) => {
   }
 
   observer.addEffect(effect);
-  console.log("settings", settings);
+  
   if(!settings.hasSeenWelcomeModal) {
     setTimeout(() => {
       openModal(<WelcomeModal />)

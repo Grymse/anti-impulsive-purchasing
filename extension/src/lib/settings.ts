@@ -1,7 +1,7 @@
 import { getUserId } from "./analytics";
 import { PersistentValue } from "./utils";
 
-type StrategyType = "need-this" | "enforce-wait" | "visualize-alternatives"  | "max-purchases" | "corporate-agenda" | "alternate-activities" | "none";
+type StrategyType = "enforce-wait" | "none";
 
 type Strategy = {
     name: string;
@@ -10,11 +10,6 @@ type Strategy = {
 }
 
 export const strategies : Strategy[] = [
-    {
-        code: "need-this",
-        name: "Need This",
-        description: "Before committing to a purchase, ask yourself a couple of questions, about whether you really need this",
-    },
     {
         code: "enforce-wait",
         name: "Enforce Wait-time",
@@ -58,9 +53,9 @@ function selectStrategyFromId(id: string) : StrategyType {
 }
 
 // Enforce activeStrategy changes
-/* getUserId().then(userId => {
+getUserId().then(userId => {
     const strategy = selectStrategyFromId(userId);
     settings.onInit(prevSettings => {
         settings.value = {...prevSettings, activeStrategies: [strategy]};
     })
-}); */
+});
