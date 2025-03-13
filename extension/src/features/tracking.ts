@@ -3,7 +3,7 @@
 import { type OneBlickBuyButton, type ShoppingItem } from "~lib/getters";
 import { Stopwatch } from "ts-stopwatch";
 import { sendAnalytics } from "~lib/analytics";
-import { cart, purchases } from "~lib/purchases";
+import { cart } from "~lib/purchases";
 
 const INTERVAL_LENGTH = 1000 * 5; // 5 seconds
 
@@ -25,19 +25,20 @@ export function trackerEffect({signal, addToCartButtons, placeOrderButtons, oneC
   }, signal);
 
   oneClickBuy?.forEach((p) => {
-    p.button?.addEventListener("click", (e) => {onInstantBuyClick([p.item]); e.stopPropagation(); e.preventDefault()});
+    p.button?.addEventListener("click", () => {onInstantBuyClick([p.item]);});
   }, signal);
 
   saveCurrentItems(cartItems);
 }
 
+
+
 function onInstantBuyClick(items: ShoppingItem[]) {
   const isBlocked = document.body.getAttribute('data-plasmo-place-order-blocked') === "true";
   if (isBlocked) return;
 
-  if (isNewOrder(cart.value ?? [])) return;
+  if (!isNewOrder(items ?? [])) return;
   
-  purchases.value = purchases.value.concat({time: Date.now(), items});
   sendAnalytics('place-order', items);
 }
 
@@ -63,7 +64,6 @@ function onPlaceOrderClick(e: MouseEvent) {
 
   if (!isNewOrder(cart.value ?? [])) return;
 
-  purchases.value = purchases.value.concat({time: Date.now(), items: cart.value ?? []});
   sendAnalytics('place-order', cart.value ?? []);
 }
 

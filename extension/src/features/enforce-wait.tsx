@@ -75,8 +75,8 @@ function WaitTimer({ onCancel, onComplete }: WaitTimerProps) {
 
         // Track when the waiting period completes
         sendAnalytics("enforce_wait_period_completed", {
-          domain: domain,
-          waitDuration: Date.now() - (currentPermit.start - PERMIT_WAIT_TIME)
+          timeUntilInvalid: Date.now() - currentPermit.end,
+          timeSinceValid: Date.now() - currentPermit.start
         })
 
         onComplete()
@@ -91,10 +91,7 @@ function WaitTimer({ onCancel, onComplete }: WaitTimerProps) {
   const handleStartWaitTimer = () => {
     permit.createIfNone()
     setCurrentPermit(permit.get())
-    sendAnalytics("enforce_wait_timer_started", {
-      waitTime: PERMIT_WAIT_TIME,
-      permitLength: PERMIT_LENGTH
-    })
+    sendAnalytics("enforce_wait_timer_started", undefined)
   }
 
   return (
@@ -237,14 +234,11 @@ export function EnforceWait({ onComplete }: EnforceWaitProps) {
     sendAnalytics("enforce_wait_modal_shown", {
       permitExists: !!currentPermit,
       permitIsValid: permit.isValid(),
-      timeLeft: currentPermit ? currentPermit.end - Date.now() : -1
+      timeUntilValid: currentPermit ? currentPermit.start - Date.now() : -1
     })
   })
 
   const handleComplete = () => {
-    sendAnalytics("enforce_wait_completed", {
-      permitActive: permit.isValid()
-    })
     close()
     onComplete()
   }

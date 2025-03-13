@@ -286,6 +286,7 @@ export default ModalComponent;
 function onPlaceOrderClickWait(e: Event) {
   try {
     permit.createIfNone()
+    console.log("CLICKED");
 
     const onComplete = () => {
       document.body.setAttribute("data-plasmo-place-order-blocked", "false")
@@ -300,10 +301,12 @@ function onPlaceOrderClickWait(e: Event) {
       e.stopPropagation()
       openModal(<EnforceWait onComplete={onComplete} />)
     } else {
-      const currentPermit = permit.get()!
+      const currentPermit = permit.get();
+
       sendAnalytics("enforce_wait_permit_valid_on_click", {
-        timeLeft: currentPermit.end - Date.now()
-      })
+        timeUntilInvalid: currentPermit.end - Date.now(),
+        timeSinceValid: Date.now() - currentPermit.start
+      });
       
       onComplete();
     }
@@ -357,7 +360,7 @@ function effect(signal: { signal: AbortSignal }) {
   }
   
   try {
-    allBuyButtons = oneClickBuyNow ? [...placeOrderButtons, ...oneClickBuyNow.map((p) => p.button)] : placeOrderButtons
+    allBuyButtons = oneClickBuyNow ? [...placeOrderButtons, ...oneClickBuyNow.map((p) => p.button)] : placeOrderButtons;
   } catch (e: any) {
     sendErrorReport("all-buy-buttons", e)
     return;

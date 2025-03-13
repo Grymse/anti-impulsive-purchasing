@@ -53,9 +53,11 @@ function selectStrategyFromId(id: string) : StrategyType {
 }
 
 // Enforce activeStrategy changes
-getUserId().then(userId => {
-    const strategy = selectStrategyFromId(userId);
-    settings.onInit(prevSettings => {
-        settings.value = {...prevSettings, activeStrategies: [strategy]};
-    })
-});
+if (process.env.NODE_ENV !== "development") {
+    getUserId().then(userId => {
+        const strategy = selectStrategyFromId(userId);
+        settings.onInit(prevSettings => {
+            settings.value = {...prevSettings, activeStrategies: [strategy]};
+        })
+    });
+}

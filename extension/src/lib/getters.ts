@@ -1,8 +1,5 @@
-import { CarTaxiFront } from "lucide-react";
-
 export type OneBlickBuyButton = {
     button?: HTMLElement;
-    label?: HTMLElement;
     item: ShoppingItem;
 }
 
@@ -234,28 +231,14 @@ getters.register(['amazon.com', 'amazon.se', 'amazon.co.uk', 'amazon.de'], {
     },
 
     getCartItems: (e: HTMLElement) => {
-        if(location.href.includes('cart')) {
-            const items = Array.from(document.querySelectorAll('div[data-csa-c-item-id]'));
+        if(!location.href.includes('checkout')) return [];
 
-            return items.map(item => {
-                // total
-                const quantity = parseInt(item.querySelector('div[name="sc-quantity"] span[data-a-selector="value"]')?.textContent ?? "1");
-                const unsplitPrice = item.querySelector<HTMLElement>('.sc-item-price-block .a-price .a-offscreen')?.textContent;
-                const {price, currency} = splitPriceCurrency(unsplitPrice);
-
-                return {
-                    quantity,
-                    price: price * quantity,
-                    currency
-                }
-            });
-        }
-
-        const items = Array.from(document.querySelectorAll('#ewc-content div[data-csa-c-item-id]'));
+        const items = Array.from(document.querySelectorAll('span[data-csa-c-slot-id="checkout-item-block-itemBlock"]'));
 
         return items.map(item => {
-            const quantity = parseInt(item.querySelector<HTMLInputElement>('span[data-a-selector="value"]')?.textContent);
-            const unsplitPrice = item.querySelector<HTMLElement>('.ewc-unit-price span')?.textContent;
+            // total
+            const quantity = parseInt(item.querySelector('select')?.value);
+            const unsplitPrice = item.querySelector<HTMLElement>('.lineitem-price-text')?.textContent;
             const {price, currency} = splitPriceCurrency(unsplitPrice);
 
             return {
@@ -268,41 +251,31 @@ getters.register(['amazon.com', 'amazon.se', 'amazon.co.uk', 'amazon.de'], {
     },
 
     getOneClickBuyNow: (e: HTMLElement) => {
-        
-        /* return Array.from(document?.querySelectorAll<HTMLElement>('button[data-testid="buyNow1click"]')).map(b => {
+        const buttonsSideBar = Array.from(document?.querySelectorAll<HTMLElement>('button[data-testid="buyNow1click"]')).map(b => {
             const {price, currency} = splitPriceCurrency(b.closest('div[data-testid]').querySelector('span').textContent);
             return {button: b, item: {price, currency, quantity: 1}};
-        }); */
-        return [];
-        const products = e.querySelectorAll<HTMLElement>('.s-product-image-container');
+        });
 
-        if (products.length > 0) {
-            return Array.from(products).map(product => {
-                const productContainer = product.closest('.a-section');
-                const unsplitPrice = productContainer.querySelector<HTMLElement>('.a-price .a-offscreen').textContent;
-                const { price, currency } = splitPriceCurrency(unsplitPrice);
-                const button = productContainer.querySelector<HTMLElement>('.a-button-input');
-                const label = productContainer.querySelector<HTMLElement>('.a-button-text');
+        const buttonsProductPage = Array.from(document?.querySelectorAll<HTMLElement>('#one-click-button')).map(b => {
+            const unsplitPrice = b.closest('#buybox')?.querySelector?.('.a-price')?.textContent;
+            const {price, currency} = splitPriceCurrency(unsplitPrice);
+            return {button: b, item: {price, currency, quantity: 1}};
+        });
 
+        const buttonsProductListing = Array.from(document.querySelectorAll('i.a-icon-1click')).map(p => 
+            {
+                const unsplitPrice = p.closest('.puis-card-container, #bnx_price_block_common')?.querySelector?.('.a-offscreen, .a-size-large');
+                const {price, currency} = splitPriceCurrency(unsplitPrice?.textContent);
                 return {
-                    button,
-                    label,
-                    item: {
-                        quantity: 1,
-                        price,
-                        currency,
-                    }
-                }
-            });
-        }
+                    button: p.parentElement.querySelector('input'),
+                    item: {price, currency, quantity: 1}
+                } 
+        }).filter(b => b.button.id !== "one-click-button");
 
-        const button = e.querySelector<HTMLElement>('#one-click-button');
-        const item = e.querySelector<HTMLElement>('.a-price');
-        const label = button?.parentElement.querySelector<HTMLElement>('.a-button-text');
+        const combined = buttonsSideBar.concat(buttonsProductPage, buttonsProductListing);
 
-        if (!button || !item || !label) return [];
-
-        return [{button, label, item: {quantity: 1, price: 0, currency: item.textContent} }];
+        console.log(combined);
+        return combined;
     }
 });
 
@@ -358,7 +331,7 @@ MLElement>('button[id="Continue to checkout button"]')
     }
   }) */
 
-getters.register("ebay.com", {
+getters.register(["ebay.com", "ebay.de", "ebay.co.uk"], {
     placeOrderButtons:(e: HTMLElement) => {
         const buttons = e.querySelectorAll<HTMLElement>('button[data-test-id="cart-checkout-button"], #gpay-button-online-api-id, div[data-test-id="PAYPAL_CTA_BUTTON"], button[data-test-id="CONFIRM_AND_PAY_BUTTON"]')
         return Array.from(buttons)
@@ -369,6 +342,7 @@ getters.register("ebay.com", {
     },
 
     getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('pay')) return [];
         const listings = e.querySelectorAll<HTMLElement>('.line-item--listings');
         if (!listings) return [];
         // total
@@ -585,10 +559,8 @@ getters.register(shopifyDomains, {
 
 getters.register("elgiganten.dk", {
     placeOrderButtons:(e: HTMLElement) => {
-        const section = e.querySelector('div[class="md:self-start"]');
-        if (section == null) return [];
-        const buttons = section.querySelectorAll<HTMLElement>('button');
-        return Array.from(buttons);
+        if (!location.href.includes('/checkout')) return [];
+        return Array.from(document.querySelectorAll('elk-mobile-pay-payment button, elk-credit-card-pay-button button, elk-trustly-payment button, elk-klarna-payment button, elk-santander-payment button')).map(createInnerChild);
     },
 
     addToCartButtons: (e: HTMLElement) => {
@@ -597,21 +569,21 @@ getters.register("elgiganten.dk", {
     },
 
     getCartItems: (e: HTMLElement) => {
-        const cart = e.querySelector<HTMLElement>('ul[data-testid="order-summary"]');
-        if (cart === null) return [];
-        const priceElements = Array.from(cart.querySelectorAll<HTMLElement>('div.grid.grid-cols-subgrid.grid-rows-subgrid.row-span-2.gap-1.items-end')).map(e => e.textContent.split(".")[0]);
-        //@ts-expect-error: value is a valid field.
-        const quantityElements = Array.from(cart.querySelectorAll<HTMLElement>('input[pattern="[0-9]*"]')).map(e => e.value);
+        if (!location.href.includes('/checkout')) return [];
+        const items = Array.from(document.querySelectorAll('elk-order-summary-product'));
+        
+        return items.map(item => {
+            // total
+            const quantity = parseInt(item.querySelector('input')?.value);
+            const unsplitPrice = Array.from(item.querySelector('.product-item__price')?.children).at(-1)?.textContent;
+            const {price} = splitPriceCurrency(unsplitPrice);
 
-        let items = [];
-        for (let i = 0; i < priceElements.length; i++) {
-            items.push({
-                quantity: parseInt(quantityElements[i]),
-                price: parseFloat(priceElements[i]),
+            return {
+                quantity,
+                price,
                 currency: "kr"
-            });
-        }
-        return items;
+            }
+        });
     }
 })
 

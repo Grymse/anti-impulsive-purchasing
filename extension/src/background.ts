@@ -5,6 +5,7 @@ console.log("Background service worker starting")
 
 // Set uninstall URL when extension starts
 getUserId().then((id) => {
+    if (process.env.NODE_ENV === "development") return;
     chrome.runtime.setUninstallURL(`https://www.lessextension.com/goodbye?userid=${id}`, () => {
         console.log("Uninstall URL set successfully")
     })

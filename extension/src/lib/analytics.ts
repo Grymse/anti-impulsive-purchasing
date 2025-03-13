@@ -37,13 +37,12 @@ type AnalyticsPayloads = {
   "welcome-modal-seen": undefined;
   
   // Enforce wait events
-  "enforce_wait_modal_shown": { permitExists: boolean; permitIsValid: boolean, timeLeft: number };
-  "enforce_wait_timer_started": { waitTime: number; permitLength: number };
+  "enforce_wait_modal_shown": { permitExists: boolean; permitIsValid: boolean, timeUntilValid: number };
+  "enforce_wait_timer_started": undefined;
   "enforce_wait_canceled": {  permitActive: boolean; waitCompleted: boolean };
-  "enforce_wait_completed": {  permitActive: boolean };
   "enforce_wait_info_expanded": undefined;
-  "enforce_wait_period_completed": { domain: string; waitDuration: number };
-  "enforce_wait_permit_valid_on_click": { timeLeft: number };
+  "enforce_wait_period_completed": { timeUntilInvalid: number, timeSinceValid: number };
+  "enforce_wait_permit_valid_on_click": { timeUntilInvalid: number };
 };
 
 export async function sendAnalytics<T extends keyof AnalyticsPayloads>(
