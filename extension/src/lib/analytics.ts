@@ -37,7 +37,7 @@ type AnalyticsPayloads = {
   "welcome-modal-seen": undefined;
   
   // Enforce wait events
-  "enforce_wait_modal_shown": { domain: string; permitExists: boolean; permitIsValid: boolean };
+  "enforce_wait_modal_shown": { domain: string; permitExists: boolean; permitIsValid: boolean, timeLeft: number };
   "enforce_wait_timer_started": { domain: string; waitTime: number; permitLength: number };
   "enforce_wait_canceled": { domain: string; permitActive: boolean; waitCompleted: boolean };
   "enforce_wait_completed": { domain: string; permitActive: boolean };

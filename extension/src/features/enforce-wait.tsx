@@ -240,7 +240,8 @@ export function EnforceWait({ onComplete }: EnforceWaitProps) {
     sendAnalytics("enforce_wait_modal_shown", {
       domain: document.location.hostname,
       permitExists: !!permit.get(),
-      permitIsValid: permit.isValid()
+      permitIsValid: permit.isValid(),
+      timeLeft: permit.get() ? permit.get().end - Date.now() : -1
     })
   })
 
