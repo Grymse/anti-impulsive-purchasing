@@ -268,11 +268,11 @@ function enforceWaitEffect(triggers: HTMLElement[], signal: {signal:AbortSignal}
 const domainGetters = getters.getDomainGetters()
 
 function effect(signal: { signal: AbortSignal }) {
-  let placeOrderButtons;
+  let placeOrderButtons = [];
   let oneClickBuyNow;
-  let addToCartButtons;
-  let currentCart;
-  let allBuyButtons;
+  let addToCartButtons = [];
+  let currentCart = [];
+  let allBuyButtons = [];
 
   try {
     placeOrderButtons = domainGetters.placeOrderButtons(document.body)

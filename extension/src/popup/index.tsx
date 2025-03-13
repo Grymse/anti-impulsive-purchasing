@@ -8,11 +8,9 @@ import React, { useEffect, useState } from "react"
 import MainLogo from '../components/ui/MainLogo';
 import { Badge } from "~components/ui/badge"
 import { sendAnalytics } from "~lib/analytics"
-import { send } from "process"
 import BackgroundWave from "~options/BackgroundWave"
 import { cn } from "~lib/utils"
 import { Card, CardFooter, CardHeader } from "~components/ui/card"
-import Header from "~options/Header"
 import Text from "~options/Text"
 
 function getActiveTabUrl() {
@@ -103,9 +101,9 @@ function RequestWebsiteModal({domainName, children}: {domainName: string, childr
     {show && <div className="z-10 top-0 left-0 w-full h-full bg-lessbackground bg-opacity-50 flex items-center justify-center">
       <Card>
         <CardHeader>
-          <Text className="text-wrap text-ellipsis">Request {domainName.slice(0, 25)}{25 < domainName.length ? "..." : ""}</Text>
+          <Text className="text-wrap text-ellipsis max-w-full">Request {domainName.slice(0, 25)}{25 < domainName.length ? "..." : ""}</Text>
         </CardHeader>
-        <CardFooter className="justify-between">
+        <CardFooter className="justify-between gap-4">
           <Button variant="outline" onClick={() => setShow(false)}>Cancel</Button>
           <Button onClick={requestWebsite}>Request</Button>
         </CardFooter>

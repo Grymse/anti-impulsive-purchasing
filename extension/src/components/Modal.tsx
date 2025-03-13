@@ -31,26 +31,23 @@ function Modal({
             onClick={() => close()}
         >
             <div style={{
-            transform: `scale(${scale})`,
-            }} className="absolute w-full h-full flex items-start justify-center">
-                <div className="relative mt-10">
+                transform: `scale(${scale})`,
+            }} className="flex items-center flex-col gap-12">
+                <div className="relative w-24 h-24">
                     <div className="-inset-4 rounded-full absolute bg-gradient-to-r from-purple-500/30 to-blue-500/30 blur-lg animate-pulse" />
                     <img
                     src={IconSrc}
                     alt="Extension Logo (On)"
-                    width={100}
-                    height={100}
-                    className="relative w-auto h-auto max-w-[100px] animation-breathe"
+                    className="relative w-auto h-auto animation-breathe"
                     />
                 </div>
+                <Card
+                    className="max-w-xl bg-white"
+                    onClick={(e) => e.stopPropagation()}>
+                {children}
+                </Card>
+                <div className="h-24 w-2" />
             </div>
-            <Card style={{
-                transform: `scale(${scale})`
-                }}
-                className="max-w-xl bg-white"
-                onClick={(e) => e.stopPropagation()}>
-            {children}
-            </Card>
         </div>
     )
 }

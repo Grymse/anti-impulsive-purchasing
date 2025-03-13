@@ -323,7 +323,7 @@ getters.register('zalando.dk', {
         // total
         const itemElements = e.querySelectorAll<HTMLElement>('article.cart-product-card');
         if (!itemElements) return [];
-        const priceElements = Array.from(itemElements).map(i => i.querySelector('header section p').textContent);
+        const priceElements = Array.from(itemElements).map(i => i.querySelector('header section p')?.textContent);
         const quantity = Array.from(itemElements).map(i => i.querySelectorAll<HTMLOptionElement>('select')?.[1]?.value);
         let items = [];
         for (let i = 0; i < itemElements.length; i++) {
@@ -404,9 +404,9 @@ getters.register("shop.app", {
         const items = basket.querySelectorAll<HTMLElement>('div[role="row"]');
         // total
         return Array.from(items).map(item => {
-            const {price, currency} = splitPriceCurrency(item.querySelectorAll<HTMLElement>('div[role="cell"]')[3].textContent);
+            const {price, currency} = splitPriceCurrency(item.querySelectorAll<HTMLElement>('div[role="cell"]')[3]?.textContent);
             return {
-                quantity: parseInt(item.querySelectorAll<HTMLElement>('div[role="cell"]')[2].textContent),
+                quantity: parseInt(item.querySelectorAll<HTMLElement>('div[role="cell"]')[2]?.textContent),
                 price,
                 currency,
             }
@@ -429,15 +429,22 @@ getters.register("matas.dk", {
     },
 
     getCartItems: (e: HTMLElement) => {
-        const quantities = e.querySelectorAll<HTMLSelectElement>('select[name="quantity"]');
-        return Array.from(quantities).map(q => {
-            const box = q.parentElement.parentElement.parentElement.parentElement.parentElement;
-            const price = Array.from(box.querySelectorAll<HTMLElement>('div[direction="column"] span')).filter(i => i.innerText.includes('kr.'))[0];
+        if(!location.href.includes('/oversigt')) return [];
+
+        const items = Array.from(e.querySelectorAll('a[href]'))
+            .map(a => a.parentElement)
+            .filter(div => div.className.includes('BasketItem'));
+
+        return Array.from(items).map(item => {
+            const spans = Array.from(item.querySelectorAll('span'));
+            const {price, currency} = splitPriceCurrency(spans.at(-1)?.textContent);
+            const quantity = parseQty(spans.at(-2)?.textContent);
+            
             // total
             return {
-                quantity: parseInt(q.value),
-                price: splitPriceCurrency(price.innerText).price,
-                currency: "kr"
+                quantity,
+                price,
+                currency,
             };
         }); 
     }
@@ -461,7 +468,7 @@ getters.register("proshop.dk", {
         // total
         return items.map(item => {
             const quantity = item.querySelector<HTMLInputElement>('input[type="number"]')?.value;
-            const price = splitPriceCurrency(item.querySelector<HTMLElement>('.basketLinePriceWithVat b').textContent);
+            const price = splitPriceCurrency(item.querySelector<HTMLElement>('.basketLinePriceWithVat b')?.textContent);
             return {
                 quantity: parseInt(quantity),
                 price: price.price,
@@ -493,8 +500,8 @@ getters.register("boozt.com", {
         for (let i = 0; i < priceElement.length; i++) {
             items.push({
                 //@ts-expect-error .value is a valid field.
-                quantity: parseInt(quantity[i].value),
-                price: parseFloat(priceElement[i].innerText),
+                quantity: parseInt(quantity[i]?.value),
+                price: parseFloat(priceElement[i]?.innerText),
                 currency: "kr"
             });
         }
@@ -528,8 +535,8 @@ getters.register("hm.com", {
             const unsplitPrice = article?.querySelector('div span')?.textContent;
             const {price, currency} = splitPriceCurrency(unsplitPrice);
             return {
-                quantity: parseInt(input.value),
-                price: price * parseInt(input.value),
+                quantity: parseInt(input?.value),
+                price: price * parseInt(input?.value),
                 currency
             };
         });
@@ -553,7 +560,7 @@ getters.register(shopifyDomains, {
     addToCartButtons: (e: HTMLElement) => {
         if (location.href.includes('checkout')) return [];
         const buttons = Array.from(document.querySelectorAll<HTMLElement>('button')).filter(button =>
-            button.textContent.toLowerCase().includes('add') || button.textContent.toLowerCase().includes('tilføj')
+            button?.textContent?.toLowerCase?.()?.includes('add') || button?.textContent?.toLowerCase?.()?.includes('tilføj')
         );
        return buttons;
     },
@@ -566,9 +573,9 @@ getters.register(shopifyDomains, {
 
         // total
         return Array.from(items).map(item => {
-            const {price, currency} = splitPriceCurrency(item.querySelectorAll<HTMLElement>('div[role="cell"]')[3].textContent);
+            const {price, currency} = splitPriceCurrency(item.querySelectorAll<HTMLElement>('div[role="cell"]')[3]?.textContent);
             return {
-                quantity: parseInt(item.querySelectorAll<HTMLElement>('div[role="cell"]')[2].textContent),
+                quantity: parseInt(item.querySelectorAll<HTMLElement>('div[role="cell"]')[2]?.textContent),
                 price,
                 currency,
             }
@@ -624,7 +631,7 @@ getters.register("magasin.dk", {
         if (cart === null) return [];
         const priceElements = Array.from(cart.querySelectorAll<HTMLElement>('div[class="sales-wrapper"]')).map(e => {
             if (e.textContent.includes("Normal pris")) {
-                return parseInt(e.textContent.split("Normal pris")[1].replaceAll(".", ""));
+                return parseInt(e.textContent.split("Normal pris")[1]?.replaceAll(".", ""));
             } else {
                 return parseInt(e.textContent);
             }
@@ -766,9 +773,9 @@ getters.register("temu.com", {
         return Array.from(items).map(item => {
             // total    
             const priceAndQuantity = item.querySelector('span[data-priority-index]');
-            const price = parsePrice(priceAndQuantity.childNodes[0].textContent);
-            const currency = priceAndQuantity.childNodes[1].textContent;
-            const quantity = getNumberFromText(priceAndQuantity.childNodes[2]?.textContent ?? "1")
+            const price = parsePrice(priceAndQuantity?.childNodes?.[0]?.textContent);
+            const currency = priceAndQuantity?.childNodes?.[1]?.textContent;
+            const quantity = getNumberFromText(priceAndQuantity?.childNodes?.[2]?.textContent ?? "1")
 
             return {
                 quantity,
@@ -794,8 +801,8 @@ getters.register("target.com", {
         const items = e.querySelectorAll('div[data-test="cartItem"]');
 
         return Array.from(items).map(item => {
-            const quantity = parseInt(item.querySelector('select').value);
-            const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>('p[data-test="cartItem-price"]').textContent);
+            const quantity = parseInt(item.querySelector('select')?.value);
+            const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>('p[data-test="cartItem-price"]')?.textContent);
             // total
             return {
                 quantity,
@@ -829,9 +836,9 @@ getters.register("homedepot.com", {
     getCartItems: (e: HTMLElement) => {
         const items = e.querySelectorAll('div[data-automation-id="cart-item"]');
         return Array.from(items).map(item => {
-            const quantity = parseInt(item.querySelector('input').value);
+            const quantity = parseInt(item.querySelector('input')?.value);
             // total price
-            const {price, currency} = splitPriceCurrency(item.querySelector('span[data-automation-id="pricingScenariosTotalPriceAddedText"]').textContent);
+            const {price, currency} = splitPriceCurrency(item.querySelector('span[data-automation-id="pricingScenariosTotalPriceAddedText"]')?.textContent);
 
             return {
                 quantity,
@@ -870,8 +877,8 @@ getters.register("bestbuy.com", {
         const qtyHolders = document.querySelectorAll('div.fluid-item__actions')
 
         return Array.from(qtyHolders).map(qtyHolder => {
-            const qty = qtyHolder.querySelector('select').value;
-            const unsplitPrice = qtyHolder.parentElement.querySelector('div.price-block__primary-price').textContent;
+            const qty = qtyHolder.querySelector('select')?.value;
+            const unsplitPrice = qtyHolder.parentElement.querySelector('div.price-block__primary-price')?.textContent;
             const {price, currency} = splitPriceCurrency(unsplitPrice);
 
             return {
@@ -899,7 +906,7 @@ getters.register("costco.com", {
 
         return items.map((item, i) => {
             const quantity = item.querySelector<HTMLInputElement>(`input#quantity_${i+1}`)?.value;
-            const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>(`div[automation-id=totalPriceOutput_${i+1}]`).textContent);
+            const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>(`div[automation-id=totalPriceOutput_${i+1}]`)?.textContent);
 
             return {
                 quantity: parseInt(quantity),
@@ -927,8 +934,8 @@ getters.register(["adidas.dk", "adidas.com"], {
 
         return items.map(item => {
             // total
-            const quantity = item.querySelector<HTMLInputElement>('select').value;
-            const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>('div[data-auto-id="gl-price-item"]').textContent);
+            const quantity = item.querySelector<HTMLInputElement>('select')?.value;
+            const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>('div[data-auto-id="gl-price-item"]')?.textContent);
 
             return {
                 quantity: parseInt(quantity),
@@ -956,8 +963,8 @@ getters.register(["nike.com"], {
         const items = Array.from(document.querySelectorAll('aside figure[data-attr="cloud-cart-item"]'));
 
         return items.map(item => {
-            const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>('div[data-attr="checkout-cart-item-price"]').textContent);
-            const quantity = parseQty(Array.from(item.querySelectorAll('figcaption div')).find(t => t.textContent.includes(' @ '))?.textContent ?? "");
+            const {price, currency} = splitPriceCurrency(item.querySelector<HTMLElement>('div[data-attr="checkout-cart-item-price"]')?.textContent);
+            const quantity = parseQty(Array.from(item.querySelectorAll('figcaption div')).find(t => t?.textContent.includes(' @ '))?.textContent ?? "");
             return {
                 quantity,
                 price,
@@ -982,7 +989,7 @@ getters.register("etsy.com", {
         // total
         return items.map(item => {
             const quantity = parseInt(item.querySelector('select')?.value ?? "1");
-            const {currency, price} = splitPriceCurrency(item.querySelector('.money').textContent);
+            const {currency, price} = splitPriceCurrency(item.querySelector('.money')?.textContent);
             return {
                 quantity,
                 price,
@@ -1018,7 +1025,7 @@ getters.register("samsung.com", {
             const items = Array.from(document.querySelectorAll<HTMLElement>('.cart-item'));
 
             return items.map(item => {
-                const {price, currency} = splitPriceCurrency(item.querySelector('.cart-item-buying-price').textContent);
+                const {price, currency} = splitPriceCurrency(item.querySelector('.cart-item-buying-price')?.textContent);
                 const quantity = parseInt(item.querySelector('select')?.value ?? "1");
                 return {
                     quantity,
@@ -1060,7 +1067,7 @@ getters.register("aliexpress.com", {
 
         return Array.from(itemInputs).map(item => {
             // Total
-            const quantity = parseInt(item.value);
+            const quantity = parseInt(item?.value);
             const {price, currency} = splitPriceCurrency(item.parentElement?.parentElement?.children?.[1]?.textContent);
 
             return {
@@ -1089,7 +1096,7 @@ getters.register("gap.com", {
         return items.map(item => {
             // total
             const quantity = parseInt(item.querySelector('div[data-testid="product-quantity"]')?.textContent ?? "1");
-            const unsplitPrice = item.querySelector('div[data-testid="product-price"] span:not(.line-through)').textContent;
+            const unsplitPrice = item.querySelector('div[data-testid="product-price"] span:not(.line-through)')?.textContent;
             const {price, currency} = splitPriceCurrency(unsplitPrice);
 
             return {
@@ -1130,8 +1137,8 @@ getters.register("wish.com", {
         // total
         const items = document.querySelectorAll('div[data-testid="cart-quantity-dropdown"]');
         return Array.from(items).map((item, i) => {
-            const quantity = parseInt(item.children[0].textContent);
-            const unsplitPrice = item.parentElement.parentElement.parentElement.querySelector(`div[data-testid="cart-item-actual-price-${i}"]`).textContent
+            const quantity = parseInt(item.children[0]?.textContent);
+            const unsplitPrice = item.parentElement.parentElement.parentElement.querySelector(`div[data-testid="cart-item-actual-price-${i}"]`)?.textContent
             const {price, currency} = splitPriceCurrency(unsplitPrice);
             
             return {
@@ -1159,7 +1166,7 @@ getters.register("wayfair.com", {
         // total
         const items = Array.from(document.querySelectorAll('.OrderSummaryCard li'));
         return items.map(item => {
-            const {price, currency} = splitPriceCurrency(item.querySelector('.ConfirmationProductCard-price').textContent);
+            const {price, currency} = splitPriceCurrency(item.querySelector('.ConfirmationProductCard-price')?.textContent);
             const quantity = parseInt(item.querySelector('.ConfirmationProductCard-quantity')?.textContent ?? "1");
 
             return {
@@ -1251,7 +1258,7 @@ getters.register("macys.com", {
         const itemPrices = Array.from(document.querySelectorAll('.bag-price-NO_LABEL, .bag-price-SALE'));
         return itemPrices.map(unsplitElem => {
             // total
-            const {price, currency} = splitPriceCurrency(unsplitElem.textContent);
+            const {price, currency} = splitPriceCurrency(unsplitElem?.textContent);
             const quantity = parseInt(unsplitElem.closest('.qty-price-wrapper')?.querySelector('input')?.value ?? "1");
 
             return {
@@ -1284,7 +1291,7 @@ getters.register("asos.com", {
         // total
 
         return items.map(item => {
-            const quantity = parseQty(item.querySelector('.item-quantity').textContent ?? "1");
+            const quantity = parseQty(item.querySelector('.item-quantity')?.textContent ?? "1");
             const {price, currency} = splitPriceCurrency(item.querySelector('.item-price')?.textContent);
 
             return {
@@ -1317,7 +1324,7 @@ getters.register("chewy.com", {
         return items.map(item => {
             // total
             const quantity = parseInt(item.querySelector('select')?.value ?? "1");
-            const {price, currency} = splitPriceCurrency(item.querySelector('.kib-product-price').textContent);
+            const {price, currency} = splitPriceCurrency(item.querySelector('.kib-product-price')?.textContent);
 
             return {
                 quantity,
@@ -1368,8 +1375,8 @@ getters.register("lowes.com", {
         const items = Array.from(document.querySelectorAll('div[data-test="cc-product-details"]')).map(p => p.parentElement);
 
         return items.map(item => {
-            const quantity = parseQty(item.querySelector('input').value);
-            const {price, currency} = splitPriceCurrency(item.querySelector('div[data-selector="art-sc-itemPrice"]').textContent);
+            const quantity = parseQty(item.querySelector('input')?.value);
+            const {price, currency} = splitPriceCurrency(item.querySelector('div[data-selector="art-sc-itemPrice"]')?.textContent);
             // total
             return {
                 quantity,
@@ -1545,7 +1552,7 @@ getters.register("hp.com", {
 
         return items.map(item => {
             const {price, currency} = splitPriceCurrency(item.querySelector('.product-price-tab span')?.textContent);
-            const quantity = parseInt(item.querySelector('input').value ?? "1");
+            const quantity = parseInt(item.querySelector('input')?.value ?? "1");
             // total
             return {
                 quantity,
@@ -1779,8 +1786,8 @@ getters.register("av-cables.dk", {
         const itemInputs = document.querySelectorAll<HTMLInputElement>('input[data-test-id="quantity-input"]');
         // total
         return Array.from(itemInputs).map(itemInput => {
-            const unsplitPrice = Array.from(itemInput.closest('div').parentElement.children).at(-1).querySelector('span span').textContent;
-            const quantity = parseInt(itemInput.value);
+            const unsplitPrice = Array.from(itemInput.closest('div').parentElement.children).at(-1)?.querySelector('span span')?.textContent;
+            const quantity = parseInt(itemInput?.value);
             const {price, currency} = splitPriceCurrency(unsplitPrice);
 
             return {
@@ -2340,11 +2347,11 @@ getters.register("bog-ide.dk", {
 
     getCartItems: (e: HTMLElement) => {
         //Hacky because of the way the site is built
-        const price = Array.from(e.querySelectorAll<HTMLElement>('div[class="css-1pjrbim-Price e75bkt5"]'));
+        const price = e.querySelector<HTMLElement>('div[class="css-1pjrbim-Price e75bkt5"]');
         return [
             {
                 quantity: 1,
-                price: getNumberFromText(price[0].textContent)/100,
+                price: getNumberFromText(price?.textContent)/100,
                 currency: "kr"
             }
         ];
