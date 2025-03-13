@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 
+import { useModal } from "~components/Modal"
 import {
   Accordion,
   AccordionContent,
@@ -15,14 +16,8 @@ import {
   CardTitle
 } from "~components/ui/card"
 import { sendAnalytics } from "~lib/analytics"
-import {
-  formatTime,
-  PERMIT_LENGTH,
-  PERMIT_WAIT_TIME
-} from "~lib/constants"
+import { formatTime, PERMIT_LENGTH, PERMIT_WAIT_TIME } from "~lib/constants"
 import permit, { type Permit } from "~lib/permit"
-import { useModal } from "~components/Modal"
-
 
 // Using formatTime from constants.ts
 
@@ -104,136 +99,134 @@ function WaitTimer({ onCancel, onComplete, scale }: WaitTimerProps) {
     })
   }
 
-
-  
-
-  return <>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>Wait Before Purchasing</span>
-            <Badge variant="outline" className="ml-2">
-              {domain}
-            </Badge>
-          </CardTitle>
-          <CardDescription>
-            Taking time before making a purchase helps reduce impulsive buying
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-6">
-          {!currentPermit || currentPermit.end < Date.now() ? (
-            <div className="text-center">
-              <p className="mb-4">
-                Starting a wait timer for <strong>{domain}</strong> helps you
-                make more conscious purchasing decisions.
-              </p>
-              <Button onClick={handleStartWaitTimer}>Start Wait Timer</Button>
-            </div>
-          ) : Date.now() < currentPermit.start ? (
-            <div className="flex flex-col items-center gap-4">
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div className="p-3 bg-slate-100 rounded-lessmd">
-                  <div className="text-3xl font-bold">
-                    {waitTime?.hours || 0}
-                  </div>
-                  <div className="text-sm text-slate-500">Hours</div>
-                </div>
-                <div className="p-3 bg-slate-100 rounded-lessmd">
-                  <div className="text-3xl font-bold">
-                    {waitTime?.minutes || 0}
-                  </div>
-                  <div className="text-sm text-slate-500">Minutes</div>
-                </div>
-                <div className="p-3 bg-slate-100 rounded-lessmd">
-                  <div className="text-3xl font-bold">
-                    {waitTime?.seconds || 0}
-                  </div>
-                  <div className="text-sm text-slate-500">Seconds</div>
-                </div>
+  return (
+    <>
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          <span>Wait Before Purchasing</span>
+          <Badge variant="outline" className="ml-2">
+            {domain}
+          </Badge>
+        </CardTitle>
+        <CardDescription>
+          Taking time before making a purchase helps reduce impulsive buying
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-6">
+        {!currentPermit || currentPermit.end < Date.now() ? (
+          <div className="text-center">
+            <p className="mb-4">
+              Starting a wait timer for <strong>{domain}</strong> helps you make
+              more conscious purchasing decisions.
+            </p>
+            <Button onClick={handleStartWaitTimer}>Start Wait Timer</Button>
+          </div>
+        ) : Date.now() < currentPermit.start ? (
+          <div className="flex flex-col items-center gap-4">
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div className="p-3 bg-slate-100 rounded-lessmd">
+                <div className="text-3xl font-bold">{waitTime?.hours || 0}</div>
+                <div className="text-sm text-slate-500">Hours</div>
               </div>
-              <p className="text-center text-sm text-slate-600">
-                Please wait before completing your purchase on{" "}
-                <strong>{domain}</strong>. This waiting period helps you make a
-                more thoughtful decision.
-              </p>
-              <div className="flex justify-between gap-4 mt-2 w-full">
-                <Button variant="outline" className="w-full" onClick={onCancel}>
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={!permit.isValid()}>
-                  Continue with Purchase
-                </Button>
+              <div className="p-3 bg-slate-100 rounded-lessmd">
+                <div className="text-3xl font-bold">
+                  {waitTime?.minutes || 0}
+                </div>
+                <div className="text-sm text-slate-500">Minutes</div>
+              </div>
+              <div className="p-3 bg-slate-100 rounded-lessmd">
+                <div className="text-3xl font-bold">
+                  {waitTime?.seconds || 0}
+                </div>
+                <div className="text-sm text-slate-500">Seconds</div>
               </div>
             </div>
-          ) : (
-            <div className="text-center">
-              <p className="mb-4">
-                Your wait time for <strong>{domain}</strong> has elapsed. You
-                may proceed with your purchase.
-              </p>
-              <Button onClick={onComplete}>Continue with Purchase</Button>
+            <p className="text-center text-sm text-slate-600">
+              Please wait before completing your purchase on{" "}
+              <strong>{domain}</strong>. This waiting period helps you make a
+              more thoughtful decision. You can safely close this window; the
+              timer will continue to run.
+            </p>
+            <div className="flex justify-between gap-4 mt-2 w-full">
+              <Button variant="outline" className="w-full" onClick={onCancel}>
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={!permit.isValid()}>
+                Continue with Purchase
+              </Button>
             </div>
-          )}
+          </div>
+        ) : (
+          <div className="text-center">
+            <p className="mb-4">
+              Your wait time for <strong>{domain}</strong> has elapsed. You may
+              proceed with your purchase.
+            </p>
+            <Button onClick={onComplete}>Continue with Purchase</Button>
+          </div>
+        )}
 
-          <Accordion
-            type="single"
-            collapsible
-            className="w-full"
-            onValueChange={(value) => {
-              if (value) {
-                sendAnalytics("enforce_wait_info_expanded", {
-                  domain: domain
-                })
-              }
-            }}>
-            <AccordionItem value="info">
-              <AccordionTrigger className="text-sm">
-                How does the wait timer work?
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-3 text-sm text-slate-600">
-                  <p>
-                    <strong>Purchase Permits</strong> are domain-specific
-                    waiting periods that help you avoid impulsive purchases.
-                    Each website you shop at has its own permit.
-                  </p>
+        <Accordion
+          type="single"
+          collapsible
+          className="w-full"
+          onValueChange={(value) => {
+            if (value) {
+              sendAnalytics("enforce_wait_info_expanded", {
+                domain: domain
+              })
+            }
+          }}>
+          <AccordionItem value="info">
+            <AccordionTrigger className="text-sm">
+              How does the wait timer work?
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="space-y-3 text-sm text-slate-600">
+                <p>
+                  <strong>Purchase Permits</strong> are domain-specific waiting
+                  periods that help you avoid impulsive purchases. Each website
+                  you shop at has its own permit.
+                </p>
 
-                  <div className="bg-slate-50 p-3 rounded-lessmd space-y-2">
-                    <p className="font-medium">When you start a wait timer:</p>
-                    <ul className="list-disc list-inside">
-                      <li>
-                        You'll need to wait{" "}
-                        <strong>{formatTime(PERMIT_WAIT_TIME)}</strong> before
-                        being able to purchase
-                      </li>
-                      <li>
-                        After the waiting period, you'll have a{" "}
-                        <strong>{formatTime(PERMIT_LENGTH)}</strong> window to
-                        complete your purchase
-                      </li>
-                      <li>
-                        This permit only applies to <strong>{domain}</strong>
-                      </li>
-                      <li>
-                        You can come back anytime - your timer continues to run
-                        even if you close the site
-                      </li>
-                    </ul>
-                  </div>
-
-                  <p>
-                    Research shows that introducing a waiting period between
-                    wanting to buy something and actually purchasing it
-                    significantly reduces impulsive buying behavior.
-                  </p>
+                <div className="bg-slate-50 p-3 rounded-lessmd space-y-2">
+                  <p className="font-medium">When you start a wait timer:</p>
+                  <ul className="list-disc list-inside">
+                    <li>
+                      You'll need to wait{" "}
+                      <strong>{formatTime(PERMIT_WAIT_TIME)}</strong> before
+                      being able to purchase
+                    </li>
+                    <li>
+                      After the waiting period, you'll have a{" "}
+                      <strong>{formatTime(PERMIT_LENGTH)}</strong> window to
+                      complete your purchase
+                    </li>
+                    <li>
+                      This permit only applies to <strong>{domain}</strong>
+                    </li>
+                    <li>
+                      You can come back anytime - your timer continues to run
+                      even if you close the site
+                    </li>
+                  </ul>
                 </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </CardContent>
-      </>
+
+                <p>
+                  Research shows that introducing a waiting period between
+                  wanting to buy something and actually purchasing it
+                  significantly reduces impulsive buying behavior.
+                </p>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </CardContent>
+    </>
+  )
 }
 
 type EnforceWaitProps = {
@@ -241,15 +234,16 @@ type EnforceWaitProps = {
 }
 
 export function EnforceWait({ onComplete }: EnforceWaitProps) {
-  const {close, scale} = useModal();
+  const { close, scale } = useModal()
 
   useEffect(() => {
     sendAnalytics("enforce_wait_modal_shown", {
       domain: document.location.hostname,
       permitExists: !!permit.get(),
-      permitIsValid: permit.isValid()
+      permitIsValid: permit.isValid(),
+      timeLeft: permit.get() ? permit.get().end - Date.now() : -1
     })
-  });
+  })
 
   const handleComplete = () => {
     sendAnalytics("enforce_wait_completed", {
@@ -269,5 +263,11 @@ export function EnforceWait({ onComplete }: EnforceWaitProps) {
     close()
   }
 
-  return <WaitTimer onCancel={handleCancel} onComplete={handleComplete} scale={scale} />
+  return (
+    <WaitTimer
+      onCancel={handleCancel}
+      onComplete={handleComplete}
+      scale={scale}
+    />
+  )
 }
