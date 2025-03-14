@@ -4,6 +4,8 @@ import MainLogo from "@/components/MainLogo";
 import Text from "@/components/Text";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Info } from "lucide-react";
+import { useEffect } from "react";
+import { sendAnalytics } from "@/lib/analytics";
 
 const concepts = [
     "Sustainable Consumption",
@@ -12,6 +14,10 @@ const concepts = [
 ]
 
 export function OnboardingPage() {
+    useEffect(() => {
+      sendAnalytics("on-onboarding", undefined, "none");
+    },[]);
+
     return (
       <div className="max-w-2xl space-y-2">
         <div className="flex flex-col items-center justify-center mb-8 space-y-8">
