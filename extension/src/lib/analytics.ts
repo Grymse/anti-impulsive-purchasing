@@ -42,7 +42,7 @@ type AnalyticsPayloads = {
   "enforce_wait_canceled": {  permitActive: boolean; waitCompleted: boolean };
   "enforce_wait_info_expanded": undefined;
   "enforce_wait_period_completed": { timeUntilInvalid: number, timeSinceValid: number };
-  "enforce_wait_permit_valid_on_click": { timeUntilInvalid: number };
+  "enforce_wait_permit_valid_on_click": { timeUntilInvalid: number, timeSinceValid: number };
 };
 
 export async function sendAnalytics<T extends keyof AnalyticsPayloads>(
