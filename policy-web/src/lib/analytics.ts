@@ -1,6 +1,7 @@
 type AnalyticsPayloads = {
   'uninstall': undefined;
   'delete-data': undefined;
+  'on-onboarding': undefined;
 };
 type AnalyticsEvent = {
   type: keyof AnalyticsPayloads;
