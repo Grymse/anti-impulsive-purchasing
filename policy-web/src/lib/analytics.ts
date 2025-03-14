@@ -2,7 +2,10 @@ type AnalyticsPayloads = {
   'uninstall': undefined;
   'delete-data': undefined;
   'on-onboarding': undefined;
+  'from-directs': string;
+  'from-directs-cta': string;
 };
+
 type AnalyticsEvent = {
   type: keyof AnalyticsPayloads;
   url: string;

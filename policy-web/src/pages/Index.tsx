@@ -5,9 +5,27 @@ import { Li, Ul } from "../components/Lists"
 import { Link } from '../components/Text';
 import MainLogo from "../components/MainLogo"
 import { WebsiteList } from "../components/WebsiteList"
+import { useEffect } from "react";
+import { sendAnalytics } from "@/lib/analytics";
 
 
 export default function IndexPage() {
+
+  function onCTA() {
+    const fromQueryParam = new URLSearchParams(window.location.search).get("from");
+    
+    if (fromQueryParam) {
+      sendAnalytics("from-directs-cta", fromQueryParam, "less-website");
+    }
+  }
+
+  useEffect(() => {
+    const fromQueryParam = new URLSearchParams(window.location.search).get("from");
+    if (fromQueryParam) {
+      sendAnalytics("from-directs", fromQueryParam, "less-website");
+    }
+  },[]);
+  
   return (
     <div className="max-w-2xl space-y-2">
       <div className="flex flex-col items-center justify-center mb-16">
@@ -35,6 +53,7 @@ export default function IndexPage() {
         <Button
           className="w-full mt-8 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 transition-all"
           onClick={() => {
+            onCTA();
             window.location.href =
               "https://chromewebstore.google.com/detail/less/kcgblchgejkpnemehaojecgbamdiacml";
           }}
