@@ -25,12 +25,15 @@ type GetterRegister = {
 }
 
 function splitPriceCurrency(price?: string | null) {
-    const numericPrice = price?.match(/[\d,.]+/);
+    const numericPrice = price?.match(/\d[\d,.]+/);
     if (!numericPrice) {
         return { price: 0, currency: 'none'}
     }
+
+    const parsedPrice = parsePrice(numericPrice[0]);
     const currency = price.replace(numericPrice ? numericPrice[0] : '', '');
-    return { price: parsePrice(numericPrice[0]), currency: currency.trim() };
+
+    return { price: parsedPrice, currency: currency.trim() };
 }
 
 function parsePrice(price: string): number {
@@ -699,7 +702,7 @@ getters.register("jemogfix.dk", {
     },
 
     addToCartButtons: (e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[class="product-details__button-add btn btn-success btn-add icon"]');
+        const buttons = e.querySelectorAll<HTMLElement>('button[class="product-details__button-add btn btn-success btn-add icon"], .mini-basket__add-to-basket-wrapper button');
         buttons.forEach(e => e.style.backgroundColor = "blue");
         return Array.from(buttons);
     },
@@ -715,7 +718,7 @@ getters.register("jemogfix.dk", {
             // total
             items.push({
                 quantity: quantityElements[i],
-                price: parseFloat(priceElements[i]),
+                price: parsePrice(priceElements[i]),
                 currency: "kr"
             });
         }
@@ -2120,7 +2123,8 @@ function createInnerChildWithColor(btn: HTMLElement, textColor: string) {
 
 getters.register("jysk.dk", {
     placeOrderButtons:(e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[id="continueToConfirmation"]');
+        if(!location.href.includes('/checkout')) return [];
+        const buttons = e.querySelectorAll<HTMLElement>('#continueToConfirmation');
         return Array.from(buttons);
     },
 
@@ -2151,8 +2155,10 @@ getters.register("jysk.dk", {
 
 getters.register(["bilka.dk", "foetex.dk"], {
     placeOrderButtons:(e: HTMLElement) => {
+        if(!location.href.includes('checkout/payment')) return [];
+
         const buttons = e.querySelectorAll<HTMLElement>('button[data-testid="checkout-submit-payment"]');
-        return Array.from(buttons);
+        return Array.from(buttons).map(createInnerChild)
     },
 
     addToCartButtons: (e: HTMLElement) => {
@@ -2213,31 +2219,33 @@ getters.register("saxo.com", {
 
 getters.register("thansen.dk", {
     placeOrderButtons: (e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[class="formsubmitbtn BwButton BwButton--large BwButton--dark BwButton--al-1 BwButton--cs-cta"]');
-        return Array.from(buttons);
+        if (!location.href.includes('/orderstep')) return [];
+
+        const buttons = e.querySelectorAll<HTMLElement>('button.formsubmitbtn');
+        return Array.from(buttons).map(createInnerChild);
     },
 
     addToCartButtons: (e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[class="BuyButton__button BwButton BwButton--al-1 BwButton--dark BwButton--small BwButton--cs-cta"], button[class="BuyButton__button BwButton BwButton--al-1 BwButton--dark BwButton--cs-cta BwButton--large"]');
+        const buttons = e.querySelectorAll<HTMLElement>('button.BuyButton__button');
         return Array.from(buttons);
     },
 
     getCartItems: (e: HTMLElement) => {
-        const cart = e.querySelector<HTMLElement>('div[data-content="cart"]');
-        if (cart === null) return [];
-        const priceElements = Array.from(cart.querySelectorAll<HTMLElement>('span[class="cartpricesum"]')).map(e => e.textContent);
-        //@ts-expect-error: value is a valid field.
-        const quantityElements = Array.from(cart.querySelectorAll<HTMLElement>('input[class="cartamount no-edit"]')).map(e => e.value);
-        
-        let items = [];
-        for (let i = 0; i < priceElements.length; i++) {
-            items.push({
-                quantity: parseInt(quantityElements[i]),
-                price: parseInt(priceElements[i].replace(/\D/g, ''))/100,
-                currency: "kr"
-            });
-        }
-        return items;
+        if (!location.href.includes('/orderstep')) return [];
+
+        const items = Array.from(document.querySelectorAll('.shopping-cart .CartLine'));
+
+        return items.map(item => {
+            const quantity = parseQty(item.querySelector('div.number')?.textContent);
+
+            const {price, currency} = splitPriceCurrency(item.querySelector('.cartpricesum')?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
     }
 });
 
@@ -2250,23 +2258,25 @@ getters.register("imerco.dk", {
         return [];
     },
     addToCartButtons: (e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[class="ecogc800 next-pkfaeh ellotkw1"], button[class="ecogc800 next-11vcflj ellotkw1"], button[class="next-1hppgum ellotkw1"]');
-        return Array.from(buttons); 
+        return findFromText(e.querySelectorAll<HTMLElement>('button'), ["Læg i kurv"]);
     },
     getCartItems: (e: HTMLElement) => {
-        const info = Array.from(e.querySelectorAll<HTMLElement>('div[class="next-utw6et ed71law2"]'));
-        if (info === null) return [];
-        // total
-        const items = info.map(e => e.textContent.split('x')).map(e => {
-            const quantity = getNumberFromText(e[0]);
-            const price = (getNumberFromText(e[1])/100) * quantity;
+        if(!location.href.includes('/checkout')) return [];
+        
+        const items = Array.from(e.querySelector('aside ul')?.querySelectorAll('li'));
+        
+        return items.map(item => {
+            const content = Array.from(item.querySelectorAll('div')).at(-1)?.textContent;
+            const quantity = parseQty(content);
+            const {price} = splitPriceCurrency(content);
+            
+            
             return {
+                price: price*quantity,
+                currency: 'kr',
                 quantity,
-                price,
-                currency : "kr"
-            }   
+            }
         });
-        return items;
     }
 });
 
@@ -2305,27 +2315,43 @@ getters.register("sport24.dk", {
 
 });
 
+function findParentWithClass(e: HTMLElement, className: string) : HTMLElement | null {
+    if(!e) return null;
+    
+    if (e.className.includes(className)) {
+        return e;
+    }
+    return findParentWithClass(e.parentElement, className);
+}
+
 getters.register("bog-ide.dk", {
     placeOrderButtons: (e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[class="e13xd5sc0 css-1c3vif9-StyledButton-CheckoutSubmitButton eh0pg5q0"]');
-        return Array.from(buttons);
+        if(!location.href.includes('/checkout')) return [];
+        
+        return findFromText(e.querySelectorAll<HTMLElement>('button[type="submit"]'),'Gå til sikker betaling');
     },
 
     addToCartButtons: (e: HTMLElement) => {
-        const buttons = e.querySelectorAll<HTMLElement>('button[class="e1t1q4g40 css-8js23k-StyledButton-BasketButton eh0pg5q0"]');
-        return Array.from(buttons);
+        return findFromText(e.querySelectorAll<HTMLElement>('button'), ["Læg i kurv", "Forudbestil"]);
     },
 
     getCartItems: (e: HTMLElement) => {
-        //Hacky because of the way the site is built
-        const price = e.querySelector<HTMLElement>('div[class="css-1pjrbim-Price e75bkt5"]');
-        return [
-            {
-                quantity: 1,
-                price: getNumberFromText(price?.textContent)/100,
-                currency: "kr"
+        if(!location.href.includes('/checkout')) return [];
+
+        const items = Array.from(document.querySelectorAll<HTMLElement>('img[sizes]'))
+            .map(e => findParentWithClass(e, "FlexLayout"));
+
+        return items.map(item => {
+            const quantity = parseQty(item.querySelector('div[type="dim"]')?.textContent);
+            const unsplitPrice = Array.from(Array.from(item.children).at(-1)?.children).at(-1)?.textContent;
+            const {price, currency} = splitPriceCurrency(unsplitPrice);
+
+            return {
+                quantity,
+                price,
+                currency
             }
-        ];
+        }).filter(p => p.price !== 0);
     }
 });
 

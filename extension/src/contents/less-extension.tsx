@@ -286,7 +286,6 @@ export default ModalComponent;
 function onPlaceOrderClickWait(e: Event) {
   try {
     permit.createIfNone()
-    console.log("CLICKED");
 
     const onComplete = () => {
       document.body.setAttribute("data-plasmo-place-order-blocked", "false")
