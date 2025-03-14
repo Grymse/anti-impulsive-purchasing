@@ -454,6 +454,7 @@ getters.register("proshop.dk", {
 
 getters.register("boozt.com", {
     placeOrderButtons:(e: HTMLElement) => {
+        if(!location.href.includes('/checkout')) return [];
         const buttons = e.querySelectorAll<HTMLElement>('.checkout-order-confirmation__content button')
         return Array.from(buttons)
     },
@@ -464,22 +465,20 @@ getters.register("boozt.com", {
     },
 
     getCartItems: (e: HTMLElement) => {
-        const cart = e.querySelector<HTMLElement>('div[class="shopcart-items"]');
-        if (!cart) return [];
-        const priceElement = cart.querySelectorAll<HTMLElement>('div[class="product-prices__price"] .typography--body2');
-        const quantity = cart.querySelectorAll<HTMLElement>('select[class="select__dropdown skip-generic-styling"]');
+        if(!location.href.includes('/checkout')) return [];
+        const items = Array.from(document.querySelectorAll('.cart-item'));
 
-        let items = [];
         // total
-        for (let i = 0; i < priceElement.length; i++) {
-            items.push({
-                //@ts-expect-error .value is a valid field.
-                quantity: parseInt(quantity[i]?.value),
-                price: parseFloat(priceElement[i]?.innerText),
-                currency: "kr"
-            });
-        }
-        return items;
+        return items.map(item => {
+            const {price, currency} = splitPriceCurrency(item.querySelector('.product-prices span')?.textContent);
+            const quantity = parseQty(findFromText(item.querySelectorAll<HTMLInputElement>('span'), ["Antal", "Quantity"])?.[0]?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        })
     }
 })
 
