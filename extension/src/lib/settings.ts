@@ -54,6 +54,12 @@ function selectStrategyFromId(id: string) : StrategyType {
 
 // Enforce activeStrategy changes
 getUserId().then(userId => {
+    if (process.env.NODE_ENV === "development") {
+        settings.onInit(prevSettings => {
+            settings.value = {...prevSettings, activeStrategies: ["enforce-wait"]};
+        })
+        return;
+    }
     const strategy = selectStrategyFromId(userId);
     settings.onInit(prevSettings => {
         settings.value = {...prevSettings, activeStrategies: [strategy]};

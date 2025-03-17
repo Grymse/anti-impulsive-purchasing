@@ -1,5 +1,3 @@
-import { CarTaxiFront } from "lucide-react";
-
 export type OneBlickBuyButton = {
     button?: HTMLElement;
     label?: HTMLElement;
@@ -156,6 +154,7 @@ const shopifyDomains = [
     "getmaude.com",
     "ugmonk.com",
     "luksusbaby.dk",
+    "intersport.dk",
 ];
 
 function getTopDomain(domain: string) {
@@ -2427,5 +2426,326 @@ getters.register("plantorama.dk", {
             });
         }
         return items;
+    }
+});
+
+getters.register("plantorama.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('/til-kassen')) return [];
+
+        return findFromText(document.querySelectorAll<HTMLElement>('button.checkout-section__submit'), "Gå til betaling").map(createInnerChild);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll<HTMLElement>('.product-card__add-to-cart-button, .product-information__call-to-action-button'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('/til-kassen')) return [];
+
+        const items = Array.from(document.querySelectorAll('.aside-right-modal__item'));
+
+        return Array.from(items).map(item => {
+            const quantity = parseQty(item.querySelector('.aside-right-modal__click-collect-unit')?.textContent ?? "1");
+            const {price, currency} = splitPriceCurrency(item.querySelector('.aside-right-modal__click-collect-normal-price')?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+    }
+});
+
+getters.register("www.kop-kande.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout')) return []
+
+        return findFromText(document.querySelectorAll<HTMLElement>('button[type="submit"]'), "Fortsæt til sikker betaling").map(createInnerChild);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return findFromText(document.querySelectorAll('button'),"Læg i kurv")
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout')) return [];
+
+        const items = document.querySelector('.product-list')?.querySelectorAll('.name-and-price')
+
+        return Array.from(items).map(item => {
+            const unparsedQuantity = items[0].querySelector('.detail')?.textContent?.split?.('x')?.[1]
+            const quantity = parseQty(unparsedQuantity);
+            const {price, currency} = splitPriceCurrency(item.querySelector('.price-value')?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+    }
+});
+
+getters.register("avxperten.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout')) return [];
+
+        return Array.from(document.querySelectorAll('#approveCheckoutBtn'));
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('a[title="Læg i kurv"], button[title="Læg i kurv"]'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout')) return [];
+
+        const items = document.querySelectorAll('.ncb-approve-row');
+
+        return Array.from(items).map(item => {
+            const children = item.querySelector('.product-name')?.children;
+            const quantity = parseQty(children?.[0]?.textContent);
+            const {price, currency} = splitPriceCurrency(children?.[1]?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+    }
+});
+
+getters.register("ilva.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('checkout/kurv')) return [];
+
+        return findFromText(document.querySelectorAll<HTMLElement>('button[type="submit"]'), "Godkend og betal").map(createInnerChild);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return findFromText(document.querySelectorAll('button'),"Tilføj til kurv")
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('checkout/kurv')) return [];
+
+        const items = document.querySelectorAll('.basket-line')
+
+        return Array.from(items).map(item => {
+            const quantity = parseInt(item.querySelector('.amount-field__value')?.textContent ?? "1");
+            const {price, currency} = splitPriceCurrency(item.querySelector('.price__total--default')?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency: 'kr'
+            }
+        });
+    }
+});
+
+getters.register("sportsworld.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout')) return [];
+
+        return Array.from(document.querySelectorAll('button[data-testid="submit-card-details"], .paypal-buttons, button.adyen-checkout__button')).map(createInnerChild);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll<HTMLElement>('button[data-testid="add-to-cart-button"], button[data-testid="purchase-button"]'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout')) return [];
+
+        const items = document.querySelectorAll('div[data-testid="order-card"]');
+
+        return Array.from(items).map(item => {
+            const unparsedPrice = item.querySelectorAll('p[data-testid="price"]')?.[1]?.textContent;
+            const unparsedQuantity = Array.from(item.querySelector('div')?.children?.[0]?.children).at(-1);
+            const quantity = parseQty(unparsedQuantity?.textContent ?? "1");
+            const {price, currency} = splitPriceCurrency(unparsedPrice);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+    }
+});
+
+getters.register("kids-world.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout_payment')) return [];
+
+        return Array.from(document.querySelectorAll('#checkoutPaymentContinue')).map(createInnerChild);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return findFromText(document.querySelectorAll('button'),"Læg i kurv")
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout_payment')) return [];
+
+        const items = document.querySelectorAll('article.product');
+
+        return Array.from(items).map(item => {
+            const quantity = parseQty(item.querySelector('.product__title')?.textContent ?? "1");
+            const {price, currency} = splitPriceCurrency(item.querySelector('.price')?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+    }
+});
+
+function pickLastChild<T>(node: Element) : Element {
+    return Array.from(node.children).at(-1);
+}
+
+function repeatPickLastChild<T>(node: Element, times: number) : Element {
+    let last = node;
+    for (let i = 0; i < times; i++) {
+        last = pickLastChild(last);
+    }
+    return last;
+}
+
+getters.register("billigvvs.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout')) return [];
+
+        return findFromText(document.querySelectorAll<HTMLElement>('button[tabindex="0"]'),"Gå til betaling").filter(b => !b.textContent.includes('metode'));
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('.new-productbox button, .product-card__CTA button[tabindex="0"]'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout')) return [];
+
+        const elem = document.querySelectorAll('a[href="/basket/"]')?.[2]?.parentElement?.parentElement
+
+        if (!elem) return [];
+
+        const items = Array.from(elem.children).slice(0,-1).filter(a => !!a);
+
+        if(!items) return [];
+
+        return Array.from(items).map(item => {
+            const quantity = parseQty(item.querySelector('img')?.parentElement?.textContent ?? "1");
+            const {price, currency} = splitPriceCurrency(repeatPickLastChild(item, 5)?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency: "kr"
+            }
+        });
+    }
+});
+
+getters.register("loebeshop.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout')) return [];
+
+        return findFromText(document.querySelectorAll('button'), "Godkend og betal");
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('.product_addtocart_form button.bg-primary, .product_addtocart_form input[type="checkbox"], #product-addtocart-button'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout')) return [];
+
+        const items = document.querySelectorAll('.minicart-items li.product-item')
+
+        return Array.from(items).map(item => {
+            const quantity = parseQty(item.querySelector('.product-image-qty')?.textContent ?? "1");
+            const {price, currency} = splitPriceCurrency(item.querySelector('.cart-price .price')?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+    }
+});
+
+
+getters.register("loberen.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        // TODO: FIX
+        if (!location.href.includes('EXAMPLE')) return [];
+
+        // Array.from(document.querySelectorAll('.paypal-buttons, #gpay-button-online-api-id')).map(createInnerChild);
+        return Array.from(document.querySelectorAll('.EXAMPLE'));
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        // TODO: FIX
+        // findFromText(document.querySelectorAll('button'),"Tilføj til kurv")
+        return Array.from(document.querySelectorAll('#product-addtocart-button'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        // TODO: FIX
+        if (!location.href.includes('EXAMPLE')) return [];
+
+        const items = document.querySelectorAll('.EXAMPLE');
+
+        return Array.from(items).map(item => {
+            const quantity = parseInt(item.querySelector('.EXAMPLE')?.textContent ?? "1");
+            const {price, currency} = splitPriceCurrency(item.querySelector('.EXAMPLE')?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+    }
+});
+
+
+getters.register("cocopanda.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('/cart') && !location.href.includes('/klarna')) return [];
+
+        return Array.from(document.querySelectorAll('button[data-cid="button.buy_button"]')).map(createInnerChild);
+
+        //return findFromText(document.querySelectorAll('button'), ["Betal ordre"]).map(createInnerChild);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll<HTMLElement>('.add-to-cart-button, .add-to-cart-icon'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('/cart')) return [];
+
+        const items = document.querySelectorAll('.product-card-footer');
+
+        return Array.from(items).map(item => {
+            const quantity = parseQty(item.querySelector('.strong.cart-product-quantity')?.textContent ?? "1");
+            const {price, currency} = splitPriceCurrency(item.querySelector('.cart-product-price-wrapper .price-text')?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        }).filter(p => p.price !== 0);
     }
 });
