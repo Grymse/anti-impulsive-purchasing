@@ -2746,3 +2746,186 @@ getters.register("cocopanda.dk", {
         }).filter(p => p.price !== 0);
     }
 });
+
+getters.register("mytrendyphone.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('shop/order3')) return [];
+
+        return Array.from(document.querySelectorAll('input[value="Gå til sikker betaling"]')).map(createNeighbour);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('input[value="Læg i kurv"]'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('shop/order3')) return [];
+
+        const items = document.querySelectorAll('.summaryitem');
+
+        return Array.from(items).map(item => {
+            const children = item.querySelector('.summaryiteminfo').children;
+            const quantity = parseQty(children?.[0]?.textContent ?? "1");
+            const {price, currency} = splitPriceCurrency(children?.[1]?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+    }
+});
+
+getters.register("jacobsenplus.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('mcheckout/Step3')) return [];
+
+        return Array.from(document.querySelectorAll('input[value="Godkend og betal"]'));
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll<HTMLElement>('.item-order-purchase__addtocart, .item__addtocart-submit'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('mcheckout/Step3')) return [];
+
+        const items = document.querySelector('.order-summary__items')?.querySelectorAll('.summary-line')
+
+        if(!items) return [];
+
+        return Array.from(items).map(item => {
+            console.log(item);
+            const quantity = parseInt(item.children?.[0]?.textContent ?? "1");
+            const {price, currency} = splitPriceCurrency(item.children?.[2]?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+    }
+});
+
+getters.register("cchobby.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout')) return [];
+        
+        return findFromText(document.querySelectorAll<HTMLElement>('button.checkout'),'Afgiv ordre').map(createInnerChild);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('.amquote-addto-button, #product-addtocart-button'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout')) return [];
+
+        const items = document.querySelectorAll('.minicart-items li.product-item')
+
+        return Array.from(items).map(item => {
+            const quantity = parseQty(item.querySelector('.details-qty')?.textContent ?? "1");
+            const {price, currency} = splitPriceCurrency(item.querySelector('.cart-price .price')?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+    }
+});
+
+getters.register("komplett.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('payment.')) return [];
+
+        return Array.from(document.querySelectorAll('button[data-automationid="confirmButton"]'));
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('button[data-automationid="AddToCart"], .addtocart-buttonContainer button'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('payment.')) return [];
+
+        const items = document.querySelector('.items-listing')?.querySelectorAll('tr[data-automationid="product"]')
+
+        if (!items) return [];
+
+        return Array.from(items).map(item => {
+
+            
+            const quantity = parseQty(item.querySelector('span[data-automationid="quantityValue"]')?.textContent ?? "1");
+            const {price} = splitPriceCurrency(pickLastChild(item.querySelector('td[data-automationid="productPrice"]'))?.textContent);
+
+            return {
+                quantity,
+                price: price * quantity,
+                currency: 'kr'
+            }
+        });
+    }
+});
+
+
+getters.register("billigparfume.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('/cart')) return [];
+
+        return Array.from(document.querySelectorAll('input[name="doPlaceOrder"]'));
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll('button.add-to-cart'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('/cart')) return [];
+
+        const items = document.querySelectorAll('div.cart-product:not(.cart-product-suggestion)');
+
+        return Array.from(items).map(item => {
+            const quantity = parseInt(item.querySelector('input').value ?? "1");
+            const {price, currency} = splitPriceCurrency(item.querySelector('.cart-product-price .price')?.textContent);
+
+            return {
+                quantity,
+                price,
+                currency
+            }
+        });
+    }
+});
+
+getters.register("faraos.dk", {
+    placeOrderButtons: (e: HTMLElement) => {
+        if (!location.href.includes('/checkout')) return [];
+
+        return findFromText(document.querySelectorAll<HTMLElement>('button.button-arrow-up'),'betaling').map(createInnerChild);
+    },
+
+    addToCartButtons: (e: HTMLElement) => {
+        return Array.from(document.querySelectorAll<HTMLElement>('.itemslider-item button.button-arrow-up, .trustpilot-big-container button'));
+    },
+
+    getCartItems: (e: HTMLElement) => {
+        if (!location.href.includes('/basket')) return [];
+
+        const items = document.querySelectorAll('.basket-table tbody tr')
+
+        return Array.from(items).map(item => {
+            const quantity = parseInt(item.querySelector('input')?.value ?? "1");
+            const {price, currency} = splitPriceCurrency(item.querySelector('.tbl-col-7')?.textContent);
+
+            return {
+                quantity,
+                price: price / 100,
+                currency
+            }
+        });
+    }
+});
