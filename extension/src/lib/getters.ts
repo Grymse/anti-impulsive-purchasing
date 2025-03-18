@@ -2721,11 +2721,9 @@ getters.register("loberen.dk", {
 
 getters.register("cocopanda.dk", {
     placeOrderButtons: (e: HTMLElement) => {
-        if (!location.href.includes('/cart') && !location.href.includes('/klarna')) return [];
+        if (!location.href.includes('/cart')) return [];
 
-        return Array.from(document.querySelectorAll('button[data-cid="button.buy_button"]')).map(createInnerChild);
-
-        //return findFromText(document.querySelectorAll('button'), ["Betal ordre"]).map(createInnerChild);
+        return Array.from(document.querySelectorAll<HTMLElement>('a[href="/klarna"]'));
     },
 
     addToCartButtons: (e: HTMLElement) => {
