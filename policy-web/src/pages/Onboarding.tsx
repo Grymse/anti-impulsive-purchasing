@@ -45,7 +45,7 @@ export function OnboardingPage() {
 
         <Card className="w-full bg-green-500/5 border-green-500/20">
           <CardHeader>
-            <Header variant="h3" className="text-center">
+            <Header variant="h3" className="text-center font-normal">
               You are now on your way to:
             </Header>
           </CardHeader>
