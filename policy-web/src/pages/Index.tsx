@@ -42,11 +42,11 @@ export default function IndexPage() {
         <div className="text-center mb-8">
           <Header 
             variant="h1" 
-            className="bg-clip-text text-transparent bg-gradient-to-r  from-sky-400 to-blue-400"
+            className="bg-clip-text tracking-normal text-5xl font-medium text-transparent bg-gradient-to-r  from-sky-400 to-blue-400"
           >
             Welcome to Less
           </Header>
-          <Text className="text-xl gantari mt-4 bg-gradient-to-r bg-clip-text text-transparent from-sky-400 to-cyan-400 dark:opacity-80">
+          <Text className="text-xl gantari mt-4 font-medium tracking-normal bg-gradient-to-r bg-clip-text text-transparent from-sky-400 to-cyan-400 dark:opacity-80">
             Take a breath and think before you buy
           </Text>
         </div>
