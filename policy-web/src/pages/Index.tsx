@@ -5,16 +5,36 @@ import { Li, Ul } from "../components/Lists"
 import { Link } from '../components/Text';
 import MainLogo from "../components/MainLogo"
 import { WebsiteList } from "../components/WebsiteList"
+import { useEffect } from "react";
+import { sendAnalytics } from "@/lib/analytics";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
+const concepts = [
+  "Consume Sustainably",
+  "Give Financial Freedom",
+  "Fight Back Invasive Marketing",
+];
 
 export default function IndexPage() {
-  return (
-    <div className="max-w-2xl space-y-2">
-      <div className="flex flex-col items-center justify-center mb-16">
-        <blockquote className="text-primary text-xl font-light italic my-16">
-          “One who is patient glows with an inner radiance.” - Allan Lokos
-        </blockquote>
 
+  function onCTA() {
+    const fromQueryParam = new URLSearchParams(window.location.search).get("from");
+    
+    if (fromQueryParam) {
+      sendAnalytics("from-directs-cta", fromQueryParam, "less-website");
+    }
+  }
+
+  useEffect(() => {
+    const fromQueryParam = new URLSearchParams(window.location.search).get("from");
+    if (fromQueryParam) {
+      sendAnalytics("from-directs", fromQueryParam, "less-website");
+    }
+  },[]);
+  
+  return (
+    <div className="max-w-2xl space-y-2 mt-20">
+      <div className="flex flex-col items-center justify-center mb-16">
         <div className="mb-12 mt-4 relative">
           <MainLogo />
         </div>
@@ -22,28 +42,60 @@ export default function IndexPage() {
         <div className="text-center mb-8">
           <Header 
             variant="h1" 
-            className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400"
+            className="bg-clip-text tracking-normal text-5xl font-medium text-transparent bg-gradient-to-r  from-sky-400 to-blue-400"
           >
             Welcome to Less
           </Header>
-          <Text className="text-xl mt-2 text-muted-foreground">
+          <Text className="text-xl gantari mt-4 font-medium tracking-normal bg-gradient-to-r bg-clip-text text-transparent from-sky-400 to-cyan-400 dark:opacity-80">
             Take a breath and think before you buy
           </Text>
         </div>
         
         {/* Toggle Button */}
         <Button
-          className="w-full mt-8 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 transition-all"
+          className="py-6 px-12 gantari text-lg mt-8 bg-gradient-to-r rounded-full text-white from-sky-500 to-blue-500 hover:from-sky-600 hover:to-blue-600 transition-all"
           onClick={() => {
+            onCTA();
             window.location.href =
               "https://chromewebstore.google.com/detail/less/kcgblchgejkpnemehaojecgbamdiacml";
           }}
         >
-          Try it here!
+            Click to install
         </Button>
       </div>
+
+      <Card className="w-full bg-green-500/10 border-green-500/20">
+          <CardHeader>
+            <Header variant="h3" className="text-center font-normal">
+              We're here to help you:
+            </Header>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {concepts.map((concept) => (
+                <div className="flex items-center p-2 rounded-lg transition-colors hover:bg-accent">
+                  <div className="bg-green-500/20 p-2 rounded-full mr-3">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-green-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <Text className="font-medium">{concept}</Text>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       {/* First Text Block */}
-      <Header variant="h1">Research Description</Header>
+      <Header variant="h1">Description</Header>
       <Text>
         Welcome to Less, a browser extension designed to help reduce impulsive
         online purchases. Our global consumption levels have grown to an
