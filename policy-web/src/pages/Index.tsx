@@ -28,6 +28,7 @@ export default function IndexPage() {
   useEffect(() => {
     const fromQueryParam = new URLSearchParams(window.location.search).get("from");
     if (fromQueryParam) {
+      localStorage.setItem("from", fromQueryParam);
       sendAnalytics("from-directs", fromQueryParam, "less-website");
     }
   },[]);

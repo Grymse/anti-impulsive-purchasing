@@ -15,7 +15,13 @@ const concepts = [
 
 export function OnboardingPage() {
   useEffect(() => {
-    sendAnalytics("on-onboarding", undefined, "none");
+    const from = localStorage.getItem("from");
+    if (from) {
+      sendAnalytics("on-onboarding", from, "none");
+      localStorage.removeItem("from");
+    } else {
+      sendAnalytics("on-onboarding", "", "none");
+    }
   }, []);
 
   return (

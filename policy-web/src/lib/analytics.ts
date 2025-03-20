@@ -1,7 +1,7 @@
 type AnalyticsPayloads = {
   'uninstall': undefined;
   'delete-data': undefined;
-  'on-onboarding': undefined;
+  'on-onboarding': string;
   'from-directs': string;
   'from-directs-cta': string;
 };
