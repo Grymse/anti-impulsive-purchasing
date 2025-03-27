@@ -17,6 +17,7 @@ export async function sendErrorReport(area: string, e: Error | any) {
         "Prefer": "return=minimal"
     };
 
+    const error_url = location.href;
     const user_id = await getUserId();
     const session_id = await getSessionId();
     const body = JSON.stringify({ error, user_id, session_id, url, area });
