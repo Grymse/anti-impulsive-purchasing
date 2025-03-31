@@ -42,10 +42,13 @@ export function OnboardingPage() {
             Your journey to mindful shopping begins.
           </Text>
           <Text className="text-l mt-2 mb-8 text-muted-foreground">
-            Please note that, as this tool is currently being used in a research
-            study, users are divded into two groups. Namely the control group
-            and the intervention group. If interested we can notify you about
-            the results of the study when concluded.
+            The{" "}
+            <span className="font-bold">
+              extension will activate when you checkout
+            </span>{" "}
+            at supported websites. Find the whole list of supported websites on
+            our main page by clicking the{" "}
+            <span className="font-bold">About</span> button below.
           </Text>
         </div>
 
