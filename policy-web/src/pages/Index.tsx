@@ -5,6 +5,7 @@ import { Li, Ul } from "../components/Lists";
 import { Link } from "../components/Text";
 import MainLogo from "../components/MainLogo";
 import { WebsiteList } from "../components/WebsiteList";
+import { WaitTimeShowcase } from "../components/WaitTimeShowcase";
 import { useEffect } from "react";
 import { sendAnalytics } from "@/lib/analytics";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -112,15 +113,20 @@ export default function IndexPage() {
       </Text>
       <Header variant="h1">What does this extension do?</Header>
       <Text className="mt-4">
-        More specifically, this extension will seperate users into two groups,
-        namely a control group and a treatment group. The treatment group will
-        recieve{" "}
+        You will recieve a{" "}
         <span className="font-bold">a timer-based intervention method</span> at
-        checkout of our supported websites listed below. While the control group
-        will not recieve any intervention. This is to measure the releavtive
-        effectivness of the intervention. We thank you for your participation in
-        our study.
+        checkout of our supported websites listed below.
       </Text>
+
+      <Header variant="h2">Our Wait Timer Intervention</Header>
+      <Text className="mt-2 mb-4">
+        Below is an example of the wait timer intervention that appears during
+        checkout. This waiting period gives you time to reconsider your
+        purchase, potentially reducing impulsive buying decisions:
+      </Text>
+      <div className="my-6">
+        <WaitTimeShowcase />
+      </div>
 
       <Header variant="h2">Supported Shopping Sites</Header>
       <WebsiteList />
