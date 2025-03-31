@@ -20,10 +20,10 @@ export async function sendErrorReport(area: string, e: Error | any) {
     const error_url = location.href;
     const user_id = await getUserId();
     const session_id = await getSessionId();
-    const body = JSON.stringify({ error, user_id, session_id, url, area });
+    const body = JSON.stringify({ error, user_id, session_id, url: error_url, area });
 
     if (process.env.NODE_ENV === "development") {
-        console.error(`${area} - ${error}`);
+        console.error(body);
         return;
     }
 

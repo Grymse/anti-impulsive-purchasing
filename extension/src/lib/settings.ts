@@ -1,4 +1,3 @@
-import { getUserId } from "./analytics";
 import { PersistentValue } from "./utils";
 
 type StrategyType = "enforce-wait" | "none";
@@ -31,11 +30,10 @@ export type Settings = {
 export const settings = new PersistentValue<Settings>("settings",
     {
         active: true,
-        activeStrategies: [],
-        hasSeenWelcomeModal: false
+        activeStrategies: ["enforce-wait"],
+        hasSeenWelcomeModal: false,
     }
 );
-
 
 function hexToNumber(hex: string) {
     return parseInt(hex, 16);
@@ -53,15 +51,6 @@ function selectStrategyFromId(id: string) : StrategyType {
 }
 
 // Enforce activeStrategy changes
-getUserId().then(userId => {
-    if (process.env.NODE_ENV === "development") {
-        settings.onInit(prevSettings => {
-            settings.value = {...prevSettings, activeStrategies: ["enforce-wait"]};
-        })
-        return;
-    }
-    const strategy = selectStrategyFromId(userId);
-    settings.onInit(prevSettings => {
-        settings.value = {...prevSettings, activeStrategies: [strategy]};
-    })
+settings.onInit(prevSettings => {
+    settings.value = {...prevSettings, activeStrategies: ["enforce-wait"]}
 });
