@@ -41,7 +41,7 @@ export function WaitTimeShowcase() {
   }, [setWaitTime]);
   
   return (
-      <Card className="w-full border dark:border-slate-700">
+      <Card className="w-full p-4 border dark:border-slate-700">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Wait Before Purchasing</span>
