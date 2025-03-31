@@ -65,7 +65,7 @@ export default function IndexPage() {
               "https://chromewebstore.google.com/detail/less/kcgblchgejkpnemehaojecgbamdiacml";
           }}
         >
-          Click to install
+          Try it out
         </Button>
       </div>
 
@@ -99,6 +99,15 @@ export default function IndexPage() {
           </div>
         </CardContent>
       </Card>
+      <Header variant="h1">The Wait Timer Intervention</Header>
+      <Text className="mt-2 mb-4">
+        Below is an example of the wait timer intervention that appears during
+        checkout. This waiting period gives you time to reconsider your
+        purchase, potentially reducing impulsive buying decisions:
+      </Text>
+      <div className="my-6">
+        <WaitTimeShowcase />
+      </div>
       {/* First Text Block */}
       <Header variant="h1">Description</Header>
       <Text>
@@ -111,22 +120,6 @@ export default function IndexPage() {
         reducing online impulsive buying behaviors, this tool is meant to
         support both your financial well-being and the environment.
       </Text>
-      <Header variant="h1">What does this extension do?</Header>
-      <Text className="mt-4">
-        You will recieve a{" "}
-        <span className="font-bold">a timer-based intervention method</span> at
-        checkout of our supported websites listed below.
-      </Text>
-
-      <Header variant="h2">Our Wait Timer Intervention</Header>
-      <Text className="mt-2 mb-4">
-        Below is an example of the wait timer intervention that appears during
-        checkout. This waiting period gives you time to reconsider your
-        purchase, potentially reducing impulsive buying decisions:
-      </Text>
-      <div className="my-6">
-        <WaitTimeShowcase />
-      </div>
 
       <Header variant="h2">Supported Shopping Sites</Header>
       <WebsiteList />
@@ -164,7 +157,7 @@ export default function IndexPage() {
         Welcome to Less, a browser extension developed as part of a thesis on
         reducing impulse purchasing habits. This extension aims to gather
         insights into user behavior and help develop strategies to minimize
-        impulse purchases. By installing or using this extension, you agree to
+        impulse purchases. By adding this extension to Chrome, you agree to
         the following terms and conditions.
       </Text>
 
