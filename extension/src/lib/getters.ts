@@ -278,7 +278,6 @@ getters.register(['amazon.com', 'amazon.se', 'amazon.co.uk', 'amazon.de'], {
 
         const combined = buttonsSideBar.concat(buttonsProductPage, buttonsProductListing);
 
-        console.log(combined);
         return combined;
     }
 });
@@ -2796,7 +2795,6 @@ getters.register("jacobsenplus.dk", {
         if(!items) return [];
 
         return Array.from(items).map(item => {
-            console.log(item);
             const quantity = parseInt(item.children?.[0]?.textContent ?? "1");
             const {price, currency} = splitPriceCurrency(item.children?.[2]?.textContent);
 
