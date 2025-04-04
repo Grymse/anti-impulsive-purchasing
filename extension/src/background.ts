@@ -10,17 +10,18 @@ if (true) {
     })
 
 }
-if (settings.getFromStorage().then(value => {
-    if (!value.hasSeenWelcomeModal) {
-        chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener(() => {
+    settings.getFromStorage().then(value => {
+        if (!value.hasSeenWelcomeModal) {
             chrome.tabs.create({ url: "https://www.lessextension.com/onboarding" }, () => {
                 console.log("Onboarding tab opened")
-            })
-        })
+            });
         }
-})) {
-    
-}
+        else {
+            console.log("Onboarding tab not opened. User has already seen the welcome modal.")
+        }
+    });
+});
 
 
 export {}
