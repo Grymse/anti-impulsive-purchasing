@@ -95,7 +95,8 @@ const questions: Question[] = [
       "Three hour wait time was too-long",
       "The timer should be visible earlier in the buying process",
       "The intervention is too intrusive",
-      "I have friends who would benefit from this extension"
+      "I have friends who would benefit from this extension",
+      "I would benefit more from a different sort of intervention"
     ],
     required: true
   },
