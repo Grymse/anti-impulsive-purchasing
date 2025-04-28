@@ -300,7 +300,7 @@ function onPlaceOrderClickWait(e: Event) {
       e.stopPropagation()
       openModal(<EnforceWait onComplete={onComplete} />)
     } else {
-      const currentPermit = permit.get()
+      const currentPermit = permit.get();
 
       sendAnalytics("enforce_wait_permit_valid_on_click", {
         timeUntilInvalid: currentPermit.end - Date.now(),
@@ -404,9 +404,9 @@ settings.onInit((settings) => {
     }, 3000)
   }
 
-  if (!settings.hasSeenQuestionnaireModal) {
+  /* if (!settings.hasSeenQuestionnaireModal) { */
     setTimeout(() => {
       openModal(<QuestionnaireModal />)
-    }, 3000)
-  }
+    }, 1000)
+  /* } */
 })
