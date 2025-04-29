@@ -77,7 +77,6 @@ const questions: Question[] = [
       "I abandoned a purchase due to the intervention",
       "I added more items to my cart during the waiting period",
       "I reduced browsing on shopping sites",
-      "I became more aware of emotional triggers for my shopping",
       "I planned out my purchases ahead of time given the wait time constraint.",
       "Other"
     ],
