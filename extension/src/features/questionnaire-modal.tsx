@@ -91,12 +91,15 @@ const questions: Question[] = [
     type: "checkbox",
     options: [
       "None",
-      "Three hour wait time was too-short",
-      "Three hour wait time was too-long",
-      "The timer should be visible earlier in the buying process",
-      "The intervention is too intrusive",
+      "The intervention is frustrating",
+      "Three hours is either too long or too short",
+      "I would benefit from a less intrusive intervention",
+      "The wait-time should be enforced earlier in the shopping process",
+      "The intervention was easy to understand",
       "I have friends who would benefit from this extension",
-      "I would benefit more from a different sort of intervention"
+      "It intervened in an urgent situation causing frustration",
+      "I would like to choose affected websites",
+      "The wait timer should be more visible during the waiting period"
     ],
     required: true
   },
