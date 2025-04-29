@@ -35,6 +35,9 @@ type AnalyticsPayloads = {
   "open-options": undefined;
   "request-add-website": string;
   "welcome-modal-seen": undefined;
+  "questionary-popup": {startQuestion: number};
+  "questionary-closed": {question: number};
+  "questionary-finished";
   
   // Enforce wait events
   "enforce_wait_modal_shown": { permitExists: boolean; permitIsValid: boolean, timeUntilValid: number };
@@ -107,4 +110,36 @@ export async function getUserId(): Promise<string> {
   const newId = crypto.randomUUID();
   chrome.storage.local.set({ userid: newId });
   return newId;
+}
+
+
+type QuestionaryResponse = {
+  user_id: string;
+  question: string;
+  answer: string;
+  questionary: string;
+};
+
+
+export async function sendQuestionaryResponse (
+  question : string,
+  answer : string,
+  questionary : string
+) {
+  const data: QuestionaryResponse = {
+    user_id: await getUserId(),
+    question: question,
+    answer: answer,
+    questionary: questionary
+  };
+
+  
+  const URL = process.env.PLASMO_PUBLIC_ANSWER_URL + "?apikey=" + process.env.PLASMO_PUBLIC_SECRET;
+  fetch(URL, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json"
+    },
+  });
 }

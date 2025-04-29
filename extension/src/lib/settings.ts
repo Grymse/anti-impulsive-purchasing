@@ -25,7 +25,6 @@ export type Settings = {
     active: boolean;
     activeStrategies: StrategyType[];
     hasSeenWelcomeModal?: boolean;
-    hasSeenQuestionnaireModal?: boolean;
 }
 
 export const settings = new PersistentValue<Settings>("settings",
@@ -33,7 +32,6 @@ export const settings = new PersistentValue<Settings>("settings",
         active: true,
         activeStrategies: ["enforce-wait"],
         hasSeenWelcomeModal: false,
-        hasSeenQuestionnaireModal: false,
     }
 );
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 
 import { useModal } from "~components/Modal"
-import { Button, CountdownButton } from "~components/ui/button"
+import { Button } from "~components/ui/button"
 import {
   CardContent,
   CardDescription,
@@ -10,11 +10,11 @@ import {
   CardTitle
 } from "~components/ui/card"
 import { Label } from "~components/ui/label"
-//import { Progress } from "~components/ui/progress"
 import { Textarea } from "~components/ui/textarea"
-import { sendAnalytics } from "~lib/analytics"
-import { settings } from "~lib/settings"
+import { sendAnalytics, sendQuestionaryResponse } from "~lib/analytics"
+import { questionnarieState } from "~lib/questionnaire"
 import Text from "~options/Text"
+
 
 // Define the questions
 type Question = {
@@ -115,12 +115,31 @@ const questions: Question[] = [
 
 export function QuestionnaireModal() {
   const { close } = useModal()
-  const [currentQuestion, setCurrentQuestion] = useState(-1) // Start at -1 for the intro page
-  const [answers, setAnswers] = useState<Record<string, string | string[]>>({})
+  const [currentQuestion, setCurrentQuestion] = useState(questionnarieState.value.question) // Start at -1 for the intro page
+
+  useEffect(() => {
+    sendAnalytics("questionary-popup", {startQuestion: currentQuestion});
+
+    return () => {
+      sendAnalytics("questionary-closed", {question: questionnarieState.value.question});
+    }
+  },[]);
+
+  const [answers, setAnswers] = useState<Record<string, string | string[]>>(questionnarieState.value.answers)
   const [showThankYou, setShowThankYou] = useState(false)
   const [textareaValue, setTextareaValue] = useState("")
   const [selectedRating, setSelectedRating] = useState<string | null>(null)
   const [selectedCheckboxes, setSelectedCheckboxes] = useState<string[]>([])
+
+
+  useEffect(() => {
+    questionnarieState.update(state => {
+      return {
+        ...state,
+        answers
+      };
+    })
+  },[answers]);
 
   // Add event listener to capture and block click events bubbling up
   useEffect(() => {
@@ -170,17 +189,6 @@ export function QuestionnaireModal() {
     }
   }, [showThankYou])
 
-  useEffect(() => {
-    const openTime = new Date().getTime()
-    return () => {
-      if (2000 < new Date().getTime() - openTime) {
-        settings.update((s) => {
-          return { ...s, hasSeenQuestionnaireModal: true }
-        })
-      }
-    }
-  }, [])
-
   // Reset selections when changing questions
   useEffect(() => {
     const question = questions[currentQuestion]
@@ -200,27 +208,42 @@ export function QuestionnaireModal() {
     if (question.type === "rating" && selectedRating) {
       // Save rating answer
       setAnswers((prev) => ({ ...prev, [question.id]: selectedRating }))
-      sendAnalytics("answer", { question: question.id, answer: selectedRating })
+
+      sendQuestionaryResponse(question.question, selectedRating, "extension-feedback");
+    
       moveToNextQuestion()
     } else if (question.type === "checkbox" && selectedCheckboxes.length > 0) {
       // Save checkbox answers
       setAnswers((prev) => ({ ...prev, [question.id]: selectedCheckboxes }))
       // For analytics, join the array into a comma-separated string
-      sendAnalytics("answer", {
-        question: question.id,
-        answer: selectedCheckboxes.join(",")
-      })
+      sendQuestionaryResponse(question.question, selectedCheckboxes.join(","), "extension-feedback");
       moveToNextQuestion()
     } else if (question.type === "textarea") {
       setAnswers((prev) => ({ ...prev, [question.id]: textareaValue }))
-      sendAnalytics("answer", { question: question.id, answer: textareaValue })
+      sendQuestionaryResponse(question.question, textareaValue, "extension-feedback");
+      
       moveToNextQuestion()
     }
   }
 
   const moveToNextQuestion = () => {
     if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1)
+      const newQuestionIndex = currentQuestion + 1
+      setCurrentQuestion(newQuestionIndex)
+
+      questionnarieState.update(state => {
+        if (currentQuestion < state.question) return state;
+
+        const finished = currentQuestion >= questions.length - 2;
+
+        if (!state.finished && finished) sendAnalytics("questionary-finished", undefined);
+  
+        return {
+          ...state,
+          question: newQuestionIndex,
+          finished
+        }
+      });
     } else {
       setShowThankYou(true)
     }
@@ -535,7 +558,7 @@ export function QuestionnaireModal() {
           variant="default"
           className="font-medium"
           disabled={isButtonDisabled}>
-          Continue
+          {currentQuestion === questions.length - 1 ? "Finish" : "Continue"}
         </Button>
       </CardFooter>
     </>

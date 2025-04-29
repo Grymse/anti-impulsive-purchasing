@@ -15,6 +15,7 @@ import { settings } from "~lib/settings"
 import { EnforceWait } from "../features/enforce-wait"
 import { trackerEffect, trackingInit } from "../features/tracking"
 import { WelcomeModal } from "../features/welcome-modal"
+import { questionnarieState } from "~lib/questionnaire"
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -404,9 +405,15 @@ settings.onInit((settings) => {
     }, 3000)
   }
 
-  /* if (!settings.hasSeenQuestionnaireModal) { */
+
+  
+  const shouldShowQuestionnaire =
+    !questionnarieState.value.finished &&
+    Math.random() < 0.2;
+
+  if (shouldShowQuestionnaire) {
     setTimeout(() => {
       openModal(<QuestionnaireModal />)
     }, 1000)
-  /* } */
+  }
 })

@@ -14,7 +14,7 @@ import { settings } from "~lib/settings"
 import Text from "~options/Text"
 
 export function WelcomeModal() {
-  const { close, scale } = useModal()
+  const { close } = useModal()
   useEffect(() => {
     const openTime = new Date().getTime()
     return () => {
