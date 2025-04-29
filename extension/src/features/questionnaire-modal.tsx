@@ -99,7 +99,7 @@ const questions: Question[] = [
       "I have friends who would benefit from this extension",
       "It intervened in an urgent situation causing frustration",
       "I would like to choose affected websites",
-      "The wait timer should be more visible during the waiting period"
+      "The wait timer should be more accessible"
     ],
     required: true
   },
