@@ -406,14 +406,17 @@ settings.onInit((settings) => {
   }
 
 
-  
-  const shouldShowQuestionnaire =
-    !questionnarieState.value.finished &&
-    Math.random() < 0.2;
+  questionnarieState.onInit(value => {
+    const WAIT_TIME = 1_000 * 3600 * 24;
+    const shouldShowQuestionnaire =
+      !value.finished &&
+      Math.random() < 0.25 &&
+      value.interventionFirstSeen + WAIT_TIME < Date.now();
 
-  if (shouldShowQuestionnaire) {
-    setTimeout(() => {
-      openModal(<QuestionnaireModal />)
-    }, 1000)
-  }
+    if (shouldShowQuestionnaire) {
+      setTimeout(() => {
+        openModal(<QuestionnaireModal />)
+      }, 1000)
+    }
+  });
 })

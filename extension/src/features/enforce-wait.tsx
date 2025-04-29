@@ -18,6 +18,7 @@ import {
 import { sendAnalytics } from "~lib/analytics"
 import { formatTime, PERMIT_LENGTH, PERMIT_WAIT_TIME } from "~lib/constants"
 import permit, { type Permit } from "~lib/permit"
+import { questionnarieState } from "~lib/questionnaire"
 
 // Using formatTime from constants.ts
 
@@ -231,6 +232,12 @@ export function EnforceWait({ onComplete }: EnforceWaitProps) {
 
   useEffect(() => {
     const currentPermit : Permit | null = permit.get();
+    questionnarieState.update((s) => {
+      if (s.interventionFirstSeen !== undefined) return s
+
+      return { interventionFirstSeen: Date.now(), ...s };
+    });
+
     sendAnalytics("enforce_wait_modal_shown", {
       permitExists: !!currentPermit,
       permitIsValid: permit.isValid(),
