@@ -72,7 +72,7 @@ const questions: Question[] = [
       "I abandoned a purchase due to the intervention",
       "I added more items to my cart during the waiting period",
       "I reduced time spent on shopping sites",
-      "I planned out my purchases ahead of time given the wait time constraint."
+      "I planned out my purchases ahead of time"
     ],
     required: true
   },
