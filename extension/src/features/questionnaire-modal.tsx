@@ -15,7 +15,6 @@ import { sendAnalytics, sendQuestionaryResponse } from "~lib/analytics"
 import { questionnarieState } from "~lib/questionnaire"
 import Text from "~options/Text"
 
-
 // Define the questions
 type Question = {
   id: string
@@ -56,8 +55,6 @@ const questions: Question[] = [
       "Used incognito/private browsing",
       "Used a different browser",
       "Used in-store shopping",
-      "Asked someone else to make the purchase",
-      "Purchasing from unsupported sites",
       "Other"
     ],
     required: true
@@ -71,14 +68,11 @@ const questions: Question[] = [
     options: [
       "None",
       "I became more selective about what I purchased",
-      "I increased reflection before going for a purchase",
-      "I researched products more thoroughly during the waiting period",
-      'I developed "shopping lists" to replace impulse buying',
+      "I became more reflective about my purchases",
       "I abandoned a purchase due to the intervention",
       "I added more items to my cart during the waiting period",
-      "I reduced browsing on shopping sites",
-      "I planned out my purchases ahead of time given the wait time constraint.",
-      "Other"
+      "I reduced time spent on shopping sites",
+      "I planned out my purchases ahead of time given the wait time constraint."
     ],
     required: true
   },
@@ -95,10 +89,9 @@ const questions: Question[] = [
       "I would benefit from a less intrusive intervention",
       "The wait-time should be enforced earlier in the shopping process",
       "The intervention was easy to understand",
-      "I have friends who would benefit from this extension",
-      "It intervened in an urgent situation causing frustration",
-      "I would like to choose affected websites",
-      "The wait timer should be more accessible"
+      "I would recommend this extension to a friend",
+      "It intervened in an urgent situation",
+      "I would like to choose affected websites"
     ],
     required: true
   },
@@ -114,31 +107,36 @@ const questions: Question[] = [
 
 export function QuestionnaireModal() {
   const { close } = useModal()
-  const [currentQuestion, setCurrentQuestion] = useState(questionnarieState.value.question) // Start at -1 for the intro page
+  const [currentQuestion, setCurrentQuestion] = useState(
+    questionnarieState.value.question
+  ) // Start at -1 for the intro page
 
   useEffect(() => {
-    sendAnalytics("questionary-popup", {startQuestion: currentQuestion});
+    sendAnalytics("questionary-popup", { startQuestion: currentQuestion })
 
     return () => {
-      sendAnalytics("questionary-closed", {question: questionnarieState.value.question});
+      sendAnalytics("questionary-closed", {
+        question: questionnarieState.value.question
+      })
     }
-  },[]);
+  }, [])
 
-  const [answers, setAnswers] = useState<Record<string, string | string[]>>(questionnarieState.value.answers)
+  const [answers, setAnswers] = useState<Record<string, string | string[]>>(
+    questionnarieState.value.answers
+  )
   const [showThankYou, setShowThankYou] = useState(false)
   const [textareaValue, setTextareaValue] = useState("")
   const [selectedRating, setSelectedRating] = useState<string | null>(null)
   const [selectedCheckboxes, setSelectedCheckboxes] = useState<string[]>([])
 
-
   useEffect(() => {
-    questionnarieState.update(state => {
+    questionnarieState.update((state) => {
       return {
         ...state,
         answers
-      };
+      }
     })
-  },[answers]);
+  }, [answers])
 
   // Add event listener to capture and block click events bubbling up
   useEffect(() => {
@@ -208,19 +206,31 @@ export function QuestionnaireModal() {
       // Save rating answer
       setAnswers((prev) => ({ ...prev, [question.id]: selectedRating }))
 
-      sendQuestionaryResponse(question.question, selectedRating, "extension-feedback");
-    
+      sendQuestionaryResponse(
+        question.question,
+        selectedRating,
+        "extension-feedback"
+      )
+
       moveToNextQuestion()
     } else if (question.type === "checkbox" && selectedCheckboxes.length > 0) {
       // Save checkbox answers
       setAnswers((prev) => ({ ...prev, [question.id]: selectedCheckboxes }))
       // For analytics, join the array into a comma-separated string
-      sendQuestionaryResponse(question.question, selectedCheckboxes.join(","), "extension-feedback");
+      sendQuestionaryResponse(
+        question.question,
+        selectedCheckboxes.join(","),
+        "extension-feedback"
+      )
       moveToNextQuestion()
     } else if (question.type === "textarea") {
       setAnswers((prev) => ({ ...prev, [question.id]: textareaValue }))
-      sendQuestionaryResponse(question.question, textareaValue, "extension-feedback");
-      
+      sendQuestionaryResponse(
+        question.question,
+        textareaValue,
+        "extension-feedback"
+      )
+
       moveToNextQuestion()
     }
   }
@@ -230,19 +240,20 @@ export function QuestionnaireModal() {
       const newQuestionIndex = currentQuestion + 1
       setCurrentQuestion(newQuestionIndex)
 
-      questionnarieState.update(state => {
-        if (currentQuestion < state.question) return state;
+      questionnarieState.update((state) => {
+        if (currentQuestion < state.question) return state
 
-        const finished = currentQuestion >= questions.length - 2;
+        const finished = currentQuestion >= questions.length - 2
 
-        if (!state.finished && finished) sendAnalytics("questionary-finished", undefined);
-  
+        if (!state.finished && finished)
+          sendAnalytics("questionary-finished", undefined)
+
         return {
           ...state,
           question: newQuestionIndex,
           finished
         }
-      });
+      })
     } else {
       setShowThankYou(true)
     }
@@ -432,10 +443,10 @@ export function QuestionnaireModal() {
               </div>
               <div>
                 <h3 className="font-medium text-base">
-                  Just {questions.length} questions
+                  Just one minute and five questions.
                 </h3>
                 <p className="text-sm text-lessmuted-foreground">
-                  The questionnaire should only take 2-3 minutes to complete.
+                  The questionnaire should only take 1 minute to complete.
                 </p>
               </div>
             </div>
@@ -457,7 +468,7 @@ export function QuestionnaireModal() {
               </div>
               <div>
                 <h3 className="font-medium text-base">
-                  Your privacy is protected
+                  Your privacy is protected.
                 </h3>
                 <p className="text-sm text-lessmuted-foreground">
                   We only collect anonymous feedback to improve the extension.
