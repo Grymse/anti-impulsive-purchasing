@@ -1,17 +1,21 @@
 import cssText from "data-text:~style.css"
 import type { PlasmoCSConfig } from "plasmo"
+
 import "../style.css"
 
+import createModal from "~components/Modal"
+import { QuestionnaireModal } from "~features/questionnaire-modal"
+import { sendAnalytics } from "~lib/analytics"
+import { sendErrorReport } from "~lib/errors"
 import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
-import { settings } from "~lib/settings"
-import createModal from "~components/Modal"
 import permit from "~lib/permit"
+import { settings } from "~lib/settings"
+
 import { EnforceWait } from "../features/enforce-wait"
 import { trackerEffect, trackingInit } from "../features/tracking"
 import { WelcomeModal } from "../features/welcome-modal"
-import { sendAnalytics } from "~lib/analytics"
-import { sendErrorReport } from "~lib/errors"
+import { questionnarieState } from "~lib/questionnaire"
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -114,52 +118,52 @@ export const config: PlasmoCSConfig = {
     "https://mobler.dk/*",
     "https://*.adidas.dk/*",
     "https://vibholm.dk/*",
-"https://*.pandora.net/*",
-"https://*.vivino.com/*",
-"https://*.bedrenaetter.dk/*",
-"https://densidsteflaske.dk/*",
-"https://*.dilling.com/*",
-"https://*.helsebixen.dk/*",
-"https://*.jwlry.dk/*",
-"https://*.lomax.dk/*",
-"https://thearmypainter.com/*",
-"https://*.trendhim.dk/*",
-"https://altidenergi.dk/*",
-"https://arturel.dk/*",
-"https://basicandally.com/*",
-"https://*.birdie.design/*",
-"https://blandselvfroe.dk/*",
-"https://bottlehero.dk/*",
-"https://canacare.dk/*",
-"https://shop.caspersobczyk.dk/*",
-"https://fantombryg.dk/*",
-"https://flowintimates.com/*",
-"https://*.greeting.dk/*",
-"https://*.kodriget.dk/*",
-"https://sisicph.dk/*",
-"https://showerlabs.dk/*",
-"https://skagen-clothing.dk/*",
-"https://*.underflod.shop/*",
-"https://wecyclefurniture.dk/*",
-"https://andlight.dk/*",
-"https://bibsworld.com/*",
-"https://maanesten.com/*",
-"https://lesdeux.dk/*",
-"https://enamelcopenhagen.dk/*",
-"https://*.rains.com/*",
-"https://*.royalcopenhagen.com/*",
-"https://*.miinto.dk/*",
-"https://*.chanti.dk/*",
-"https://*.ganni.com/*",
-"https://*.babysam.dk/*",
-"https://*.vinted.dk/*",
-"https://camillakroeyer.dk/*",
-"https://bahne.dk/*",
-"https://*.envii.com/*",
-"https://*.emp-shop.dk/*",
-"https://nelly.com/*",
-"https://*.jdsports.dk/*",
-"https://*.stylepit.dk/*",
+    "https://*.pandora.net/*",
+    "https://*.vivino.com/*",
+    "https://*.bedrenaetter.dk/*",
+    "https://densidsteflaske.dk/*",
+    "https://*.dilling.com/*",
+    "https://*.helsebixen.dk/*",
+    "https://*.jwlry.dk/*",
+    "https://*.lomax.dk/*",
+    "https://thearmypainter.com/*",
+    "https://*.trendhim.dk/*",
+    "https://altidenergi.dk/*",
+    "https://arturel.dk/*",
+    "https://basicandally.com/*",
+    "https://*.birdie.design/*",
+    "https://blandselvfroe.dk/*",
+    "https://bottlehero.dk/*",
+    "https://canacare.dk/*",
+    "https://shop.caspersobczyk.dk/*",
+    "https://fantombryg.dk/*",
+    "https://flowintimates.com/*",
+    "https://*.greeting.dk/*",
+    "https://*.kodriget.dk/*",
+    "https://sisicph.dk/*",
+    "https://showerlabs.dk/*",
+    "https://skagen-clothing.dk/*",
+    "https://*.underflod.shop/*",
+    "https://wecyclefurniture.dk/*",
+    "https://andlight.dk/*",
+    "https://bibsworld.com/*",
+    "https://maanesten.com/*",
+    "https://lesdeux.dk/*",
+    "https://enamelcopenhagen.dk/*",
+    "https://*.rains.com/*",
+    "https://*.royalcopenhagen.com/*",
+    "https://*.miinto.dk/*",
+    "https://*.chanti.dk/*",
+    "https://*.ganni.com/*",
+    "https://*.babysam.dk/*",
+    "https://*.vinted.dk/*",
+    "https://camillakroeyer.dk/*",
+    "https://bahne.dk/*",
+    "https://*.envii.com/*",
+    "https://*.emp-shop.dk/*",
+    "https://nelly.com/*",
+    "https://*.jdsports.dk/*",
+    "https://*.stylepit.dk/*",
 
     // ----- Common domains -----
     "https://*.shein.com/*",
@@ -271,17 +275,14 @@ export const config: PlasmoCSConfig = {
     "https://*.flybyjing.com/*",
     "https://getmaude.com/*",
     "https://ugmonk.com/*",
-    "https://shop.app/*",
+    "https://shop.app/*"
   ],
   all_frames: true
 }
 
-const {
-  ModalComponent,
-  openModal,
-} = createModal();
+const { ModalComponent, openModal } = createModal()
 
-export default ModalComponent;
+export default ModalComponent
 
 function onPlaceOrderClickWait(e: Event) {
   try {
@@ -305,66 +306,70 @@ function onPlaceOrderClickWait(e: Event) {
       sendAnalytics("enforce_wait_permit_valid_on_click", {
         timeUntilInvalid: currentPermit.end - Date.now(),
         timeSinceValid: Date.now() - currentPermit.start
-      });
-      
-      onComplete();
+      })
+
+      onComplete()
     }
   } catch (e: any) {
     sendErrorReport("onPlaceOrderListener", e)
   }
 }
 
-function enforceWaitEffect(triggers: HTMLElement[], signal: {signal:AbortSignal}) {
+function enforceWaitEffect(
+  triggers: HTMLElement[],
+  signal: { signal: AbortSignal }
+) {
   triggers.forEach((trigger) => {
     trigger.addEventListener("click", onPlaceOrderClickWait, signal)
   })
 }
 
-
 const domainGetters = getters.getDomainGetters()
 
 function effect(signal: { signal: AbortSignal }) {
-  let placeOrderButtons = [];
-  let oneClickBuyNow;
-  let addToCartButtons = [];
-  let currentCart = [];
-  let allBuyButtons = [];
+  let placeOrderButtons = []
+  let oneClickBuyNow
+  let addToCartButtons = []
+  let currentCart = []
+  let allBuyButtons = []
 
   try {
     placeOrderButtons = domainGetters.placeOrderButtons(document.body)
   } catch (e: any) {
     sendErrorReport("place-order-buttons", e)
-    return;
+    return
   }
 
   try {
     oneClickBuyNow = domainGetters.getOneClickBuyNow?.(document.body)
   } catch (e: any) {
     sendErrorReport("one-click-buy", e)
-    return;
+    return
   }
 
   try {
     addToCartButtons = domainGetters.addToCartButtons(document.body)
   } catch (e: any) {
     sendErrorReport("add-to-cart-buttons", e)
-    return;
+    return
   }
-  
+
   try {
     currentCart = domainGetters.getCartItems(document.body)
   } catch (e: any) {
     sendErrorReport("cart-items", e)
-    return;
+    return
   }
-  
+
   try {
-    allBuyButtons = oneClickBuyNow ? [...placeOrderButtons, ...oneClickBuyNow.map((p) => p.button)] : placeOrderButtons;
+    allBuyButtons = oneClickBuyNow
+      ? [...placeOrderButtons, ...oneClickBuyNow.map((p) => p.button)]
+      : placeOrderButtons
   } catch (e: any) {
     sendErrorReport("all-buy-buttons", e)
-    return;
+    return
   }
-  
+
   // Setup tracking
   trackerEffect({
     signal,
@@ -372,31 +377,46 @@ function effect(signal: { signal: AbortSignal }) {
     placeOrderButtons,
     oneClickBuy: oneClickBuyNow,
     cartItems: currentCart
-  });
+  })
 
   // Specifically required for need this
-  if(settings.value.activeStrategies.includes("enforce-wait")) {
-      enforceWaitEffect(allBuyButtons, signal);
+  if (settings.value.activeStrategies.includes("enforce-wait")) {
+    enforceWaitEffect(allBuyButtons, signal)
   }
 }
 
 settings.onInit((settings) => {
-  if (!settings.active) return;
-  trackingInit();
+  if (!settings.active) return
+  trackingInit()
 
   // Specifically required for enforce-wait
-  if(settings.activeStrategies.includes("enforce-wait")) {
+  if (settings.activeStrategies.includes("enforce-wait")) {
     document.body.setAttribute(
       "data-plasmo-place-order-blocked",
       permit.isValid() ? "false" : "true"
     )
   }
 
-  observer.addEffect(effect);
-  
-  if(!settings.hasSeenWelcomeModal) {
+  observer.addEffect(effect)
+
+  if (!settings.hasSeenWelcomeModal) {
     setTimeout(() => {
       openModal(<WelcomeModal />)
-    }, 3000);
+    }, 3000)
   }
-});
+
+
+  questionnarieState.onInit(value => {
+    const WAIT_TIME = 1_000 * 3600 * 24;
+    const shouldShowQuestionnaire =
+      !value.finished &&
+      Math.random() < 0.25 &&
+      value.interventionFirstSeen + WAIT_TIME < Date.now();
+
+    if (shouldShowQuestionnaire) {
+      setTimeout(() => {
+        openModal(<QuestionnaireModal />)
+      }, 1000)
+    }
+  });
+})

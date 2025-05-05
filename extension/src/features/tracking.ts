@@ -31,8 +31,6 @@ export function trackerEffect({signal, addToCartButtons, placeOrderButtons, oneC
   saveCurrentItems(cartItems);
 }
 
-
-
 function onInstantBuyClick(items: ShoppingItem[]) {
   const isBlocked = document.body.getAttribute('data-plasmo-place-order-blocked') === "true";
   if (isBlocked) return;
