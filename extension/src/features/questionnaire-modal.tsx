@@ -36,14 +36,6 @@ const questions: Question[] = [
     required: true
   },
   {
-    id: "alternative_methods",
-    question:
-      "How often did you use alternative methods to make purchases during the waiting period?",
-    type: "rating",
-    options: ["Never", "Once", "Twice", "Multiple times"],
-    required: true
-  },
-  {
     id: "workarounds",
     question:
       "Have you used any of the following methods to work around the waiting period?",
@@ -89,7 +81,6 @@ const questions: Question[] = [
       "I would benefit from a less intrusive intervention",
       "The wait-time should be enforced earlier in the shopping process",
       "The intervention was easy to understand",
-      "I would recommend this extension to a friend",
       "It intervened in an urgent situation",
       "I would like to choose affected websites"
     ],
