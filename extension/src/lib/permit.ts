@@ -5,6 +5,7 @@ export type Permit = {
   start: number;
   end: number;
 }
+
 const DOMAIN = document.location.hostname;
 const LOCAL_STORAGE_KEY = DOMAIN + "-permit";
 const permit = new PersistentValue<Permit>(LOCAL_STORAGE_KEY);

@@ -14,6 +14,7 @@ type AnalyticsEvent = {
   session_id: string;
   created_at: string;
 };
+
 type QuestionaryResponse = {
   user_id: string;
   question: string;
