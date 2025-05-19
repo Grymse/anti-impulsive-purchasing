@@ -411,6 +411,7 @@ settings.onInit((settings) => {
     const shouldShowQuestionnaire =
       !value.finished &&
       Math.random() < 0.25 &&
+      value.notSeenExtension === undefined ||
       value.interventionFirstSeen + WAIT_TIME < Date.now();
 
     if (shouldShowQuestionnaire) {

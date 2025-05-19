@@ -372,6 +372,7 @@ export function QuestionnaireModal() {
     )
   }
 
+
   const ThankYou = () => {
     return (
       <>
@@ -406,6 +407,18 @@ export function QuestionnaireModal() {
   }
 
   const IntroPage = () => {
+  
+    const mightNotHaveSeen = true;
+
+    function haveNotSeenExtension() {
+      questionnarieState.update((state) => {
+        return {
+          ...state,
+          notSeenExtension: true
+        }
+      })
+      
+    }
     return (
       <>
         <CardHeader className="pb-2">
@@ -504,6 +517,13 @@ export function QuestionnaireModal() {
           </div>
         </CardContent>
         <CardFooter className="justify-end items-center pt-2">
+          {mightNotHaveSeen && <Button
+            onClick={haveNotSeenExtension}
+            variant="default"
+            size="lg"
+            className="font-medium">
+            I have not seen the extension
+          </Button>}
           <Button
             onClick={() => setCurrentQuestion(0)}
             variant="default"
