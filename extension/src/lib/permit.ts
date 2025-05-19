@@ -21,6 +21,14 @@ function markAsUsed() {
     }
 }
 
+function hasBeenUsed() : boolean {
+    // Check if a permit exists and has been used
+    // We consider a permit used if it has been created and its start time has passed
+    if (!permit.value) return false;
+    
+    return Date.now() > permit.value.start;
+}
+
 function createIfNone() {
     // Do nothing if the current permit has not expired
     if (permit.value && Date.now() < permit.value.end) return;
@@ -46,5 +54,6 @@ export default {
     markAsUsed,
     createIfNone,
     isValid,
+    hasBeenUsed,
 };
 

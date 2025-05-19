@@ -137,6 +137,18 @@ export function QuestionnaireModal() {
       }
     })
   }, [answers])
+  
+  // When the questionnaire is finished, mark it as answered
+  useEffect(() => {
+    if (showThankYou) {
+      questionnarieState.update((state) => {
+        return {
+          ...state,
+          haveAnswered: true
+        }
+      })
+    }
+  }, [showThankYou])
 
   // Add event listener to capture and block click events bubbling up
   useEffect(() => {
@@ -372,6 +384,7 @@ export function QuestionnaireModal() {
     )
   }
 
+
   const ThankYou = () => {
     return (
       <>
@@ -515,8 +528,76 @@ export function QuestionnaireModal() {
       </>
     )
   }
+  
+  // New component for asking if the user has seen the extension
+  const AskUserHaveSeen = () => {
+    function handleHaveSeen(hasSeen: boolean) {
+      questionnarieState.update((state) => {
+        return {
+          ...state,
+          haveSeen: hasSeen,
+          lastPrompted: Date.now()
+        }
+      })
+      
+      if (hasSeen) {
+        // User has seen the extension, proceed to questionnaire
+        setCurrentQuestion(0)
+      } else {
+        // User has not seen the extension, record the current time 
+        // as interventionFirstSeen to track 24hr wait period
+        questionnarieState.update((state) => {
+          return {
+            ...state,
+            interventionFirstSeen: Date.now()
+          }
+        })
+        
+        // Close the modal
+        close()
+      }
+    }
+    
+    return (
+      <>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-2xl font-bold text-lessprimary">
+            Quick Question
+          </CardTitle>
+          <CardDescription className="text-lg mt-2">
+            Have you seen the Less extension in action?
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="bg-lessaccent/10 p-4 rounded-lg border border-lessaccent/20">
+            <Text className="text-wrap text-base leading-relaxed">
+              We'd like to know if you've encountered the Less extension's waiting period 
+              when trying to make a purchase. This helps us understand your experience better.
+            </Text>
+          </div>
+        </CardContent>
+        <CardFooter className="justify-between items-center pt-2">
+          <Button
+            onClick={() => handleHaveSeen(false)}
+            variant="outline"
+            size="lg"
+            className="font-medium">
+            No, I haven't seen it yet
+          </Button>
+          <Button
+            onClick={() => handleHaveSeen(true)}
+            variant="default"
+            size="lg"
+            className="font-medium">
+            Yes, I've seen it
+          </Button>
+        </CardFooter>
+      </>
+    )
+  }
 
   if (showThankYou) return <ThankYou />
+  if (currentQuestion === -2) return <AskUserHaveSeen />
   if (currentQuestion < 0) return <IntroPage />
 
   const question = questions[currentQuestion]

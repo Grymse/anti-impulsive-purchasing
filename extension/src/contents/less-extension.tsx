@@ -407,16 +407,42 @@ settings.onInit((settings) => {
 
 
   questionnarieState.onInit(value => {
-    const WAIT_TIME = 1_000 * 3600 * 24;
-    const shouldShowQuestionnaire =
-      !value.finished &&
-      Math.random() < 0.25 &&
-      value.interventionFirstSeen + WAIT_TIME < Date.now();
-
-    if (shouldShowQuestionnaire) {
+    const WAIT_TIME = 1_000 * 3600 * 24; // 24 hours
+    const now = Date.now();
+    
+    // Only run this if we haven't already answered the questionnaire
+    if (value.haveAnswered) {
+      return; // User has already answered, do nothing
+    }
+    
+    // Control flow som i diagrammet
+    if (value.haveSeen) {
+      // User has confirmed they've seen the extension
+      if (!value.haveAnswered) {
+        // User hasn't answered yet, prompt with survey
+        setTimeout(() => {
+          openModal(<QuestionnaireModal />)
+        }, 1000);
+      }
+    } else if (value.interventionFirstSeen) {
+      // User has previously indicated they haven't seen the extension
+      // Only show questionnaire after they've seen intervention AND 24 hours have passed
+      if (permit.hasBeenUsed() && (now - value.interventionFirstSeen > WAIT_TIME)) {
+        // User has now used a permit (seen intervention) AND 24+ hours have passed
+        setTimeout(() => {
+          openModal(<QuestionnaireModal />)
+        }, 1000);
+      }
+      // Otherwise, continue to wait - don't show anything
+    } else {
+      // First time encountering extension, ask if user has seen it
       setTimeout(() => {
+        questionnarieState.update(state => ({
+          ...state,
+          question: -2 // Set to the "have you seen" question page
+        }));
         openModal(<QuestionnaireModal />)
-      }, 1000)
+      }, 1000);
     }
   });
 })
