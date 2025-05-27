@@ -1,38 +1,47 @@
-# reddit anti-consumption research. Analyzing survey data
+# Survey Analysis
 
-## DISCLAIMER
-We used LLMs to generate code for this project
+Analysis of survey responses collected from users about their purchasing behaviors, strategies, and attitudes towards consumption reduction.
 
-## Setup a file called .env
-Get the values from reddit
+## Description
 
+This folder contains analysis scripts and notebooks for processing and analyzing survey data collected as part of the MSc thesis research. The analysis examines user demographics, purchasing patterns, effectiveness of different strategies, and relationships between various behavioral factors.
+
+**Note**: AI assistance (LLMs) was used to generate code for this project.
+
+## Technologies
+
+- **Python**: Data processing and statistical analysis
+- **Pandas**: Data manipulation and analysis
+- **Jupyter Notebooks**: Interactive analysis and visualization
+- **Matplotlib/Seaborn**: Data visualization
+- **Scikit-learn**: Machine learning and clustering analysis
+- **Statistical Analysis**: Correlation analysis, regression, and hypothesis testing
+
+## Key Analysis Areas
+
+- **Demographic Analysis**: Age, gender, employment, and geographic distribution
+- **Strategy Effectiveness**: Analysis of which anti-consumption strategies work best
+- **Behavioral Patterns**: Purchase frequency, regret patterns, and help-seeking behavior
+- **Feature Engineering**: Creating predictive models for purchasing resistance
+- **Clustering Analysis**: Identifying user archetypes and behavior patterns
+- **Statistical Testing**: Validating hypotheses about intervention effectiveness
+
+## Data Files
+
+- **`data_processed/`**: Contains processed survey responses and analysis outputs
+- **`plots/`**: Generated visualizations and charts
+- **Survey Data**: Demographics, purchasing behaviors, and strategy preferences
+- **Processed Features**: Engineered features for machine learning analysis
+
+## Setup
+
+1. Create conda environment:
+```bash
+conda env create -f env.yml
+conda activate antic
 ```
-CLIENT_ID=
-CLIENT_SECRET=
-USERNAME=
-PASSWORD=
-SUBREDDITS='anticonsumption'
-SCRAPE_TOP_N_SUBMISSIONS=10
-SUBMISSION_TYPE='hot'
-SUBMISSIONS_TIME_FILTER='month'
-COMMENT_DEPTH=-1
 
-# OpenAI
-OPENAI_API_KEY=
-ASSISTANT_ID=
-```
-
-## Create conda environment
-Run `conda env create -f env.yml` (takes a long time)...
-
-then run `conda activate antic` or choose the kernal in the specific notebook in vscode (you might need to restart vscode to see it).
-
-If you ever want to add a dependency, simple update the list in the `env.yml` file and run `conda env update -f env.yml`
-
-# File structure
-Create this file structure in the root of the repo:
-```
-- data (this is only required now)
-```
-
-# impulse-purchasing
+2. Run analysis notebooks in order:
+   - `process_survey.ipynb` - Initial data processing
+   - `first_page_graphs.ipynb` - Demographic visualizations
+   - `effective_strategies_graphs.ipynb` - Strategy analysis

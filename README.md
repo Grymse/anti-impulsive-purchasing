@@ -1,4 +1,4 @@
-# Less Extension
+# Anti-Impulsive Purchasing Research - MSc Thesis
 
 <img src="./extension//assets/icon.png" alt="Less Icon" width="200"/>
 
@@ -6,7 +6,23 @@
 
 Welcome to *Less*, a browser extension designed to help reduce impulsive online purchases. Our global consumption levels have grown to an unsustainable scale, posing a serious threat to the planet’s environment. By encouraging mindful purchasing decisions, *Less* aims to promote a more eco-friendly lifestyle, help you save money, and offer the mental benefits of decluttering.
 
-Developed as part of a thesis on reducing online impulsive buying behaviors, this tool is meant to support both your financial well-being and the environment.
+This research project and browser extension were developed as part of an MSc thesis on reducing online impulsive buying behaviors.
+
+**Note**: AI assistance was used throughout this project to help with code development and data analysis.
+
+## Project Structure
+
+This repository is organized into several key components:
+
+- **`extension/`** - The main *Less* browser extension built with Plasmo framework
+- **`extension-edge/`** - Supabase edge functions and database configuration for analytics
+- **`extension-policy-web/`** - React web application for the extension's policy and landing pages
+- **`survey/`** - Custom survey platform built with React and Firebase for collecting user data
+- **`survey-analysis/`** - Analysis scripts and notebooks for processing survey responses
+- **`reddit-analysis/`** - Data mining and analysis of Reddit discussions on consumption behaviors
+- **`experiment-data/`** - Analysis scripts for experimental data collected during the study period
+
+## Less Extension Details
 
 ### Supported webshops
 Refer to the updated list found on [our webpage.](https://www.lessextension.com/)
