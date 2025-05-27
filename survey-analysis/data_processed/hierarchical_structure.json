@@ -1,0 +1,128 @@
+[
+    {
+        "id": "Online Impulsive Shopping Reduction",
+        "datum": 247,
+        "children": [
+            {
+                "id": "Financial Discipline",
+                "datum": 16,
+                "children": [
+                    {
+                        "id": "Create a budget and limit spending on specific categories",
+                        "datum": 16
+                    }
+                ]
+            },
+            {
+                "id": "Self-Control",
+                "datum": 45,
+                "children": [
+                    {
+                        "id": "Remove advertisements",
+                        "datum": 5
+                    },
+                    {
+                        "id": "Block webshop/shop-app or disable checkout",
+                        "datum": 12
+                    },
+                    {
+                        "id": "Remind user to do free alternatives over shopping",
+                        "datum": 28
+                    }
+                ]
+            },
+            {
+                "id": "Assess Quality",
+                "datum": 24,
+                "children": [
+                    {
+                        "id": "Read about item reviews to judge quality",
+                        "datum": 1
+                    },
+                    {
+                        "id": "Ask yourself if this is a quality product with a long lifespan",
+                        "datum": 23
+                    }
+                ]
+            },
+            {
+                "id": "Decision Postponing",
+                "datum": 40,
+                "children": [
+                    {
+                        "id": "Postpone purchase, create a waiting list",
+                        "datum": 30
+                    },
+                    {
+                        "id": "Delete saved credit card information",
+                        "datum": 2
+                    },
+                    {
+                        "id": "Only allow buying within a time-window",
+                        "datum": 1
+                    },
+                    {
+                        "id": "Set a maximum items to buy over a given time",
+                        "datum": 7
+                    }
+                ]
+            },
+            {
+                "id": "Resource Sharing",
+                "datum": 43,
+                "children": [
+                    {
+                        "id": "Find alternative second-hand options",
+                        "datum": 22
+                    },
+                    {
+                        "id": "Find lending/renting alternatives",
+                        "datum": 21
+                    }
+                ]
+            },
+            {
+                "id": "Mindful Awareness",
+                "datum": 79,
+                "children": [
+                    {
+                        "id": "Reflect and be aware of buying items similar to existing ones",
+                        "datum": 13
+                    },
+                    {
+                        "id": "When purchasing, register what feeling leads you to shopping",
+                        "datum": 11
+                    },
+                    {
+                        "id": "Reflect on time, space, and environmental cost of the product",
+                        "datum": 6
+                    },
+                    {
+                        "id": "Remind yourself of psychological marketing targeting you",
+                        "datum": 18
+                    },
+                    {
+                        "id": "Ask yourself if you need it",
+                        "datum": 20
+                    },
+                    {
+                        "id": "Visualize hours of work-time instead of price",
+                        "datum": 2
+                    },
+                    {
+                        "id": "Visualize alternative spending of money",
+                        "datum": 4
+                    },
+                    {
+                        "id": "Visualize time spent on shopping websites",
+                        "datum": 1
+                    },
+                    {
+                        "id": "Ask yourself how often you will use the product",
+                        "datum": 4
+                    }
+                ]
+            }
+        ]
+    }
+]
