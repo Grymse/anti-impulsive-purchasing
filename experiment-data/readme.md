@@ -1,1 +1,1 @@
-This folder contains scripts that are useful for testing analytics
+This folder contains all scripts used to analyze the analytics produced by the extension during the experiment period
