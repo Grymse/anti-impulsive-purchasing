@@ -1,3 +1,4 @@
 .env
-data/.env
-data/*.csv
+experiment-data/.env
+experiment-data/*.csv
+final-analytics-report.csv
