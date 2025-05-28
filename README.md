@@ -139,7 +139,7 @@ extension/
 └── tsconfig.json
 
 // Supabase edge functions and db
-edge/
+extension-edge/
 ├── package.json
 └── supabase
     ├── config.toml
@@ -148,10 +148,10 @@ edge/
     │       └── index.ts // Endpoint to receive analytics
     └── seed.sql // Empty SQL file. We setup the analytics table in the browser
 
-
-// FLASK ENDPOINT
-data/
-└── event-catcher.py // Script for debugging analytical endpoint
+experiment-data/
+├── event-catcher.py // Script for debugging analytical endpoint
+├── *_X.ipynb // Analysis with graphs used in report
+└── *.ipynb // Remaining analysis
 
 // REACT APP
 policy-web/
@@ -181,4 +181,14 @@ policy-web/
 ├── tsconfig.json
 ├── tsconfig.node.json
 └── vite.config.ts
+
+
+survey/
+└── * // A lot of files about the survey. Checkout the folder and the local Readme
+
+survey-analysis/
+└── * // A lot of files about the survey analysis. Checkout the folder and the local Readme
+
+reddit-analysis/
+└── * // A lot of files about the reddit analysis. Checkout the folder and the local Readme
 ```
