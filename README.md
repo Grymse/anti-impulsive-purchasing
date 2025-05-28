@@ -3,16 +3,7 @@
 <img src="./extension//assets/icon.png" alt="Less Icon" width="200"/>
 
 ## Description
-
-Welcome to *Less*, a browser extension designed to help reduce impulsive online purchases. Our global consumption levels have grown to an unsustainable scale, posing a serious threat to the planet’s environment. By encouraging mindful purchasing decisions, *Less* aims to promote a more eco-friendly lifestyle, help you save money, and offer the mental benefits of decluttering.
-
-This research project and browser extension were developed as part of an MSc thesis on reducing online impulsive buying behaviors.
-
-**Note**: AI assistance was used throughout this project to help with code development and data analysis.
-
-## Project Structure
-
-This repository is organized into several key components:
+This repo contains all files regarding the Msc Thesis by Frederik Rothe and Nicolai Grymer. This repo includes files for a five-part study:
 
 - **`extension/`** - The main *Less* browser extension built with Plasmo framework
 - **`extension-edge/`** - Supabase edge functions and database configuration for analytics
@@ -21,6 +12,16 @@ This repository is organized into several key components:
 - **`survey-analysis/`** - Analysis scripts and notebooks for processing survey responses
 - **`reddit-analysis/`** - Data mining and analysis of Reddit discussions on consumption behaviors
 - **`experiment-data/`** - Analysis scripts for experimental data collected during the study period
+
+
+## Extension Description
+
+Welcome to *Less*, a browser extension designed to help reduce impulsive online purchases. Our global consumption levels have grown to an unsustainable scale, posing a serious threat to the planet’s environment. By encouraging mindful purchasing decisions, *Less* aims to promote a more eco-friendly lifestyle, help you save money, and offer the mental benefits of decluttering.
+
+This research project and browser extension were developed as part of an MSc thesis on reducing online impulsive buying behaviors.
+
+**Note**: AI assistance was used throughout this project to help with code development and data analysis.
+
 
 ## Less Extension Details
 
