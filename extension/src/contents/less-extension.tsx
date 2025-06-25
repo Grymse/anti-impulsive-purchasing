@@ -10,12 +10,12 @@ import { sendErrorReport } from "~lib/errors"
 import { getters } from "~lib/getters"
 import { observer } from "~lib/observer"
 import permit from "~lib/permit"
+import { questionnarieState } from "~lib/questionnaire"
 import { settings } from "~lib/settings"
 
 import { EnforceWait } from "../features/enforce-wait"
 import { trackerEffect, trackingInit } from "../features/tracking"
 import { WelcomeModal } from "../features/welcome-modal"
-import { questionnarieState } from "~lib/questionnaire"
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -290,8 +290,6 @@ function onPlaceOrderClickWait(e: Event) {
 
     const onComplete = () => {
       document.body.setAttribute("data-plasmo-place-order-blocked", "false")
-      const button = e.target as HTMLElement
-      button.click?.()
       permit.markAsUsed()
     }
 
@@ -301,7 +299,7 @@ function onPlaceOrderClickWait(e: Event) {
       e.stopPropagation()
       openModal(<EnforceWait onComplete={onComplete} />)
     } else {
-      const currentPermit = permit.get();
+      const currentPermit = permit.get()
 
       sendAnalytics("enforce_wait_permit_valid_on_click", {
         timeUntilInvalid: currentPermit.end - Date.now(),
@@ -405,18 +403,17 @@ settings.onInit((settings) => {
     }, 3000)
   }
 
-
-  questionnarieState.onInit(value => {
-    const WAIT_TIME = 1_000 * 3600 * 24;
+  questionnarieState.onInit((value) => {
+    const WAIT_TIME = 1_000 * 3600 * 24
     const shouldShowQuestionnaire =
       !value.finished &&
       Math.random() < 0.25 &&
-      value.interventionFirstSeen + WAIT_TIME < Date.now();
+      value.interventionFirstSeen + WAIT_TIME < Date.now()
 
     if (shouldShowQuestionnaire) {
       setTimeout(() => {
         openModal(<QuestionnaireModal />)
       }, 1000)
     }
-  });
+  })
 })
