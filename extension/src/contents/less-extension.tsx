@@ -385,7 +385,8 @@ function effect(signal: { signal: AbortSignal }) {
 
 settings.onInit((settings) => {
   if (!settings.active) return
-  trackingInit()
+  //!! Tracking disabled as research project has concluded.
+  //trackingInit()
 
   // Specifically required for enforce-wait
   if (settings.activeStrategies.includes("enforce-wait")) {
@@ -403,17 +404,19 @@ settings.onInit((settings) => {
     }, 3000)
   }
 
-  questionnarieState.onInit((value) => {
-    const WAIT_TIME = 1_000 * 3600 * 24
-    const shouldShowQuestionnaire =
-      !value.finished &&
-      Math.random() < 0.25 &&
-      value.interventionFirstSeen + WAIT_TIME < Date.now()
+  // !! Questionaire removed as research project has concluded.
 
-    if (shouldShowQuestionnaire) {
-      setTimeout(() => {
-        openModal(<QuestionnaireModal />)
-      }, 1000)
-    }
-  })
+  // questionnarieState.onInit((value) => {
+  //   const WAIT_TIME = 1_000 * 3600 * 24
+  //   const shouldShowQuestionnaire =
+  //     !value.finished &&
+  //     Math.random() < 0.25 &&
+  //     value.interventionFirstSeen + WAIT_TIME < Date.now()
+
+  //   if (shouldShowQuestionnaire) {
+  //     setTimeout(() => {
+  //       openModal(<QuestionnaireModal />)
+  //     }, 1000)
+  //   }
+  // })
 })
