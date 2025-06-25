@@ -385,7 +385,8 @@ function effect(signal: { signal: AbortSignal }) {
 
 settings.onInit((settings) => {
   if (!settings.active) return
-  trackingInit()
+  //!! Tracking disabled as research project has concluded.
+  //trackingInit()
 
   // Specifically required for enforce-wait
   if (settings.activeStrategies.includes("enforce-wait")) {
@@ -402,6 +403,8 @@ settings.onInit((settings) => {
       openModal(<WelcomeModal />)
     }, 3000)
   }
+
+  // !! Questionaire removed as research project has concluded.
 
   // questionnarieState.onInit((value) => {
   //   const WAIT_TIME = 1_000 * 3600 * 24
